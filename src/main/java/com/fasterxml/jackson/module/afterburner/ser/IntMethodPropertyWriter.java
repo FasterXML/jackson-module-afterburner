@@ -11,8 +11,8 @@ public final class IntMethodPropertyWriter
         super(src, null, index);
     }
 
-    public IntMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
-        return new IntMethodPropertyWriter(this, acc, _propertyIndex);
+    public IntMethodPropertyWriter withAccessor(BeanPropertyAccessor acc, int index) {
+        return new IntMethodPropertyWriter(this, acc,index);
     }
 
     /*

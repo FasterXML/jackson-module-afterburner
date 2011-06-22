@@ -22,7 +22,7 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         _propertyIndex = propertyIndex;
     }
     
-    public abstract T withAccessor(BeanPropertyAccessor acc);
+    public abstract T withAccessor(BeanPropertyAccessor acc, int index);
 
     @Override
     public abstract void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)

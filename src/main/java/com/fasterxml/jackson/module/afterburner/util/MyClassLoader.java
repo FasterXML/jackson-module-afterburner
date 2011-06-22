@@ -14,12 +14,12 @@ public class MyClassLoader extends ClassLoader
      * @param targetClass Interface or abstract class that class to load should extend or 
      *   implement
      */
-    public Class<?> loadAndResolve(String className, byte[] byteCode, Class<?> targetClass)
+    public Class<?> loadAndResolve(String className, byte[] byteCode)
         throws IllegalArgumentException
     {
         // First things first: just to be sure; maybe we have already loaded it?
         Class<?> old = findLoadedClass(className);
-        if (old != null && targetClass.isAssignableFrom(old)) {
+        if (old != null) {
             return old;
         }
         
