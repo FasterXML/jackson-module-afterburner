@@ -4,15 +4,15 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.BeanPropertyWriter;
 
-public final class IntMethodPropertyAccessor
-    extends OptimizedBeanPropertyWriter<IntMethodPropertyAccessor>
+public final class IntMethodPropertyWriter
+    extends OptimizedBeanPropertyWriter<IntMethodPropertyWriter>
 {
-    public IntMethodPropertyAccessor(BeanPropertyWriter src, BeanPropertyAccessor acc, int index) {
+    public IntMethodPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index) {
         super(src, null, index);
     }
 
-    public IntMethodPropertyAccessor withAccessor(BeanPropertyAccessor acc) {
-        return new IntMethodPropertyAccessor(this, acc, _propertyIndex);
+    public IntMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
+        return new IntMethodPropertyWriter(this, acc, _propertyIndex);
     }
 
     /*
