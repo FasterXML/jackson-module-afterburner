@@ -52,12 +52,12 @@ used to enhance access functionality using bytecode generation.
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.7.2</version>
+      <version>1.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mrbean</artifactId>
-      <version>1.7.2</version>
+      <version>1.8.1</version>
     </dependency>
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
