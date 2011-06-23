@@ -25,7 +25,7 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         int getX() { return 123; }
     }
 
-    static class LongBean {
+    public static class LongBean {
         public long getValue() { return -99L; }
     }
 

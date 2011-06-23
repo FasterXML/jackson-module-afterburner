@@ -9,23 +9,43 @@ import org.codehaus.jackson.map.introspect.AnnotatedMethod;
 import org.codehaus.jackson.map.introspect.BasicBeanDescription;
 import org.codehaus.jackson.map.ser.*;
 
+import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
+
 public class SerializerModifier extends BeanSerializerModifier
 {
+    /**
+     * Class loader to use for generated classes; if null, will try to
+     * use class loader of the target class.
+     */
+    protected final MyClassLoader _classLoader;
+    
+    public SerializerModifier(ClassLoader cl)
+    {
+        // If we were given parent class loader explicitly, use that:
+        _classLoader = (cl == null) ? null : new MyClassLoader(cl, false);
+    }
+
     public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
             BasicBeanDescription beanDesc, List<BeanPropertyWriter> beanProperties)
     {
         final Class<?> beanClass = beanDesc.getBeanClass();
-        PropertyCollector collector = findProperties(beanProperties);
-        
-        /* First things first: we can't really access stuff within private
-         * classes, so skip
+        /* Hmmh. Can we access stuff from private classes?
+         * Possibly, if we can use parent class loader.
+         * (should probably skip all non-public?)
          */
+        if (_classLoader != null) {
+            if (Modifier.isPrivate(beanClass.getModifiers())) {
+                return beanProperties;
+            }
+        }
+        
+        PropertyAccessorCollector collector = findProperties(beanProperties);
         if (collector.isEmpty()) {
             return beanProperties;
         }
         
         // if we had a match, need to materialize
-        BeanPropertyAccessor acc = collector.findAccessor(beanClass);
+        BeanPropertyAccessor acc = collector.findAccessor(beanClass, _classLoader);
         // and then link accessors to bean property writers:
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
@@ -37,9 +57,9 @@ public class SerializerModifier extends BeanSerializerModifier
         return beanProperties;
     }
 
-    protected PropertyCollector findProperties(List<BeanPropertyWriter> beanProperties)
+    protected PropertyAccessorCollector findProperties(List<BeanPropertyWriter> beanProperties)
     {
-        PropertyCollector collector = new PropertyCollector();
+        PropertyAccessorCollector collector = new PropertyAccessorCollector();
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
             BeanPropertyWriter bpw = it.next();

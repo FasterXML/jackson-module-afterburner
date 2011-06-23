@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import org.codehaus.jackson.map.introspect.AnnotatedField;
-import org.codehaus.jackson.map.introspect.AnnotatedMethod;
 import org.codehaus.jackson.map.ser.BeanPropertyWriter;
 
 import org.codehaus.jackson.org.objectweb.asm.ClassWriter;
@@ -14,18 +13,16 @@ import org.codehaus.jackson.org.objectweb.asm.Type;
 
 import static org.codehaus.jackson.org.objectweb.asm.Opcodes.*;
 
+import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
 /**
  * Simple collector used to keep track of properties for which code-generated
  * accessors are needed.
  */
-public class PropertyCollector
+public class PropertyAccessorCollector
+    extends DynamicPropertyAccessorBase
 {
-    private final static int[] ALL_INT_CONSTS = new int[] {
-        ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
-    };
-    
     private final ArrayList<IntMethodPropertyWriter> _intGetters = new ArrayList<IntMethodPropertyWriter>();
     private final ArrayList<LongMethodPropertyWriter> _longGetters = new ArrayList<LongMethodPropertyWriter>();
     private final ArrayList<StringMethodPropertyWriter> _stringGetters = new ArrayList<StringMethodPropertyWriter>();
@@ -36,8 +33,8 @@ public class PropertyCollector
     private final ArrayList<StringFieldPropertyWriter> _stringFields = new ArrayList<StringFieldPropertyWriter>();
     private final ArrayList<ObjectFieldPropertyWriter> _objectFields = new ArrayList<ObjectFieldPropertyWriter>();
     
-    public PropertyCollector() { }
-
+    public PropertyAccessorCollector() { }
+    
     /*
     /**********************************************************
     /* Methods for collecting properties
@@ -88,12 +85,17 @@ public class PropertyCollector
     /**********************************************************
      */
 
-    public BeanPropertyAccessor findAccessor(Class<?> beanType)
+    public BeanPropertyAccessor findAccessor(Class<?> beanType,
+            MyClassLoader classLoader)
     {
+        // if we weren't passed a class loader, we will base it on value type CL, try to use parent
+        if (classLoader == null) {
+            classLoader = new MyClassLoader(beanType.getClassLoader(), true);
+        }
+        
         String srcName = beanType.getName() + "$Access4JacksonSerializer";
         
         String generatedClass = internalClassName(srcName);
-        MyClassLoader classLoader = new MyClassLoader(beanType.getClassLoader());
         Class<?> accessorClass = null;
         try {
             accessorClass = classLoader.loadClass(srcName);
@@ -252,7 +254,7 @@ public class PropertyCollector
     
     /*
     /**********************************************************
-    /* Code generation; method-based getters
+    /* Code generation; field-based getters
     /**********************************************************
      */
     
@@ -443,40 +445,4 @@ public class PropertyCollector
         }
         mv.visitLabel(defaultLabel);
     }        
-    
-    /*
-    /**********************************************************
-    /* Helper methods, generating common pieces
-    /**********************************************************
-     */
-    
-    private static void _generateException(MethodVisitor mv, String beanClass, int propertyCount)
-    {
-        mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
-        mv.visitInsn(DUP);
-        mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
-        mv.visitInsn(DUP);
-        mv.visitLdcInsn("Invalid field index (valid; 0 <= n < "+propertyCount+"): ");
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V");
-        mv.visitVarInsn(ILOAD, 2);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;");
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>", "(Ljava/lang/String;)V");
-        mv.visitInsn(ATHROW);
-    }
-    
-    /*
-    /**********************************************************
-    /* Helper methods, other
-    /**********************************************************
-     */
-
-    private static String internalClassName(String className) {
-        return className.replace(".", "/");
-    }
-    
-    private <T extends OptimizedBeanPropertyWriter<T>> T _add(List<T> list, T value) {
-        list.add(value);
-        return value;
-    }
 }

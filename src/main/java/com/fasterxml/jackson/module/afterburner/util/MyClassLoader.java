@@ -7,9 +7,17 @@ import java.lang.reflect.Method;
  */
 public class MyClassLoader extends ClassLoader
 {
-    public MyClassLoader(ClassLoader parent)
+    /**
+     * Flag that determines if we should first try to load new class
+     * using parent class loader or not; this may be done to try to
+     * force access to protected/package-access properties.
+     */
+    protected final boolean _cfgUseParentLoader;
+    
+    public MyClassLoader(ClassLoader parent, boolean tryToUseParent)
     {
         super(parent);
+        _cfgUseParentLoader = tryToUseParent;
     }
     
     /**
@@ -28,16 +36,18 @@ public class MyClassLoader extends ClassLoader
         Class<?> impl;
         
         // First: let's try calling it directly on parent, to be able to access protected/package-access stuff:
-        try {
-            Method method = ClassLoader.class.getDeclaredMethod("defineClass", 
-                    new Class[] {String.class, byte[].class, int.class,
-                    int.class});
-            method.setAccessible(true);
-            return (Class<?>)method.invoke(getParent(),
-                    new Object[] { className, byteCode, Integer.valueOf(0), Integer.valueOf(byteCode.length)});
-        } catch (Exception e) { }
+        if (_cfgUseParentLoader) {
+            try {
+                Method method = ClassLoader.class.getDeclaredMethod("defineClass", 
+                        new Class[] {String.class, byte[].class, int.class,
+                        int.class});
+                method.setAccessible(true);
+                return (Class<?>)method.invoke(getParent(),
+                        new Object[] { className, byteCode, Integer.valueOf(0), Integer.valueOf(byteCode.length)});
+            } catch (Exception e) { }
+        }
 
-        // but if that doesn't fly, try to do it from sub-class
+        // but if that doesn't fly, try to do it from our own class loader
         try {
             impl = defineClass(className, byteCode, 0, byteCode.length);
         } catch (LinkageError e) {
