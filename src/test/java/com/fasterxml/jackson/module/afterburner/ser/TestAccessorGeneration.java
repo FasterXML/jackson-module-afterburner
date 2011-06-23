@@ -16,7 +16,17 @@ public class TestAccessorGeneration extends AfterburnerTestBase
     /**********************************************************************
      */
 
-    public static class Bean {
+    public static class Bean1 {
+        public int getX() { return 13; }
+    }
+
+    public static class Bean3 {
+        public int getX() { return 13; }
+        public int getY() { return 27; }
+        public int get3() { return 3; }
+    }
+
+    public static class BeanN {
         public int getX() { return 13; }
         public int getY() { return 27; }
 
@@ -35,7 +45,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
     
     public void testSingleIntAccessorGeneration() throws Exception
     {
-        Method method = Bean.class.getDeclaredMethod("getX");
+        Method method = Bean1.class.getDeclaredMethod("getX");
         AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
         PropertyCollector coll = new PropertyCollector();
         BeanPropertyWriter bpw = new BeanPropertyWriter(annMethod, null,
@@ -43,8 +53,8 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                 null, null, null,
                 method, null, false, null);
         coll.addIntGetter(bpw);
-        BeanPropertyAccessor acc = coll.findAccessor(Bean.class);
-        Bean bean = new Bean();
+        BeanPropertyAccessor acc = coll.findAccessor(Bean1.class);
+        Bean1 bean = new Bean1();
         int value = acc.intGetter(bean, 0);
         assertEquals(bean.getX(), value);
     }
@@ -57,7 +67,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                 "getX", "getY", "get3"
         };
         for (String methodName : methodNames) {
-            Method method = Bean.class.getDeclaredMethod(methodName);
+            Method method = Bean3.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
             coll.addIntGetter(new BeanPropertyWriter(annMethod, null,
                     new SerializedString(methodName), null,
@@ -65,8 +75,8 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                     method, null, false, null));
         }
 
-        BeanPropertyAccessor acc = coll.findAccessor(Bean.class);
-        Bean bean = new Bean();
+        BeanPropertyAccessor acc = coll.findAccessor(Bean3.class);
+        Bean3 bean = new Bean3();
 
         assertEquals(bean.getX(), acc.intGetter(bean, 0));
         assertEquals(bean.getY(), acc.intGetter(bean, 1));
@@ -81,7 +91,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                 "getX", "getY", "get3", "get4", "get5", "get6", "get7"
         };
         for (String methodName : methodNames) {
-            Method method = Bean.class.getDeclaredMethod(methodName);
+            Method method = BeanN.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
             coll.addIntGetter(new BeanPropertyWriter(annMethod, null,
                     new SerializedString(methodName), null,
@@ -89,8 +99,8 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                     method, null, false, null));
         }
 
-        BeanPropertyAccessor acc = coll.findAccessor(Bean.class);
-        Bean bean = new Bean();
+        BeanPropertyAccessor acc = coll.findAccessor(BeanN.class);
+        BeanN bean = new BeanN();
 
         assertEquals(bean.getX(), acc.intGetter(bean, 0));
         assertEquals(bean.getY(), acc.intGetter(bean, 1));

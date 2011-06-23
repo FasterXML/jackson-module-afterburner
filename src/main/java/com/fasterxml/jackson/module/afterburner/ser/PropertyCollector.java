@@ -19,6 +19,7 @@ import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 public class PropertyCollector
 {
     private final ArrayList<IntMethodPropertyWriter> _intGetters = new ArrayList<IntMethodPropertyWriter>();
+    private final ArrayList<LongMethodPropertyWriter> _longGetters = new ArrayList<LongMethodPropertyWriter>();
     
     public PropertyCollector() { }
 
@@ -31,7 +32,16 @@ public class PropertyCollector
     public IntMethodPropertyWriter addIntGetter(BeanPropertyWriter bpw) {
         return _add(_intGetters, new IntMethodPropertyWriter(bpw, null, _intGetters.size(), null));
     }
+    public LongMethodPropertyWriter addLongGetter(BeanPropertyWriter bpw) {
+        return _add(_longGetters, new LongMethodPropertyWriter(bpw, null, _longGetters.size(), null));
+    }
 
+    public boolean isEmpty() {
+        return _intGetters.isEmpty()
+            && _longGetters.isEmpty()
+        ;
+    }
+    
     /*
     /**********************************************************
     /* Code generation; high level
@@ -67,11 +77,24 @@ public class PropertyCollector
         // muchos important: level at least 1.5 to get generics!!!
         cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, generatedClass, null, superClass, null);
         cw.visitSource(srcName + ".java", null);
-        generateDefaultConstructor(cw, superClass);
-        final String beanClass = internalClassName(beanType.getName());
+
+        // add default (no-arg) constructor:
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0); // don't care (real values: 1,1)
+        mv.visitEnd();
         
+        final String beanClass = internalClassName(beanType.getName());
+ 
+        // and then add various accessors
         if (!_intGetters.isEmpty()) {
             _addIntGetters(cw, _intGetters, beanClass);
+        }
+        if (!_longGetters.isEmpty()) {
+            _addLongGetters(cw, _longGetters, beanClass);
         }
         cw.visitEnd();
         byte[] byteCode = cw.toByteArray();
@@ -87,6 +110,7 @@ public class PropertyCollector
     private static void _addIntGetters(ClassWriter cw, List<IntMethodPropertyWriter> props,
             String beanClass)
     {
+System.err.println("Adding "+props.size()+" int getters for "+beanClass);        
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "intGetter", "(Ljava/lang/Object;I)I", /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
@@ -96,28 +120,54 @@ public class PropertyCollector
 
         // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
         if (props.size() <= 4) {
-            _addIntGettersIf(mv, props, beanClass);
+            _addGettersUsingIf(mv, props, beanClass, IRETURN, "()I",
+                    new int[] {
+                    ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
+                });
         } else {
-            _addIntGettersSwitch(mv, props, beanClass);
+            _addGettersUsingSwitch(mv, props, beanClass, IRETURN, "()I");
         }
-
         // and if no match, generate exception:
-        mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
-        mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>", "()V");
-        mv.visitInsn(ATHROW);
-
+        _generateException(mv, beanClass, props.size());
         // and that's it
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
 
-    private final static int[] ALL_ICONSTS = new int[] {
-        ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
-    };
-    
-    private static void _addIntGettersIf(MethodVisitor mv, List<IntMethodPropertyWriter> props,
+    private static void _addLongGetters(ClassWriter cw, List<LongMethodPropertyWriter> props,
             String beanClass)
+    {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "longGetter", "(Ljava/lang/Object;I)J", /*generic sig*/null, null);
+        mv.visitCode();
+        // first: cast bean to proper type
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitVarInsn(ASTORE, 3);
+
+        if (props.size() <= 1) { // there are just 2 constants...  so almost not worth it but
+            _addGettersUsingIf(mv, props, beanClass, LRETURN, "()J",
+                    new int[] { LCONST_0, LCONST_1 });
+        } else {
+            _addGettersUsingSwitch(mv, props, beanClass, LRETURN, "()J");
+        }
+
+        // and if no match, generate exception:
+        _generateException(mv, beanClass, props.size());
+
+        // and that's it
+        mv.visitMaxs(0, 0); // don't care (real values: 1,1)
+        mv.visitEnd();
+    }
+    
+    /*
+    /**********************************************************
+    /* Helper methods, method accessor creation
+    /**********************************************************
+     */
+    
+    private static <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingIf(MethodVisitor mv,
+            List<T> props, String beanClass, int returnOpcode, String getterSignature,
+            int[] constantOpcodes)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
         Label next = new Label();
@@ -126,26 +176,25 @@ public class PropertyCollector
 
         // call first getter:
         mv.visitVarInsn(ALOAD, 3); // load local for cast bean
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(0).getMember().getName(), "()I");
-        mv.visitInsn(IRETURN);
+        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(0).getMember().getName(), getterSignature);
+        mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
         for (int i = 1, len = props.size(); i < len; ++i) {
             mv.visitLabel(next);
             next = new Label();
             mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ALL_ICONSTS[i]);
+            mv.visitInsn(constantOpcodes[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(i).getMember().getName(), "()I");
-            mv.visitInsn(IRETURN);
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(i).getMember().getName(), getterSignature);
+            mv.visitInsn(returnOpcode);
         }
-        // and if no match, throw error
         mv.visitLabel(next);
     }        
 
-    private static void _addIntGettersSwitch(MethodVisitor mv, List<IntMethodPropertyWriter> props,
-            String beanClass)
+    private static <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingSwitch(MethodVisitor mv,
+            List<T> props, String beanClass, int returnOpcode, String getterSignature)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
 
@@ -158,26 +207,36 @@ public class PropertyCollector
         for (int i = 0, len = labels.length; i < len; ++i) {
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, 3); // load bean
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(i).getMember().getName(), "()I");
-            mv.visitInsn(IRETURN);
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(i).getMember().getName(), getterSignature);
+            mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(defaultLabel);
     }        
+
+    /*
+    /**********************************************************
+    /* Helper methods, generating common pieces
+    /**********************************************************
+     */
     
-    private static void generateDefaultConstructor(ClassWriter cw, String superName)
+    private static void _generateException(MethodVisitor mv, String beanClass, int propertyCount)
     {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-        mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, superName, "<init>", "()V");
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(0, 0); // don't care (real values: 1,1)
-        mv.visitEnd();
+        mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
+        mv.visitInsn(DUP);
+        mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+        mv.visitInsn(DUP);
+        mv.visitLdcInsn("Invalid field index (valid; 0 <= n < "+propertyCount+"): ");
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V");
+        mv.visitVarInsn(ILOAD, 2);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>", "(Ljava/lang/String;)V");
+        mv.visitInsn(ATHROW);
     }
     
     /*
     /**********************************************************
-    /* Helper methods
+    /* Helper methods, other
     /**********************************************************
      */
 

@@ -10,6 +10,9 @@ public abstract class BeanPropertyAccessor
     public int intGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No intGetters defined");
     }
+    public long longGetter(Object bean, int property) {
+        throw new UnsupportedOperationException("No longGetters defined");
+    }
 
     public String stringGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No stringGetters defined");
@@ -20,6 +23,9 @@ public abstract class BeanPropertyAccessor
     
     public int intField(Object bean, int property) {
         throw new UnsupportedOperationException("No intFields defined");
+    }
+    public long longField(Object bean, int property) {
+        throw new UnsupportedOperationException("No longFields defined");
     }
     public String stringField(Object bean, int property) {
         throw new UnsupportedOperationException("No stringFields defined");
