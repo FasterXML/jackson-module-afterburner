@@ -28,7 +28,6 @@ public class SerializerModifier extends BeanSerializerModifier
                 }
             }
         }
-System.err.println("Got "+count+" int props for "+beanDesc.getBeanClass());        
         if (count == 0) {
             return beanProperties;
         }

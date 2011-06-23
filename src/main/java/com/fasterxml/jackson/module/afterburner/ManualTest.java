@@ -2,6 +2,7 @@ package com.fasterxml.jackson.module.afterburner;
 
 import java.io.*;
 
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 public class ManualTest
@@ -12,14 +13,21 @@ public class ManualTest
         public int getB() { return -123; }
         public int getC() { return 0; }
         public int getD() { return 999999; }
+
+        public int getE() { return 1; }
+        public int getF() { return 21; }
+        public int getG() { return 345; }
+        public int getH() { return 99; }
     }
     
     public static void main(String[] args) throws Exception
     {
-        ObjectMapper mapperSlow = new ObjectMapper();
-        ObjectMapper mapperFast = new ObjectMapper();
+//        JsonFactory f = new org.codehaus.jackson.smile.SmileFactory();
+        JsonFactory f = new JsonFactory();
+        ObjectMapper mapperSlow = new ObjectMapper(f);
+        ObjectMapper mapperFast = new ObjectMapper(f);
         
-        // !!! TEST
+        // !!! TEST -- to get profile info, comment out:
 //        mapperSlow.registerModule(new AfterburnerModule());
 
         mapperFast.registerModule(new AfterburnerModule());
