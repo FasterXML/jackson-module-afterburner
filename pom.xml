@@ -52,12 +52,12 @@ used to enhance access functionality using bytecode generation.
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.8.1</version>
+      <version>1.8.2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mrbean</artifactId>
-      <version>1.8.1</version>
+      <version>1.8.2</version>
     </dependency>
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
@@ -140,6 +140,7 @@ org.codehaus.jackson
 ,org.codehaus.jackson.map.introspect
 ,org.codehaus.jackson.map.module
 ,org.codehaus.jackson.map.ser
+,org.codehaus.jackson.map.ser.impl
 ,org.codehaus.jackson.org.objectweb.asm
 </Import-Package>
               <Private-Package>

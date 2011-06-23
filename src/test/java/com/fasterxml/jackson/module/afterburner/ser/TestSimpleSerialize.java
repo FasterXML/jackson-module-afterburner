@@ -13,6 +13,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
     /**********************************************************************
      */
 
+    public enum MyEnum {
+        A, B, C;
+    }
+    
     /* Keep this as package access, since we can't handle private; but
      * public is pretty much always available.
      */
@@ -28,6 +32,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
     static class StringBean {
         public String getName() { return "abc"; }
     }
+
+    static class EnumBean {
+        public MyEnum getEnum() { return MyEnum.B; }
+    }
     
     static class IntFieldBean {
         @JsonProperty("intF") int x = 17;
@@ -39,6 +47,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
 
     public static class StringFieldBean {
         public String foo = "bar";
+    }
+
+    public static class EnumFieldBean {
+        public MyEnum value = MyEnum.C;
     }
     
     /*
@@ -62,6 +74,11 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"name\":\"abc\"}", mapper.writeValueAsString(new StringBean()));
     }
 
+    public void testObjectMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{\"enum\":\"B\"}", mapper.writeValueAsString(new EnumBean()));
+    }
+    
     /*
     /**********************************************************************
     /* Test methods, field access
@@ -81,5 +98,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
     public void testStringField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new StringFieldBean()));
+    }
+
+    public void testObjectField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{\"value\":\"C\"}", mapper.writeValueAsString(new EnumFieldBean()));
     }
 }

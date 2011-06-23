@@ -78,7 +78,11 @@ public class SerializerModifier extends BeanSerializerModifier
                         it.set(collector.addStringField(bpw));
                     }
                 } else { // any other Object types; we can at least call accessor
-                    // !!! TODO
+                    if (isMethod) {
+                        it.set(collector.addObjectGetter(bpw));
+                    } else {
+                        it.set(collector.addObjectField(bpw));
+                    }
                 }
             }
         }

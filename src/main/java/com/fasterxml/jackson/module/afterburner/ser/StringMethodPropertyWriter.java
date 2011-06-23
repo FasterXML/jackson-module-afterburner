@@ -33,7 +33,16 @@ public class StringMethodPropertyWriter
     public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
+        String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
+        // Null (etc) handling; copied from super-class impl
+        if (value == null) {
+            if (!_suppressNulls) {
+                jgen.writeFieldName(_name);
+                prov.defaultSerializeNull(jgen);
+            }
+            return;
+        }
         jgen.writeFieldName(_name);
-        jgen.writeString(_propertyAccessor.stringGetter(bean, _propertyIndex));
+        jgen.writeString(value);
     }
 }
