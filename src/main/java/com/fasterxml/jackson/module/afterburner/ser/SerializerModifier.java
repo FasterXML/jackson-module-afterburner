@@ -51,15 +51,34 @@ public class SerializerModifier extends BeanSerializerModifier
                 continue;
             }
             // (although, interestingly enough, can seem to access private classes...)
+
+            // !!! TODO: skip entries with non-standard serializer
+            // (may need to add accessor(s) to BeanPropertyWriter?)
             
             boolean isMethod = (member instanceof AnnotatedMethod);
-            if (type == Integer.TYPE) {
-                if (isMethod) {
-                    it.set(collector.addIntGetter(bpw));
+            if (type.isPrimitive()) {
+                if (type == Integer.TYPE) {
+                    if (isMethod) {
+                        it.set(collector.addIntGetter(bpw));
+                    } else {
+                        it.set(collector.addIntField(bpw));
+                    }
+                } else if (type == Long.TYPE) {
+                    if (isMethod) {
+                        it.set(collector.addLongGetter(bpw));
+                    } else {
+                        it.set(collector.addLongField(bpw));
+                    }
                 }
-            } else if (type == Long.TYPE) {
-                if (isMethod) {
-                    it.set(collector.addLongGetter(bpw));
+            } else {
+                if (type == String.class) {
+                    if (isMethod) {
+                        it.set(collector.addStringGetter(bpw));
+                    } else {
+                        it.set(collector.addStringField(bpw));
+                    }
+                } else { // any other Object types; we can at least call accessor
+                    // !!! TODO
                 }
             }
         }

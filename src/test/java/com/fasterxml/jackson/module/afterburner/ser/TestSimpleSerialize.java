@@ -25,17 +25,25 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         public long getValue() { return -99L; }
     }
 
+    static class StringBean {
+        public String getName() { return "abc"; }
+    }
+    
     static class IntFieldBean {
-        @JsonProperty("x") int x = 17;
+        @JsonProperty("intF") int x = 17;
     }
 
     static class LongFieldBean {
         @JsonProperty("long") long l = -123L;
     }
+
+    public static class StringFieldBean {
+        public String foo = "bar";
+    }
     
     /*
     /**********************************************************************
-    /* Test methods
+    /* Test methods, method access
     /**********************************************************************
      */
 
@@ -49,13 +57,29 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"value\":-99}", mapper.writeValueAsString(new LongBean()));
     }
 
+    public void testStringMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{\"name\":\"abc\"}", mapper.writeValueAsString(new StringBean()));
+    }
+
+    /*
+    /**********************************************************************
+    /* Test methods, field access
+    /**********************************************************************
+     */
+    
     public void testIntField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
-        assertEquals("{\"x\":17}", mapper.writeValueAsString(new IntFieldBean()));
+        assertEquals("{\"intF\":17}", mapper.writeValueAsString(new IntFieldBean()));
     }
 
     public void testLongField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         assertEquals("{\"long\":-123}", mapper.writeValueAsString(new LongFieldBean()));
+    }
+
+    public void testStringField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new StringFieldBean()));
     }
 }

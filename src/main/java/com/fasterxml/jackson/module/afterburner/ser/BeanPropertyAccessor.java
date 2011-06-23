@@ -13,7 +13,6 @@ public abstract class BeanPropertyAccessor
     public long longGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No longGetters defined");
     }
-
     public String stringGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No stringGetters defined");
     }

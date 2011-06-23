@@ -5,22 +5,22 @@ import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.BeanPropertyWriter;
 
-public final class IntFieldPropertyWriter
-    extends OptimizedBeanPropertyWriter<IntFieldPropertyWriter>
+public final class StringFieldPropertyWriter
+    extends OptimizedBeanPropertyWriter<StringFieldPropertyWriter>
 {
-    public IntFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
+    public StringFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
     }
 
     @Override
     public BeanPropertyWriter withSerializer(JsonSerializer<Object> ser) {
-        return new IntFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
+        return new StringFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
-    public IntFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
+    public StringFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
-        return new IntFieldPropertyWriter(this, acc, _propertyIndex, _serializer);
+        return new StringFieldPropertyWriter(this, acc, _propertyIndex, _serializer);
     }
 
     /*
@@ -34,6 +34,6 @@ public final class IntFieldPropertyWriter
         throws Exception
     {
         jgen.writeFieldName(_name);
-        jgen.writeNumber(_propertyAccessor.intField(bean, _propertyIndex));
+        jgen.writeString(_propertyAccessor.stringField(bean, _propertyIndex));
     }
 }

@@ -5,22 +5,22 @@ import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.BeanPropertyWriter;
 
-public final class IntFieldPropertyWriter
-    extends OptimizedBeanPropertyWriter<IntFieldPropertyWriter>
+public class StringMethodPropertyWriter 
+    extends OptimizedBeanPropertyWriter<StringMethodPropertyWriter>
 {
-    public IntFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
+    public StringMethodPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
     }
 
     @Override
     public BeanPropertyWriter withSerializer(JsonSerializer<Object> ser) {
-        return new IntFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
+        return new StringMethodPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
-    public IntFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
+    public StringMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
-        return new IntFieldPropertyWriter(this, acc, _propertyIndex, _serializer);
+        return new StringMethodPropertyWriter(this, acc, _propertyIndex, _serializer);
     }
 
     /*
@@ -30,10 +30,10 @@ public final class IntFieldPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
+    public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
         jgen.writeFieldName(_name);
-        jgen.writeNumber(_propertyAccessor.intField(bean, _propertyIndex));
+        jgen.writeString(_propertyAccessor.stringGetter(bean, _propertyIndex));
     }
 }

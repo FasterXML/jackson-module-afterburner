@@ -21,14 +21,14 @@ public class PropertyCollector
     private final static int[] ALL_INT_CONSTS = new int[] {
         ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
     };
-
-    private final static int[] ALL_LONG_CONSTS = new int[] { LCONST_0, LCONST_1 };
     
     private final ArrayList<IntMethodPropertyWriter> _intGetters = new ArrayList<IntMethodPropertyWriter>();
     private final ArrayList<LongMethodPropertyWriter> _longGetters = new ArrayList<LongMethodPropertyWriter>();
+    private final ArrayList<StringMethodPropertyWriter> _stringGetters = new ArrayList<StringMethodPropertyWriter>();
     
     private final ArrayList<IntFieldPropertyWriter> _intFields = new ArrayList<IntFieldPropertyWriter>();
     private final ArrayList<LongFieldPropertyWriter> _longFields = new ArrayList<LongFieldPropertyWriter>();
+    private final ArrayList<StringFieldPropertyWriter> _stringFields = new ArrayList<StringFieldPropertyWriter>();
     
     public PropertyCollector() { }
 
@@ -44,20 +44,27 @@ public class PropertyCollector
     public LongMethodPropertyWriter addLongGetter(BeanPropertyWriter bpw) {
         return _add(_longGetters, new LongMethodPropertyWriter(bpw, null, _longGetters.size(), null));
     }
+    public StringMethodPropertyWriter addStringGetter(BeanPropertyWriter bpw) {
+        return _add(_stringGetters, new StringMethodPropertyWriter(bpw, null, _stringGetters.size(), null));
+    }
 
     public IntFieldPropertyWriter addIntField(BeanPropertyWriter bpw) {
         return _add(_intFields, new IntFieldPropertyWriter(bpw, null, _intFields.size(), null));
     }
-
     public LongFieldPropertyWriter addLongField(BeanPropertyWriter bpw) {
         return _add(_longFields, new LongFieldPropertyWriter(bpw, null, _longFields.size(), null));
+    }
+    public StringFieldPropertyWriter addStringField(BeanPropertyWriter bpw) {
+        return _add(_stringFields, new StringFieldPropertyWriter(bpw, null, _stringFields.size(), null));
     }
     
     public boolean isEmpty() {
         return _intGetters.isEmpty()
             && _longGetters.isEmpty()
+            && _stringGetters.isEmpty()
             && _intFields.isEmpty()
             && _longFields.isEmpty()
+            && _stringFields.isEmpty()
         ;
     }
     
@@ -115,12 +122,18 @@ public class PropertyCollector
         if (!_longFields.isEmpty()) {
             _addLongFields(cw, _longFields, beanClass);
         }
+        if (!_stringFields.isEmpty()) {
+            _addStringFields(cw, _stringFields, beanClass);
+        }
         // and then method accessors:
         if (!_intGetters.isEmpty()) {
             _addIntGetters(cw, _intGetters, beanClass);
         }
         if (!_longGetters.isEmpty()) {
             _addLongGetters(cw, _longGetters, beanClass);
+        }
+        if (!_stringGetters.isEmpty()) {
+            _addStringGetters(cw, _stringGetters, beanClass);
         }
         cw.visitEnd();
         byte[] byteCode = cw.toByteArray();
@@ -165,8 +178,8 @@ public class PropertyCollector
         mv.visitTypeInsn(CHECKCAST, beanClass);
         mv.visitVarInsn(ASTORE, 3);
 
-        if (props.size() < ALL_LONG_CONSTS.length) {
-            _addGettersUsingIf(mv, props, beanClass, LRETURN, "()J", ALL_LONG_CONSTS);
+        if (props.size() < 4) {
+            _addGettersUsingIf(mv, props, beanClass, LRETURN, "()J", ALL_INT_CONSTS);
         } else {
             _addGettersUsingSwitch(mv, props, beanClass, LRETURN, "()J");
         }
@@ -179,6 +192,24 @@ public class PropertyCollector
         mv.visitEnd();
     }
 
+    private static void _addStringGetters(ClassWriter cw, List<StringMethodPropertyWriter> props,
+            String beanClass)
+    {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "stringGetter", "(Ljava/lang/Object;I)Ljava/lang/String;", /*generic sig*/null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitVarInsn(ASTORE, 3);
+        if (props.size() < 4) {
+            _addGettersUsingIf(mv, props, beanClass, ARETURN, "()Ljava/lang/String;", ALL_INT_CONSTS);
+        } else {
+            _addGettersUsingSwitch(mv, props, beanClass, ARETURN, "()Ljava/lang/String;");
+        }
+        _generateException(mv, beanClass, props.size());
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+    }
+    
     /*
     /**********************************************************
     /* Code generation; method-based getters
@@ -195,8 +226,8 @@ public class PropertyCollector
         mv.visitTypeInsn(CHECKCAST, beanClass);
         mv.visitVarInsn(ASTORE, 3);
 
-        // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
-        if (props.size() <= 4) {
+        // Ok; minor optimization, less than 4 accessors, just do IFs; over that, use switch
+        if (props.size() < 4) {
             _addFieldsUsingIf(mv, props, beanClass, IRETURN, "I", ALL_INT_CONSTS);
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, IRETURN, "I");
@@ -216,14 +247,33 @@ public class PropertyCollector
         mv.visitTypeInsn(CHECKCAST, beanClass);
         mv.visitVarInsn(ASTORE, 3);
 
-        if (props.size() < ALL_LONG_CONSTS.length) {
-            _addFieldsUsingIf(mv, props, beanClass, LRETURN, "J", ALL_LONG_CONSTS);
+        if (props.size() < 4) {
+            _addFieldsUsingIf(mv, props, beanClass, LRETURN, "J", ALL_INT_CONSTS);
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, LRETURN, "J");
         }
         // and if no match, generate exception:
         _generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
+        mv.visitEnd();
+    }
+
+    private static void _addStringFields(ClassWriter cw, List<StringFieldPropertyWriter> props,
+            String beanClass)
+    {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "stringField", "(Ljava/lang/Object;I)Ljava/lang/String;", /*generic sig*/null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitVarInsn(ASTORE, 3);
+
+        if (props.size() < 4) {
+            _addFieldsUsingIf(mv, props, beanClass, ARETURN, "Ljava/lang/String;", ALL_INT_CONSTS);
+        } else {
+            _addFieldsUsingSwitch(mv, props, beanClass, ARETURN, "Ljava/lang/String;");
+        }
+        _generateException(mv, beanClass, props.size());
+        mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
     
@@ -289,9 +339,9 @@ public class PropertyCollector
         // first: check if 'index == 0'
         mv.visitJumpInsn(IFNE, next); // "if not zero, goto L (skip stuff)"
 
-        // call first getter:
+        // first field accessor
         mv.visitVarInsn(ALOAD, 3); // load local for cast bean
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(0).getMember().getName(), fieldSignature);
+        mv.visitFieldInsn(GETFIELD, beanClass, props.get(0).getMember().getName(), fieldSignature);
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
