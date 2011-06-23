@@ -18,8 +18,17 @@ import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
  */
 public class PropertyCollector
 {
+    private final static int[] ALL_INT_CONSTS = new int[] {
+        ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
+    };
+
+    private final static int[] ALL_LONG_CONSTS = new int[] { LCONST_0, LCONST_1 };
+    
     private final ArrayList<IntMethodPropertyWriter> _intGetters = new ArrayList<IntMethodPropertyWriter>();
     private final ArrayList<LongMethodPropertyWriter> _longGetters = new ArrayList<LongMethodPropertyWriter>();
+    
+    private final ArrayList<IntFieldPropertyWriter> _intFields = new ArrayList<IntFieldPropertyWriter>();
+    private final ArrayList<LongFieldPropertyWriter> _longFields = new ArrayList<LongFieldPropertyWriter>();
     
     public PropertyCollector() { }
 
@@ -36,9 +45,19 @@ public class PropertyCollector
         return _add(_longGetters, new LongMethodPropertyWriter(bpw, null, _longGetters.size(), null));
     }
 
+    public IntFieldPropertyWriter addIntField(BeanPropertyWriter bpw) {
+        return _add(_intFields, new IntFieldPropertyWriter(bpw, null, _intFields.size(), null));
+    }
+
+    public LongFieldPropertyWriter addLongField(BeanPropertyWriter bpw) {
+        return _add(_longFields, new LongFieldPropertyWriter(bpw, null, _longFields.size(), null));
+    }
+    
     public boolean isEmpty() {
         return _intGetters.isEmpty()
             && _longGetters.isEmpty()
+            && _intFields.isEmpty()
+            && _longFields.isEmpty()
         ;
     }
     
@@ -89,7 +108,14 @@ public class PropertyCollector
         
         final String beanClass = internalClassName(beanType.getName());
  
-        // and then add various accessors
+        // and then add various accessors; first field accessors:
+        if (!_intFields.isEmpty()) {
+            _addIntFields(cw, _intFields, beanClass);
+        }
+        if (!_longFields.isEmpty()) {
+            _addLongFields(cw, _longFields, beanClass);
+        }
+        // and then method accessors:
         if (!_intGetters.isEmpty()) {
             _addIntGetters(cw, _intGetters, beanClass);
         }
@@ -103,14 +129,13 @@ public class PropertyCollector
 
     /*
     /**********************************************************
-    /* Code generation; int getters
+    /* Code generation; method-based getters
     /**********************************************************
      */
-    
+
     private static void _addIntGetters(ClassWriter cw, List<IntMethodPropertyWriter> props,
             String beanClass)
     {
-System.err.println("Adding "+props.size()+" int getters for "+beanClass);        
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "intGetter", "(Ljava/lang/Object;I)I", /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
@@ -120,16 +145,12 @@ System.err.println("Adding "+props.size()+" int getters for "+beanClass);
 
         // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
         if (props.size() <= 4) {
-            _addGettersUsingIf(mv, props, beanClass, IRETURN, "()I",
-                    new int[] {
-                    ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
-                });
+            _addGettersUsingIf(mv, props, beanClass, IRETURN, "()I", ALL_INT_CONSTS);
         } else {
             _addGettersUsingSwitch(mv, props, beanClass, IRETURN, "()I");
         }
         // and if no match, generate exception:
         _generateException(mv, beanClass, props.size());
-        // and that's it
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -144,9 +165,8 @@ System.err.println("Adding "+props.size()+" int getters for "+beanClass);
         mv.visitTypeInsn(CHECKCAST, beanClass);
         mv.visitVarInsn(ASTORE, 3);
 
-        if (props.size() <= 1) { // there are just 2 constants...  so almost not worth it but
-            _addGettersUsingIf(mv, props, beanClass, LRETURN, "()J",
-                    new int[] { LCONST_0, LCONST_1 });
+        if (props.size() < ALL_LONG_CONSTS.length) {
+            _addGettersUsingIf(mv, props, beanClass, LRETURN, "()J", ALL_LONG_CONSTS);
         } else {
             _addGettersUsingSwitch(mv, props, beanClass, LRETURN, "()J");
         }
@@ -158,13 +178,60 @@ System.err.println("Adding "+props.size()+" int getters for "+beanClass);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
+
+    /*
+    /**********************************************************
+    /* Code generation; method-based getters
+    /**********************************************************
+     */
+    
+    private static void _addIntFields(ClassWriter cw, List<IntFieldPropertyWriter> props,
+            String beanClass)
+    {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "intField", "(Ljava/lang/Object;I)I", /*generic sig*/null, null);
+        mv.visitCode();
+        // first: cast bean to proper type
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitVarInsn(ASTORE, 3);
+
+        // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
+        if (props.size() <= 4) {
+            _addFieldsUsingIf(mv, props, beanClass, IRETURN, "I", ALL_INT_CONSTS);
+        } else {
+            _addFieldsUsingSwitch(mv, props, beanClass, IRETURN, "I");
+        }
+        // and if no match, generate exception:
+        _generateException(mv, beanClass, props.size());
+        mv.visitMaxs(0, 0); // don't care (real values: 1,1)
+        mv.visitEnd();
+    }
+
+    private static void _addLongFields(ClassWriter cw, List<LongFieldPropertyWriter> props,
+            String beanClass)
+    {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "longField", "(Ljava/lang/Object;I)J", /*generic sig*/null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitVarInsn(ASTORE, 3);
+
+        if (props.size() < ALL_LONG_CONSTS.length) {
+            _addFieldsUsingIf(mv, props, beanClass, LRETURN, "J", ALL_LONG_CONSTS);
+        } else {
+            _addFieldsUsingSwitch(mv, props, beanClass, LRETURN, "J");
+        }
+        // and if no match, generate exception:
+        _generateException(mv, beanClass, props.size());
+        mv.visitMaxs(0, 0); // don't care (real values: 1,1)
+        mv.visitEnd();
+    }
     
     /*
     /**********************************************************
     /* Helper methods, method accessor creation
     /**********************************************************
      */
-    
     private static <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingIf(MethodVisitor mv,
             List<T> props, String beanClass, int returnOpcode, String getterSignature,
             int[] constantOpcodes)
@@ -213,6 +280,54 @@ System.err.println("Adding "+props.size()+" int getters for "+beanClass);
         mv.visitLabel(defaultLabel);
     }        
 
+    private static <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingIf(MethodVisitor mv,
+            List<T> props, String beanClass, int returnOpcode, String fieldSignature,
+            int[] constantOpcodes)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        Label next = new Label();
+        // first: check if 'index == 0'
+        mv.visitJumpInsn(IFNE, next); // "if not zero, goto L (skip stuff)"
+
+        // call first getter:
+        mv.visitVarInsn(ALOAD, 3); // load local for cast bean
+        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, props.get(0).getMember().getName(), fieldSignature);
+        mv.visitInsn(returnOpcode);
+
+        // And from this point on, loop a bit
+        for (int i = 1, len = props.size(); i < len; ++i) {
+            mv.visitLabel(next);
+            next = new Label();
+            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+            mv.visitInsn(constantOpcodes[i]);
+            mv.visitJumpInsn(IF_ICMPNE, next);
+            mv.visitVarInsn(ALOAD, 3); // load bean
+            mv.visitFieldInsn(GETFIELD, beanClass, props.get(i).getMember().getName(), fieldSignature);
+            mv.visitInsn(returnOpcode);
+        }
+        mv.visitLabel(next);
+    }        
+
+    private static <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
+            List<T> props, String beanClass, int returnOpcode, String fieldSignature)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+
+        Label[] labels = new Label[props.size()];
+        for (int i = 0, len = labels.length; i < len; ++i) {
+            labels[i] = new Label();
+        }
+        Label defaultLabel = new Label();
+        mv.visitTableSwitchInsn(0, labels.length - 1, defaultLabel, labels);
+        for (int i = 0, len = labels.length; i < len; ++i) {
+            mv.visitLabel(labels[i]);
+            mv.visitVarInsn(ALOAD, 3); // load bean
+            mv.visitFieldInsn(GETFIELD, beanClass, props.get(i).getMember().getName(), fieldSignature);
+            mv.visitInsn(returnOpcode);
+        }
+        mv.visitLabel(defaultLabel);
+    }        
+    
     /*
     /**********************************************************
     /* Helper methods, generating common pieces
