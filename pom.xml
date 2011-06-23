@@ -72,6 +72,7 @@ used to enhance access functionality using bytecode generation.
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
@@ -80,7 +81,7 @@ used to enhance access functionality using bytecode generation.
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.0</version>
+            <version>2.1</version>
             <configuration>
                 <mavenExecutorId>forked-path</mavenExecutorId>
             </configuration>
@@ -88,6 +89,7 @@ used to enhance access functionality using bytecode generation.
         <plugin><!-- plug-in to attach source bundle in repo -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
+          <version>2.1.2</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -98,10 +100,10 @@ used to enhance access functionality using bytecode generation.
           </executions>
         </plugin>
         <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
+	      <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.6.1</version>
+          <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
                     <encoding>UTF-8</encoding>
@@ -109,8 +111,8 @@ used to enhance access functionality using bytecode generation.
                     <links>
                         <link>http://java.sun.com/javase/6/docs/api/</link>
                     </links>
-                </configuration>
-                <executions>
+           </configuration>
+           <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <phase>verify</phase>
@@ -118,24 +120,35 @@ used to enhance access functionality using bytecode generation.
                             <goal>jar</goal>
                         </goals>
                     </execution>
-                </executions>
+           </executions>
         </plugin>
 
         <!-- Plus, let's make jars OSGi bundles as well  -->
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.3.4</version>
           <extensions>true</extensions>
           <configuration>
             <instructions>
               <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
+org.codehaus.jackson
+,org.codehaus.jackson.io
+,org.codehaus.jackson.map
+,org.codehaus.jackson.map.introspect
+,org.codehaus.jackson.map.module
+,org.codehaus.jackson.map.ser
+,org.codehaus.jackson.org.objectweb.asm
 </Import-Package>
               <Private-Package>
+com.fasterxml.jackson.module.afterburner.util
 </Private-Package>
               <Export-Package>
 com.fasterxml.jackson.module.afterburner
+,com.fasterxml.jackson.module.afterburner.deser
+,com.fasterxml.jackson.module.afterburner.ser
 </Export-Package>
             </instructions>
           </configuration>

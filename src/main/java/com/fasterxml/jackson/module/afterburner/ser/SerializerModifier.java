@@ -8,8 +8,6 @@ import org.codehaus.jackson.map.introspect.AnnotatedMethod;
 import org.codehaus.jackson.map.introspect.BasicBeanDescription;
 import org.codehaus.jackson.map.ser.*;
 
-import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
-
 public class SerializerModifier extends BeanSerializerModifier
 {
     public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
@@ -17,6 +15,7 @@ public class SerializerModifier extends BeanSerializerModifier
     {
         PropertyCollector collector = new PropertyCollector();
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
+        int count = 0;
         while (it.hasNext()) {
             BeanPropertyWriter bpw = it.next();
             Class<?> type = bpw.getPropertyType();
@@ -25,13 +24,25 @@ public class SerializerModifier extends BeanSerializerModifier
             if (type == Integer.TYPE) {
                 if (isMethod) {
                     it.set(collector.addIntGetter(bpw));
+                    ++count;
                 }
             }
         }
+System.err.println("Got "+count+" int props for "+beanDesc.getBeanClass());        
+        if (count == 0) {
+            return beanProperties;
+        }
+        
         // if we had a match, need to materialize
-        if (collector.hasEntries()) {
-            Class<?> beanClass = beanDesc.getBeanClass();
-            MyClassLoader loader = new MyClassLoader(beanClass.getClassLoader());
+        Class<?> beanClass = beanDesc.getBeanClass();
+        BeanPropertyAccessor acc = collector.findAccessor(beanClass);
+        // and then link accessors to bean property writers:
+        it = beanProperties.listIterator();
+        while (it.hasNext()) {
+            BeanPropertyWriter bpw = it.next();
+            if (bpw instanceof OptimizedBeanPropertyWriter<?>) {
+                it.set(((OptimizedBeanPropertyWriter<?>) bpw).withAccessor(acc));
+            }
         }
         return beanProperties;
     }
