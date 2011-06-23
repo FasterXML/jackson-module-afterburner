@@ -131,7 +131,7 @@ used to enhance access functionality using bytecode generation.
           <extensions>true</extensions>
           <configuration>
             <instructions>
-              <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+              <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
 org.codehaus.jackson

@@ -134,7 +134,6 @@ public class PropertyCollector
             mv.visitLabel(next);
             next = new Label();
             mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ICONST_1);
             mv.visitInsn(ALL_ICONSTS[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean

@@ -30,7 +30,7 @@ public class ManualTest
         throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        boolean fast = false;
+        boolean fast = true;
         final IntBean bean = new IntBean();
         
         while (true) {
@@ -48,7 +48,7 @@ public class ManualTest
             
             System.out.println("Mapper (fast: "+fast+"; "+len+"); took "+time+" msecs");
 
-                    fast = !fast;
+            fast = !fast;
         }
     }
    
