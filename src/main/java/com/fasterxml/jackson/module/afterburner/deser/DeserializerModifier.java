@@ -65,13 +65,11 @@ public class DeserializerModifier extends BeanDeserializerModifier
                         newProps.add(collector.addLongSetter(prop));
                     }
                 } else {
-                    /*
                     if (type == String.class) {
-                        it.set(collector.addStringGetter(bpw));
+                        newProps.add(collector.addStringSetter(prop));
                     } else { // any other Object types; we can at least call accessor
-                        it.set(collector.addObjectGetter(bpw));
+                        newProps.add(collector.addObjectSetter(prop));
                     }
-                    */
                 }
             } else if (prop instanceof SettableBeanProperty.FieldProperty) { // regular fields
                 Class<?> type = ((AnnotatedField) member).getRawType();
@@ -82,7 +80,12 @@ public class DeserializerModifier extends BeanDeserializerModifier
                         newProps.add(collector.addLongField(prop));
                     }
                 } else {
-            }
+                    if (type == String.class) {
+                        newProps.add(collector.addStringField(prop));
+                    } else { // any other Object types; we can at least call accessor
+                        newProps.add(collector.addObjectField(prop));
+                    }
+                } 
             }
         }
         // and if we found any, create mutator proxy, replace property objects

@@ -41,12 +41,30 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         
         public void setX(long v) { _x = v; }
     }
+
+    public static class StringBean {
+        protected String _x;
+        
+        public void setX(String v) { _x = v; }
+    }
+
+    public static class EnumBean {
+        protected MyEnum _x;
+        
+        public void setX(MyEnum v) { _x = v; }
+    }
     
     public static class IntFieldBean {
         @JsonProperty("value") int x;
     }
     static class LongFieldBean {
         public long value;
+    }
+    static class StringFieldBean {
+        public String x;
+    }
+    static class EnumFieldBean {
+        public MyEnum x;
     }
 
     static class MixedBean {
@@ -72,6 +90,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     /**********************************************************************
      */
 
+    /*
     public void testIntMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         IntBean bean = mapper.readValue("{\"x\":13}", IntBean.class);
@@ -93,13 +112,26 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         LongBean bean = mapper.readValue("{\"x\":-1}", LongBean.class);
         assertEquals(-1, bean._x);
     }
+
+    public void testStringMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        StringBean bean = mapper.readValue("{\"x\":\"zoobar\"}", StringBean.class);
+        assertEquals("zoobar", bean._x);
+    }
+    */
+
+    public void testObjectMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        EnumBean bean = mapper.readValue("{\"x\":\"A\"}", EnumBean.class);
+        assertEquals(MyEnum.A, bean._x);
+    }
     
     /*
     /**********************************************************************
     /* Test methods, field access
     /**********************************************************************
      */
-    
+
     public void testIntField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         IntFieldBean bean = mapper.readValue("{\"value\":-92}", IntFieldBean.class);
@@ -112,6 +144,18 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(-92, bean.value);
     }
 
+    public void testStringField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        StringFieldBean bean = mapper.readValue("{\"x\":\"\"}", StringFieldBean.class);
+        assertEquals("", bean.x);
+    }
+
+    public void testEnumField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        EnumFieldBean bean = mapper.readValue("{\"x\":\"C\"}", EnumFieldBean.class);
+        assertEquals(MyEnum.C, bean.x);
+    }
+    
     /*
     /**********************************************************************
     /* Test methods, other
