@@ -1,11 +1,13 @@
-package com.fasterxml.jackson.module.afterburner;
+package test;
 
 import java.io.*;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
-public class ManualTest
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+
+public class TestSerializePerf
 {
     public final static class IntBean
     {
@@ -31,7 +33,7 @@ public class ManualTest
 //        mapperSlow.registerModule(new AfterburnerModule());
 
         mapperFast.registerModule(new AfterburnerModule());
-        new ManualTest().testWith(mapperSlow, mapperFast);
+        new TestSerializePerf().testWith(mapperSlow, mapperFast);
     }
 
     private void testWith(ObjectMapper slowMapper, ObjectMapper fastMapper)
