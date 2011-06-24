@@ -5,8 +5,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 
-import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
-
 /**
  * Micro-benchmark for comparing performance of bean deserialization
  */
@@ -22,7 +20,7 @@ public final class TestJvmDeserPerf
 
     private TestJvmDeserPerf() {
         // Let's try to guestimate suitable size
-        REPS = 15000;
+        REPS = 35000;
     }
 
     private MediaItem buildItem()
@@ -61,18 +59,18 @@ public final class TestJvmDeserPerf
         ;
         
         final ObjectMapper jsonMapper = new ObjectMapper(jsonF);
-        jsonMapper.registerModule(new AfterburnerModule());
-//        jsonMapper.configure(SerializationConfig.Feature.USE_STATIC_TYPING, true);
+        jsonMapper.registerModule(new com.fasterxml.jackson.module.afterburner.AfterburnerModule());
 
         byte[] json = jsonMapper.writeValueAsBytes(item);
         System.out.println("Warmed up: data size is "+json.length+" bytes; "+REPS+" reps -> "
                 +((REPS * json.length) >> 10)+" kB per iteration");
         System.out.println();
 
+        int round = 0;
         while (true) {
 //            try {  Thread.sleep(100L); } catch (InterruptedException ie) { }
-            int round = 0;
 
+            round = (round + 1) % 2;
             long curr = System.currentTimeMillis();
             String msg;
             boolean lf = (round == 0);
@@ -80,12 +78,12 @@ public final class TestJvmDeserPerf
             switch (round) {
 
             case 0:
-                msg = "Deserialize, JSON";
+                msg = "Deserialize/databind, JSON";
                 sum += testDeser(jsonMapper, json, REPS);
                 break;
 
             case 1:
-                msg = "Deserialize, manual, JSON";
+                msg = "Deserialize/manual, JSON";
                 sum += testDeser(jsonMapper.getJsonFactory(), json, REPS);
                 break;
 
