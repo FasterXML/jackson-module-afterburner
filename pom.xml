@@ -48,16 +48,18 @@ used to enhance access functionality using bytecode generation.
   </organization>
 
   <dependencies>
-    <!-- Extends Jackson core, mapper, and mrbean (to access embedded ASM) -->
+    <!-- Extends Jackson core, mapper, and mrbean (to access embedded ASM)
+         Requires version 1.9.x or above
+     -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.8.3</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mrbean</artifactId>
-      <version>1.8.3</version>
+      <version>1.9.0</version>
     </dependency>
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>

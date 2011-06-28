@@ -188,7 +188,7 @@ public class PropertyMutatorCollector
             _addSettersUsingSwitch(mv, props, beanClass, ILOAD, 4, false);
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -208,7 +208,7 @@ public class PropertyMutatorCollector
             _addSettersUsingSwitch(mv, props, beanClass, LLOAD, 5, false);
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -227,7 +227,7 @@ public class PropertyMutatorCollector
         } else {
             _addSettersUsingSwitch(mv, props, beanClass, ALOAD, 4, false);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -246,7 +246,7 @@ public class PropertyMutatorCollector
         } else {
             _addSettersUsingSwitch(mv, props, beanClass, ALOAD, 4, true);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -274,7 +274,7 @@ public class PropertyMutatorCollector
             _addFieldsUsingSwitch(mv, props, beanClass, ILOAD, 4, false);
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -294,7 +294,7 @@ public class PropertyMutatorCollector
             _addFieldsUsingSwitch(mv, props, beanClass, LLOAD, 5, false);
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -312,7 +312,7 @@ public class PropertyMutatorCollector
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, ALOAD, 4, false);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -330,7 +330,7 @@ public class PropertyMutatorCollector
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, ALOAD, 4, true);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }

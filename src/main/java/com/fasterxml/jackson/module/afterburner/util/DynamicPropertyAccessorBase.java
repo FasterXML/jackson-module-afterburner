@@ -28,7 +28,7 @@ public class DynamicPropertyAccessorBase
     /**********************************************************
      */
     
-    protected static void _generateException(MethodVisitor mv, String beanClass, int propertyCount)
+    protected static void generateException(MethodVisitor mv, String beanClass, int propertyCount)
     {
         mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
         mv.visitInsn(DUP);

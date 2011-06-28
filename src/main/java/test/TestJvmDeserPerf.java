@@ -70,7 +70,7 @@ public final class TestJvmDeserPerf
         while (true) {
 //            try {  Thread.sleep(100L); } catch (InterruptedException ie) { }
 
-            round = (round + 1) % 2;
+//            round = (round + 1) % 2;
             long curr = System.currentTimeMillis();
             String msg;
             boolean lf = (round == 0);

@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.map.deser.*;
+import org.codehaus.jackson.map.deser.impl.StdValueInstantiator;
 import org.codehaus.jackson.map.introspect.AnnotatedField;
 import org.codehaus.jackson.map.introspect.AnnotatedMember;
 import org.codehaus.jackson.map.introspect.AnnotatedMethod;
@@ -39,8 +40,32 @@ public class DeserializerModifier extends BeanDeserializerModifier
             }
         }
         PropertyMutatorCollector collector = new PropertyMutatorCollector();
+        List<OptimizedSettableBeanProperty<?>> newProps = findOptimizableProperties(
+                collector, builder.getProperties());
+        // and if we found any, create mutator proxy, replace property objects
+        if (!newProps.isEmpty()) {
+            BeanPropertyMutator mutator = collector.buildMutator(beanClass, _classLoader);
+            for (OptimizedSettableBeanProperty<?> prop : newProps) {
+                builder.addOrReplaceProperty(prop.withMutator(mutator), true);
+            }
+        }
+        // Second thing: see if we could (re)generate Creator(s):
+        ValueInstantiator inst = builder.getValueInstantiator();
+        if (inst instanceof StdValueInstantiator) {
+            inst = new CreatorOptimizer(beanClass, _classLoader, (StdValueInstantiator) inst).createOptimized();
+            if (inst != null) {
+                builder.setValueInstantiator(inst);
+            }
+        }
+        
+        return builder;
+    }
+
+    protected List<OptimizedSettableBeanProperty<?>> findOptimizableProperties(
+            PropertyMutatorCollector collector,
+            Iterator<SettableBeanProperty> propIterator)
+    {
         ArrayList<OptimizedSettableBeanProperty<?>> newProps = new ArrayList<OptimizedSettableBeanProperty<?>>();
-        Iterator<SettableBeanProperty> propIterator = builder.getProperties();
 
         // Ok, then, find any properties for which we could generate accessors
         while (propIterator.hasNext()) {
@@ -88,13 +113,6 @@ public class DeserializerModifier extends BeanDeserializerModifier
                 } 
             }
         }
-        // and if we found any, create mutator proxy, replace property objects
-        if (!newProps.isEmpty()) {
-            BeanPropertyMutator mutator = collector.buildMutator(beanClass, _classLoader);
-            for (OptimizedSettableBeanProperty<?> prop : newProps) {
-                builder.addOrReplaceProperty(prop.withMutator(mutator), true);
-            }
-        }
-        return builder;
+        return newProps;
     }
 }

@@ -187,7 +187,7 @@ public class PropertyAccessorCollector
             _addGettersUsingSwitch(mv, props, beanClass, IRETURN);
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -209,7 +209,7 @@ public class PropertyAccessorCollector
         }
 
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
 
         // and that's it
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
@@ -229,7 +229,7 @@ public class PropertyAccessorCollector
         } else {
             _addGettersUsingSwitch(mv, props, beanClass, ARETURN);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -247,7 +247,7 @@ public class PropertyAccessorCollector
         } else {
             _addGettersUsingSwitch(mv, props, beanClass, ARETURN);
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -275,7 +275,7 @@ public class PropertyAccessorCollector
             _addFieldsUsingSwitch(mv, props, beanClass, IRETURN, "I");
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -295,7 +295,7 @@ public class PropertyAccessorCollector
             _addFieldsUsingSwitch(mv, props, beanClass, LRETURN, "J");
         }
         // and if no match, generate exception:
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -314,7 +314,7 @@ public class PropertyAccessorCollector
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, ARETURN, "Ljava/lang/String;");
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
@@ -333,7 +333,7 @@ public class PropertyAccessorCollector
         } else {
             _addFieldsUsingSwitch(mv, props, beanClass, ARETURN, "Ljava/lang/Object;");
         }
-        _generateException(mv, beanClass, props.size());
+        generateException(mv, beanClass, props.size());
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
