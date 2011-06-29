@@ -23,5 +23,13 @@ public abstract class OptimizedValueInstantiator
         super(src);
     }
 
+    /**
+     * Need to override this, now that we have installed default creator.
+     */
+    @Override
+    public boolean canCreateUsingDefault() {
+        return true;
+    }
+    
     protected abstract OptimizedValueInstantiator with(StdValueInstantiator src);
 }

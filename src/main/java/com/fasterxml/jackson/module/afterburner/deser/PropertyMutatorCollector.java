@@ -379,8 +379,8 @@ public class PropertyMutatorCollector
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(next);
-    }        
-
+    }
+    
     private static <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingSwitch(MethodVisitor mv,
             List<T> props, String beanClass, int loadValueCode, int beanIndex,
             boolean mustCast)

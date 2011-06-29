@@ -142,8 +142,10 @@ org.codehaus.jackson
 ,org.codehaus.jackson.map.introspect
 ,org.codehaus.jackson.map.module
 ,org.codehaus.jackson.map.deser
+,org.codehaus.jackson.map.deser.impl
 ,org.codehaus.jackson.map.ser
 ,org.codehaus.jackson.map.ser.impl
+,org.codehaus.jackson.type
 ,org.codehaus.jackson.org.objectweb.asm
 </Import-Package>
               <Private-Package>
