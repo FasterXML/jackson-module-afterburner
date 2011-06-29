@@ -4,10 +4,11 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
-public class SettableLongMethodProperty
+public final class SettableLongMethodProperty
     extends OptimizedSettableBeanProperty<SettableLongMethodProperty>
 {
     public SettableLongMethodProperty(SettableBeanProperty src,
@@ -26,6 +27,11 @@ public class SettableLongMethodProperty
             Object bean) throws IOException, JsonProcessingException
     {
         long value = jp.getValueAsLong();
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            value = jp.getLongValue();
+        } else {
+            value = jp.getValueAsLong();
+        }
         _propertyMutator.longSetter(bean, _propertyIndex, value);
     }
 

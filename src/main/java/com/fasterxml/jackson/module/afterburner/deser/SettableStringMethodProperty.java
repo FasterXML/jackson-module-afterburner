@@ -7,7 +7,7 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
-public class SettableStringMethodProperty
+public final class SettableStringMethodProperty
     extends OptimizedSettableBeanProperty<SettableStringMethodProperty>
 {
     public SettableStringMethodProperty(SettableBeanProperty src,

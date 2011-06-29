@@ -7,8 +7,8 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
-public class SettableObjectFieldProperty
-extends OptimizedSettableBeanProperty<SettableObjectFieldProperty>
+public final class SettableObjectFieldProperty
+    extends OptimizedSettableBeanProperty<SettableObjectFieldProperty>
 {
     public SettableObjectFieldProperty(SettableBeanProperty src,
             BeanPropertyMutator mutator, int index)

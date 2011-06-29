@@ -4,10 +4,11 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
-public class SettableIntMethodProperty
+public final class SettableIntMethodProperty
     extends OptimizedSettableBeanProperty<SettableIntMethodProperty>
 {
     public SettableIntMethodProperty(SettableBeanProperty src,
@@ -25,7 +26,12 @@ public class SettableIntMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        int value = jp.getValueAsInt();
+        int value;
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            value = jp.getIntValue();
+        } else {
+            value = jp.getValueAsInt();
+        }
         _propertyMutator.intSetter(bean, _propertyIndex, value);
     }
 
