@@ -25,8 +25,7 @@ public final class SettableStringMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        String value = jp.getText();
-        _propertyMutator.stringSetter(bean, _propertyIndex, value);
+        _propertyMutator.stringSetter(bean, _propertyIndex, jp.getText());
     }
 
     @Override

@@ -75,20 +75,6 @@ public final class TestJvmSerPerf
         smileFactory.configure(SmileGenerator.Feature.CHECK_SHARED_STRING_VALUES, false);
         final ObjectMapper smileMapper = new ObjectMapper(smileFactory);
         */
-
-        // Verify that we can round trip
-        /*
-        {
-            byte[] stuff = jsonMapper.writeValueAsBytes(item);
-            @SuppressWarnings("unused")
-            MediaItem back = jsonMapper.readValue(stuff, 0, stuff.length, MediaItem.class);
-            System.out.println("Warmed up: data size is "+stuff.length+" bytes; "+REPS+" reps -> "
-                    +((REPS * stuff.length) >> 10)+" kB per iteration");
-            System.out.println();
-            stuff = smileMapper.writeValueAsBytes(item);
-            System.out.println(" Smile size: "+stuff.length+" bytes");
-        }
-        */
         
         while (true) {
 //            Thread.sleep(150L);
@@ -104,7 +90,7 @@ public final class TestJvmSerPerf
             switch (round) {
 
             case 0:
-                msg = "Serialize, JSON";
+                msg = "Serialize, JSON/databind";
                 sum += testObjectSer(jsonMapper, item, REPS+REPS, result);
                 break;
 

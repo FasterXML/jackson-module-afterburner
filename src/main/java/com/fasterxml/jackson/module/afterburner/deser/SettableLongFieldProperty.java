@@ -26,7 +26,7 @@ public final class SettableLongFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        long value = jp.getValueAsLong();
+        long value;
         if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
             value = jp.getLongValue();
         } else {
