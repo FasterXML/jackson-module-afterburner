@@ -90,7 +90,6 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     /**********************************************************************
      */
 
-    /*
     public void testIntMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         IntBean bean = mapper.readValue("{\"x\":13}", IntBean.class);
@@ -118,7 +117,6 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         StringBean bean = mapper.readValue("{\"x\":\"zoobar\"}", StringBean.class);
         assertEquals("zoobar", bean._x);
     }
-    */
 
     public void testObjectMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
@@ -162,6 +160,20 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     /**********************************************************************
      */
 
+    public void testFiveMinuteDoc() throws Exception
+    {
+        ObjectMapper abMapper = mapperWithModule();
+        FiveMinuteUser input = new FiveMinuteUser("First", "Name", true,
+                FiveMinuteUser.Gender.FEMALE, new byte[] { 1 } );
+        String jsonAb = abMapper.writeValueAsString(input);
+
+        FiveMinuteUser output = abMapper.readValue(jsonAb, FiveMinuteUser.class);
+        if (!output.equals(input)) {
+            fail("Round-trip test failed: intermediate JSON = "+jsonAb);
+        }
+        // but also let's require equality
+    }
+    
     public void testMixed() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();

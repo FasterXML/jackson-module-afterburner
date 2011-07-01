@@ -104,4 +104,22 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         ObjectMapper mapper = mapperWithModule();
         assertEquals("{\"value\":\"C\"}", mapper.writeValueAsString(new EnumFieldBean()));
     }
+
+    /*
+    /**********************************************************************
+    /* Test methods, other
+    /**********************************************************************
+     */
+    
+    public void testFiveMinuteDoc() throws Exception
+    {
+        ObjectMapper plainMapper = new ObjectMapper();
+        ObjectMapper abMapper = mapperWithModule();
+        FiveMinuteUser input = new FiveMinuteUser("First", "Name", true,
+                FiveMinuteUser.Gender.FEMALE, new byte[] { 1 } );
+        String jsonPlain = plainMapper.writeValueAsString(input);
+        String jsonAb = abMapper.writeValueAsString(input);
+        assertEquals(jsonPlain, jsonAb);
+    }
+
 }
