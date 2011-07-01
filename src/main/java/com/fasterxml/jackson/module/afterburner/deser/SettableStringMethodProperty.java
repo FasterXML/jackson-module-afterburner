@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
@@ -20,12 +21,20 @@ public final class SettableStringMethodProperty
     public SettableStringMethodProperty withMutator(BeanPropertyMutator mut) {
         return new SettableStringMethodProperty(_originalSettable, mut, _propertyIndex);
     }
-    
+
+    // Copied from StdDeserializer.StringDeserializer:
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.stringSetter(bean, _propertyIndex, jp.getText());
+        String value;
+        JsonToken curr = jp.getCurrentToken();
+        if (curr == JsonToken.VALUE_STRING) {
+            value = jp.getText();
+        } else {
+            value = _convertToString(jp, ctxt, curr);
+        }
+        _propertyMutator.stringSetter(bean, _propertyIndex, value);
     }
 
     @Override
