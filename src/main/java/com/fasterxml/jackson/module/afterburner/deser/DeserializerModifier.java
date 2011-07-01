@@ -51,10 +51,17 @@ public class DeserializerModifier extends BeanDeserializerModifier
         }
         // Second thing: see if we could (re)generate Creator(s):
         ValueInstantiator inst = builder.getValueInstantiator();
-        if (inst instanceof StdValueInstantiator) {
-            inst = new CreatorOptimizer(beanClass, _classLoader, (StdValueInstantiator) inst).createOptimized();
-            if (inst != null) {
-                builder.setValueInstantiator(inst);
+        /* Hmmh. Probably better to require exact default implementation
+         * and not sub-class; chances are sub-class uses its own
+         * construction anyway.
+         */
+        if (inst.getClass() == StdValueInstantiator.class) {
+            // also, only override if using default creator (no-arg ctor, no-arg static factory)
+            if (inst.canCreateUsingDefault()) {
+                inst = new CreatorOptimizer(beanClass, _classLoader, (StdValueInstantiator) inst).createOptimized();
+                if (inst != null) {
+                    builder.setValueInstantiator(inst);
+                }
             }
         }
         
