@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
 public final class SettableStringFieldProperty
@@ -17,6 +18,15 @@ public final class SettableStringFieldProperty
         super(src, mutator, index);
     }
 
+    public SettableStringFieldProperty(SettableStringFieldProperty src, JsonDeserializer<Object> deser) {
+        super(src, deser);
+    }
+
+    @Override
+    public SettableStringFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+        return new SettableStringFieldProperty(this, deser);
+    }
+    
     @Override
     public SettableStringFieldProperty withMutator(BeanPropertyMutator mut) {
         return new SettableStringFieldProperty(_originalSettable, mut, _propertyIndex);

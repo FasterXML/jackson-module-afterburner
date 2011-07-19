@@ -36,8 +36,19 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         _propertyIndex = index;
     }
 
+    protected OptimizedSettableBeanProperty(OptimizedSettableBeanProperty<T> src,
+            JsonDeserializer<Object> deser)
+    {
+        super(src, deser);
+        _originalSettable = src;
+        _propertyMutator = src._propertyMutator;
+        _propertyIndex = src._propertyIndex;
+    }
+            
     public abstract T withMutator(BeanPropertyMutator mut);
 
+    public abstract T withValueDeserializer(JsonDeserializer<Object> deser);
+    
     @Override
     public abstract void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object arg2) throws IOException, JsonProcessingException;

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
 public final class SettableObjectMethodProperty
@@ -16,6 +17,15 @@ public final class SettableObjectMethodProperty
         super(src, mutator, index);
     }
 
+    public SettableObjectMethodProperty(SettableObjectMethodProperty src, JsonDeserializer<Object> deser) {
+        super(src, deser);
+    }
+
+    @Override
+    public SettableObjectMethodProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+        return new SettableObjectMethodProperty(this, deser);
+    }
+    
     @Override
     public SettableObjectMethodProperty withMutator(BeanPropertyMutator mut) {
         return new SettableObjectMethodProperty(_originalSettable, mut, _propertyIndex);
