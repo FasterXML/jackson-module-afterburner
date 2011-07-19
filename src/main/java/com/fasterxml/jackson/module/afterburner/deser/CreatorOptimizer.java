@@ -71,11 +71,13 @@ public class CreatorOptimizer
             byte[] bytecode = generateOptimized(srcName, ctor, factory);
             impl = loader.loadAndResolve(srcName, bytecode);
         }
+        ValueInstantiator inst;
         try {
-            return (ValueInstantiator) impl.newInstance();
+            inst = (ValueInstantiator) impl.newInstance();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
         }
+        return inst;
     }
 
     protected byte[] generateOptimized(String srcName, Constructor<?> ctor, Method factory)
@@ -124,8 +126,8 @@ public class CreatorOptimizer
             mv.visitMaxs(0, 0);
             mv.visitEnd();
 
-            // And then override: public Object createInstanceFromObject()
-            mv = cw.visitMethod(ACC_PUBLIC, "createInstanceFromObject", "()Ljava/lang/Object;", null, null);
+            // And then override: public Object createUsingDefault()
+            mv = cw.visitMethod(ACC_PUBLIC, "createUsingDefault", "()Ljava/lang/Object;", null, null);
             mv.visitCode();
             
             if (ctor != null) {
