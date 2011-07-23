@@ -61,12 +61,19 @@ used to enhance access functionality using bytecode generation.
       <artifactId>jackson-mrbean</artifactId>
       <version>1.9.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-smile</artifactId>
+      <version>1.9.0</version>
+    </dependency>
+
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
-      <!-- <scope>test</scope> -->
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -80,14 +87,6 @@ used to enhance access functionality using bytecode generation.
           <target>1.5</target>
         </configuration>
       </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.1</version>
-            <configuration>
-                <mavenExecutorId>forked-path</mavenExecutorId>
-            </configuration>
-        </plugin>
         <plugin><!-- plug-in to attach source bundle in repo -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
@@ -102,7 +101,7 @@ used to enhance access functionality using bytecode generation.
           </executions>
         </plugin>
         <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.6.1</version>
           <configuration>
@@ -123,6 +122,14 @@ used to enhance access functionality using bytecode generation.
                         </goals>
                     </execution>
            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.1</version>
+            <configuration>
+                <mavenExecutorId>forked-path</mavenExecutorId>
+            </configuration>
         </plugin>
 
         <!-- Plus, let's make jars OSGi bundles as well  -->
