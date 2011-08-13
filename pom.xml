@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>5</version>
+    <version>6</version>
   </parent>
   <groupId>com.fasterxml</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
@@ -149,7 +149,7 @@ org.codehaus.jackson
 ,org.codehaus.jackson.map.introspect
 ,org.codehaus.jackson.map.module
 ,org.codehaus.jackson.map.deser
-,org.codehaus.jackson.map.deser.impl
+,org.codehaus.jackson.map.deser.std
 ,org.codehaus.jackson.map.ser
 ,org.codehaus.jackson.map.ser.impl
 ,org.codehaus.jackson.type
