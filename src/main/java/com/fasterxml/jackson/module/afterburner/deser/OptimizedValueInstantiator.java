@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
-import org.codehaus.jackson.map.deser.impl.StdValueInstantiator;
+import org.codehaus.jackson.map.deser.std.StdValueInstantiator;
 
 /**
  * Base class for concrete bytecode-generated value instantiators.
