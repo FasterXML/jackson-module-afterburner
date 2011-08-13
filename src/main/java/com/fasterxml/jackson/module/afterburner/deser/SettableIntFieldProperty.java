@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 
 public final class SettableIntFieldProperty
@@ -17,6 +18,17 @@ public final class SettableIntFieldProperty
         super(src, mutator, index);
     }
 
+    public SettableIntFieldProperty(SettableIntFieldProperty src,
+            JsonDeserializer<Object> deser)
+    {
+        super(src, deser);
+    }
+
+    @Override
+    public SettableIntFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+        return new SettableIntFieldProperty(this, deser);
+    }
+    
     @Override
     public SettableIntFieldProperty withMutator(BeanPropertyMutator mut) {
         return new SettableIntFieldProperty(_originalSettable, mut, _propertyIndex);

@@ -13,7 +13,7 @@ public abstract class OptimizedValueInstantiator
      * dummy instance to call factory method.
      */
     protected OptimizedValueInstantiator() {
-        super(/*DeserializationConfig*/null, (Class<?>)null);
+        super(/*DeserializationConfig*/null, (Class<?>)String.class);
     }
 
     /**
