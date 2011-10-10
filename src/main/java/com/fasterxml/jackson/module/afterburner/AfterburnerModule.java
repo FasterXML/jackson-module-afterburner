@@ -28,6 +28,16 @@ public class AfterburnerModule extends SimpleModule
      * By default this feature is enabled.
      */
     protected boolean _cfgUseValueClassLoader = true;
+
+    /**
+     * Flag to indicate whether we should use an optimized sub-class of
+     * {@link org.codehaus.jackson.map.deser.BeanDeserializer} or not.
+     * Use of optimized version should further improve performance, but
+     * it can be disabled in case it causes issues.
+     *<p>
+     * By default this feature is enabled.
+     */
+    protected boolean _cfgUseOptimizedBeanDeserializer = true;
     
     /*
     /********************************************************************** 
@@ -45,7 +55,8 @@ public class AfterburnerModule extends SimpleModule
     {
         super.setupModule(context);
         ClassLoader cl = _cfgUseValueClassLoader ? null : getClass().getClassLoader();
-        context.addBeanDeserializerModifier(new DeserializerModifier(cl));
+        context.addBeanDeserializerModifier(new DeserializerModifier(cl,
+                _cfgUseOptimizedBeanDeserializer));
         context.addBeanSerializerModifier(new SerializerModifier(cl));
     }
 
@@ -65,8 +76,14 @@ public class AfterburnerModule extends SimpleModule
      *<p>
      * By default this feature is enabled.
      */
-    public void setUseValueClassLoader(boolean state) {
+    public AfterburnerModule setUseValueClassLoader(boolean state) {
         _cfgUseValueClassLoader = state;
+        return this;
+    }
+
+    public AfterburnerModule setUseOptimizedBeanDeserializer(boolean state) {
+        _cfgUseOptimizedBeanDeserializer = state;
+        return this;
     }
 }
 

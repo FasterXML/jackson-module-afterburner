@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.*;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
@@ -26,6 +27,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         void setX(int v) { _x = v; }
     }
 
+    @JsonPropertyOrder({"c","a","b","e","d"})
     static class IntsBean {
         protected int _a, _b, _c, _d, _e;
         
@@ -67,6 +69,8 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public MyEnum x;
     }
 
+    @JsonPropertyOrder
+    ({"stringField", "string", "intField", "int", "longField", "long", "enumField", "enum"})
     static class MixedBean {
         public String stringField;
         public int intField;
@@ -171,7 +175,6 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         if (!output.equals(input)) {
             fail("Round-trip test failed: intermediate JSON = "+jsonAb);
         }
-        // but also let's require equality
     }
     
     public void testMixed() throws Exception

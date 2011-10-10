@@ -21,10 +21,20 @@ public class DeserializerModifier extends BeanDeserializerModifier
      */
     protected final MyClassLoader _classLoader;
     
-    public DeserializerModifier(ClassLoader cl) {
+    protected final boolean _useCustomDeserializer;
+    
+    public DeserializerModifier(ClassLoader cl, boolean useCustomDeserializer)
+    {
         // If we were given parent class loader explicitly, use that:
         _classLoader = (cl == null) ? null : new MyClassLoader(cl, false);
+        _useCustomDeserializer = useCustomDeserializer;
     }
+
+    /*
+    /********************************************************************** 
+    /* BeanDeserializerModifier methods
+    /********************************************************************** 
+     */
     
     public BeanDeserializerBuilder updateBuilder(DeserializationConfig config,
             BasicBeanDescription beanDesc, BeanDeserializerBuilder builder) 
@@ -64,10 +74,21 @@ public class DeserializerModifier extends BeanDeserializerModifier
                 }
             }
         }
-        
+
+        // also: may want to replace actual BeanDeserializer as well? For this, need to replace builder
+        // (but only if builder is the original standard one; don't want to break other impls)
+        if (_useCustomDeserializer && builder.getClass() == BeanDeserializerBuilder.class) {
+            return new CustomDeserializerBuilder(builder);
+        }
         return builder;
     }
 
+    /*
+    /********************************************************************** 
+    /* Internal methods
+    /********************************************************************** 
+     */
+    
     protected List<OptimizedSettableBeanProperty<?>> findOptimizableProperties(
             PropertyMutatorCollector collector,
             Iterator<SettableBeanProperty> propIterator)
