@@ -172,6 +172,7 @@ used to enhance access functionality using bytecode generation.
                    Maven Bundle plug-in insists for some reason?!?
                    
                    Similarly, org.objectweb.asm is shaded... why require?
+                   (will try to hide via resolution directive)
                 -->
               <Import-Package>
 org.codehaus.jackson
@@ -185,7 +186,7 @@ org.codehaus.jackson
 ,org.codehaus.jackson.map.ser
 ,org.codehaus.jackson.map.ser.impl
 ,org.codehaus.jackson.type
-,org.objectweb.asm
+,org.objectweb.asm;resolution:=optional
 </Import-Package>
               <Private-Package>
 com.fasterxml.jackson.module.afterburner.util
