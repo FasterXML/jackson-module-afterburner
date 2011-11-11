@@ -1,6 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -10,9 +10,9 @@ import java.lang.reflect.Modifier;
 import org.codehaus.jackson.map.deser.ValueInstantiator;
 import org.codehaus.jackson.map.deser.std.StdValueInstantiator;
 import org.codehaus.jackson.map.introspect.AnnotatedWithParams;
-import org.codehaus.jackson.org.objectweb.asm.ClassWriter;
-import org.codehaus.jackson.org.objectweb.asm.MethodVisitor;
-import org.codehaus.jackson.org.objectweb.asm.Type;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;

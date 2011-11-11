@@ -6,12 +6,9 @@ import java.util.*;
 import org.codehaus.jackson.map.introspect.AnnotatedField;
 import org.codehaus.jackson.map.ser.BeanPropertyWriter;
 
-import org.codehaus.jackson.org.objectweb.asm.ClassWriter;
-import org.codehaus.jackson.org.objectweb.asm.Label;
-import org.codehaus.jackson.org.objectweb.asm.MethodVisitor;
-import org.codehaus.jackson.org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;

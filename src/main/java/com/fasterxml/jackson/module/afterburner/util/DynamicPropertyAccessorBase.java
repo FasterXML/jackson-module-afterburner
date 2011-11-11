@@ -1,20 +1,11 @@
 package com.fasterxml.jackson.module.afterburner.util;
 
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ATHROW;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.DUP;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ICONST_0;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ICONST_1;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ICONST_2;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ICONST_3;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ICONST_4;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.ILOAD;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.INVOKESPECIAL;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.NEW;
 
 import java.util.List;
 
-import org.codehaus.jackson.org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.MethodVisitor;
+
+import static org.objectweb.asm.Opcodes.*;
 
 public class DynamicPropertyAccessorBase
 {

@@ -48,18 +48,24 @@ used to enhance access functionality using bytecode generation.
   </organization>
 
   <dependencies>
-    <!-- Extends Jackson core, mapper, and mrbean (to access embedded ASM)
-         Requires version 1.9.x or above
+    <!-- Extends Jackson core, mapper, requires version 1.9.x or above.
+         Also needs ASM for bytecode generation
      -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.1</version>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>1.9.2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mrbean</artifactId>
-      <version>1.9.1</version>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.2</version>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>3.3.1</version>
+      <scope>compile</scope>
     </dependency>
      <!-- and for testing, JUnit (or TestNG?) is needed -->
     <dependency>
@@ -72,6 +78,33 @@ used to enhance access functionality using bytecode generation.
 
   <build>
     <plugins>
+      <plugin>
+        <!--  We will shade ASM, to simplify deployment, avoid version conflicts -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>asm:asm</include>
+                </includes>
+              </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>org.objectweb.asm</pattern>
+                  <shadedPattern>com.fasterxml.jackson.module.afterburner.asm</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
@@ -137,6 +170,8 @@ used to enhance access functionality using bytecode generation.
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <!-- 09-Oct-2011, tatu: should NOT require "org.codehaus.jackson.map.deser.impl", but
                    Maven Bundle plug-in insists for some reason?!?
+                   
+                   Similarly, org.objectweb.asm is shaded... why require?
                 -->
               <Import-Package>
 org.codehaus.jackson
@@ -150,7 +185,7 @@ org.codehaus.jackson
 ,org.codehaus.jackson.map.ser
 ,org.codehaus.jackson.map.ser.impl
 ,org.codehaus.jackson.type
-,org.codehaus.jackson.org.objectweb.asm
+,org.objectweb.asm
 </Import-Package>
               <Private-Package>
 com.fasterxml.jackson.module.afterburner.util

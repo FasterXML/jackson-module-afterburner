@@ -1,14 +1,15 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
-import static org.codehaus.jackson.org.objectweb.asm.Opcodes.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.objectweb.asm.*;
+import static org.objectweb.asm.Opcodes.*;
+
 import org.codehaus.jackson.map.deser.SettableBeanProperty;
 import org.codehaus.jackson.map.introspect.AnnotatedField;
-import org.codehaus.jackson.org.objectweb.asm.*;
 
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
