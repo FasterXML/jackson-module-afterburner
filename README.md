@@ -1,5 +1,5 @@
 Module that will add dynamic bytecode generation for standard Jackson POJO serializers and deserializers, eliminating majority of remaining data binding overhead.
-Plugs in using standard Module interface (requiring Jackson 1.8.3 or above).
+Plugs in using standard Module interface (requiring Jackson 1.9.2 or above).
 
 ## Status
 
