@@ -43,5 +43,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
 
         json = mapper.writeValueAsString(new AnyWrapper(new IntWrapper(null)));
         assertEquals("{\"name\":\"Foo\",\"wrapped\":{}}", json);
+        json = mapper.writeValueAsString(new AnyWrapper(null));
+        assertEquals("{\"name\":\"Foo\"}", json);
     }
 }
