@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
@@ -10,7 +10,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
 {
     public class IntWrapper
     {
-        @JsonSerialize(include=Inclusion.NON_NULL) 
+        @JsonInclude(JsonInclude.Include.NON_NULL) 
         public Integer value;
         
         public IntWrapper(Integer v) { value = v; }
@@ -20,7 +20,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
     {
         public String name = "Foo";
         
-        @JsonSerialize(include=Inclusion.NON_NULL) 
+        @JsonInclude(JsonInclude.Include.NON_NULL) 
         public Object wrapped;
         
         public AnyWrapper(Object w) { wrapped = w; }

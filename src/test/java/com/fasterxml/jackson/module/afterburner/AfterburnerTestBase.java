@@ -3,10 +3,9 @@ package com.fasterxml.jackson.module.afterburner;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AfterburnerTestBase extends junit.framework.TestCase
 {

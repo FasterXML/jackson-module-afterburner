@@ -2,9 +2,10 @@ package com.fasterxml.jackson.module.afterburner.ser;
 
 import java.lang.reflect.Method;
 
-import org.codehaus.jackson.io.SerializedString;
-import org.codehaus.jackson.map.introspect.AnnotatedMethod;
-import org.codehaus.jackson.map.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.core.io.SerializedString;
+
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 

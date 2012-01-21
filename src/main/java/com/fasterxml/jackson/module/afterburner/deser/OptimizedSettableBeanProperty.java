@@ -3,13 +3,11 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 
-import org.codehaus.jackson.Base64Variants;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.deser.*;
-import org.codehaus.jackson.map.introspect.AnnotatedMember;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 
 /**
  * Base class for concrete type-specific {@link SettableBeanProperty}
@@ -44,7 +42,16 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         _propertyMutator = src._propertyMutator;
         _propertyIndex = src._propertyIndex;
     }
-            
+
+    protected OptimizedSettableBeanProperty(OptimizedSettableBeanProperty<T> src,
+            String name)
+    {
+        super(src, name);
+        _originalSettable = src;
+        _propertyMutator = src._propertyMutator;
+        _propertyIndex = src._propertyIndex;
+    }
+    
     public abstract T withMutator(BeanPropertyMutator mut);
 
     public abstract T withValueDeserializer(JsonDeserializer<Object> deser);

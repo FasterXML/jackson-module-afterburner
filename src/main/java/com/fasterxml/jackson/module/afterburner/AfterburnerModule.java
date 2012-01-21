@@ -1,16 +1,12 @@
 package com.fasterxml.jackson.module.afterburner;
 
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.module.SimpleModule;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.fasterxml.jackson.module.afterburner.ser.SerializerModifier;
 import com.fasterxml.jackson.module.afterburner.deser.DeserializerModifier;
 
 public class AfterburnerModule extends SimpleModule
 {
-    // TODO: externalize
-    private final static Version VERSION = new Version(1, 8, 0, null);
-
     /*
     /********************************************************************** 
     /* Configuration settings
@@ -47,7 +43,7 @@ public class AfterburnerModule extends SimpleModule
     
     public AfterburnerModule()
     {
-        super("Afterburner", VERSION);
+        super("Afterburner", ModuleVersion.instance.version());
     }
     
     @Override

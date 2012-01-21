@@ -2,12 +2,9 @@ package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.deser.SettableBeanProperty;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 
 public final class SettableStringMethodProperty
     extends OptimizedSettableBeanProperty<SettableStringMethodProperty>
@@ -22,6 +19,15 @@ public final class SettableStringMethodProperty
         super(src, deser);
     }
 
+    public SettableStringMethodProperty(SettableStringMethodProperty src, String name) {
+        super(src, name);
+    }
+    
+    @Override
+    public SettableStringMethodProperty withName(String name) {
+        return new SettableStringMethodProperty(this, name);
+    }
+    
     @Override
     public SettableStringMethodProperty withValueDeserializer(JsonDeserializer<Object> deser) {
         return new SettableStringMethodProperty(this, deser);

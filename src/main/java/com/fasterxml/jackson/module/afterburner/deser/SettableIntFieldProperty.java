@@ -2,12 +2,9 @@ package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.deser.SettableBeanProperty;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 
 public final class SettableIntFieldProperty
     extends OptimizedSettableBeanProperty<SettableIntFieldProperty>
@@ -24,6 +21,15 @@ public final class SettableIntFieldProperty
         super(src, deser);
     }
 
+    public SettableIntFieldProperty(SettableIntFieldProperty src, String name) {
+        super(src, name);
+    }
+    
+    @Override
+    public SettableIntFieldProperty withName(String name) {
+        return new SettableIntFieldProperty(this, name);
+    }
+    
     @Override
     public SettableIntFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
         return new SettableIntFieldProperty(this, deser);

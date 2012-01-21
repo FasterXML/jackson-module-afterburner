@@ -3,7 +3,7 @@ package test;
 import java.io.IOException;
 import java.util.*;
 
-import org.codehaus.jackson.*;
+import com.fasterxml.jackson.core.*;
 
 /**
  * Value class for performance tests

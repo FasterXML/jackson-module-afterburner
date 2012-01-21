@@ -3,13 +3,12 @@ package com.fasterxml.jackson.module.afterburner.ser;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import org.codehaus.jackson.map.introspect.AnnotatedField;
-import org.codehaus.jackson.map.ser.BeanPropertyWriter;
-
 import org.objectweb.asm.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 

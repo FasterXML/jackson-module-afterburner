@@ -7,9 +7,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.codehaus.jackson.map.deser.ValueInstantiator;
-import org.codehaus.jackson.map.deser.std.StdValueInstantiator;
-import org.codehaus.jackson.map.introspect.AnnotatedWithParams;
+import com.fasterxml.jackson.databind.deser.ValueInstantiator;
+import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
+import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;

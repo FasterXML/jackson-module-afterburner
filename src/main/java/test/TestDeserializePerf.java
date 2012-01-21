@@ -2,8 +2,8 @@ package test;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 

@@ -2,11 +2,11 @@ package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.util.*;
 
-import org.codehaus.jackson.map.BeanProperty;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.deser.BeanDeserializer;
-import org.codehaus.jackson.map.deser.BeanDeserializerBuilder;
-import org.codehaus.jackson.map.deser.SettableBeanProperty;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializer;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
+import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 
 public class CustomDeserializerBuilder extends BeanDeserializerBuilder
 {

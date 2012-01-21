@@ -3,13 +3,10 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.deser.*;
-import org.codehaus.jackson.map.deser.std.StdValueInstantiator;
-import org.codehaus.jackson.map.introspect.AnnotatedField;
-import org.codehaus.jackson.map.introspect.AnnotatedMember;
-import org.codehaus.jackson.map.introspect.AnnotatedMethod;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
+import com.fasterxml.jackson.databind.introspect.*;
 
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 

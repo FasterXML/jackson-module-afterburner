@@ -3,17 +3,12 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.io.IOException;
 import java.util.*;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.io.SerializedString;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.DeserializerProvider;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.deser.BeanDeserializer;
-import org.codehaus.jackson.map.deser.SettableBeanProperty;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.io.SerializedString;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.util.NameTransformer;
 
 public class SuperSonicBeanDeserializer extends BeanDeserializer
 {
@@ -38,7 +33,7 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
     
     public SuperSonicBeanDeserializer(BeanDeserializer src, List<SettableBeanProperty> props)
     {
-        super(src, false);
+        super(src);
         final int len = props.size();
         _orderedPropertyNames = new SerializedString[len];
         for (int i = 0; i < len; ++i) {
@@ -46,17 +41,17 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
         }
     }
 
-    protected SuperSonicBeanDeserializer(SuperSonicBeanDeserializer src, boolean ignoreAllUnknown)
+    protected SuperSonicBeanDeserializer(SuperSonicBeanDeserializer src, NameTransformer unwrapper)
     {
-        super(src, ignoreAllUnknown);
+        super(src, unwrapper);
         _orderedProperties = src._orderedProperties;
         _orderedPropertyNames = src._orderedPropertyNames;
     }
     
     @Override
-    public JsonDeserializer<Object> unwrappingDeserializer()
+    public JsonDeserializer<Object> unwrappingDeserializer(NameTransformer unwrapper)
     {
-        return new SuperSonicBeanDeserializer(this, true);
+        return new SuperSonicBeanDeserializer(this, unwrapper);
     }
 
     /*
@@ -168,7 +163,7 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
             }
             return deserializeFromObjectUsingNonDefault(jp, ctxt);
         }
-        final Object bean = _valueInstantiator.createUsingDefault();
+        final Object bean = _valueInstantiator.createUsingDefault(ctxt);
         if (_injectables != null) {
             injectValues(ctxt, bean);
         }

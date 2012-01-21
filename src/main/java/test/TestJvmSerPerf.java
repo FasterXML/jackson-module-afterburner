@@ -2,10 +2,9 @@ package test;
 
 import java.io.ByteArrayOutputStream;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 

@@ -8,7 +8,7 @@
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
   <name>Jackson-module-Afterburner</name>
-  <version>1.9.4-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <description>Experimental extension to Jackson (http://jackson.codehaus.org)
 used to enhance access functionality using bytecode generation.
@@ -52,14 +52,14 @@ used to enhance access functionality using bytecode generation.
          Also needs ASM for bytecode generation
      -->
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.4</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.4</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>asm</groupId>
@@ -74,9 +74,22 @@ used to enhance access functionality using bytecode generation.
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency> <!--  tests use Jackson annoations -->
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <!--  need to enable filtering to add version info -->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>  
+    </resources>
     <plugins>
       <plugin>
         <!--  We will shade ASM, to simplify deployment, avoid version conflicts -->
@@ -168,24 +181,24 @@ used to enhance access functionality using bytecode generation.
             <instructions>
               <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
-              <!-- 09-Oct-2011, tatu: should NOT require "org.codehaus.jackson.map.deser.impl", but
+              <!-- 09-Oct-2011, tatu: should NOT require "com.fasterxml.jackson.databind.deser.impl", but
                    Maven Bundle plug-in insists for some reason?!?
                    
                    Similarly, org.objectweb.asm is shaded... why require?
                    (will try to hide via resolution directive)
                 -->
               <Import-Package>
-org.codehaus.jackson
-,org.codehaus.jackson.io
-,org.codehaus.jackson.map
-,org.codehaus.jackson.map.introspect
-,org.codehaus.jackson.map.module
-,org.codehaus.jackson.map.deser
-,org.codehaus.jackson.map.deser.impl
-,org.codehaus.jackson.map.deser.std
-,org.codehaus.jackson.map.ser
-,org.codehaus.jackson.map.ser.impl
-,org.codehaus.jackson.type
+com.fasterxml.jackson.core
+,com.fasterxml.jackson.core.io
+,com.fasterxml.jackson.core.type
+,com.fasterxml.jackson.databind
+,com.fasterxml.jackson.databind.introspect
+,com.fasterxml.jackson.databind.module
+,com.fasterxml.jackson.databind.deser
+,com.fasterxml.jackson.databind.deser.impl
+,com.fasterxml.jackson.databind.deser.std
+,com.fasterxml.jackson.databind.ser
+,com.fasterxml.jackson.databind.ser.impl
 ,org.objectweb.asm;resolution:=optional
 </Import-Package>
               <Private-Package>

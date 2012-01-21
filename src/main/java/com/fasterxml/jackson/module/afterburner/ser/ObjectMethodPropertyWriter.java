@@ -1,10 +1,11 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.BeanPropertyWriter;
-import org.codehaus.jackson.map.ser.impl.PropertySerializerMap;
+import com.fasterxml.jackson.core.JsonGenerator;
+
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 
 public class ObjectMethodPropertyWriter
     extends OptimizedBeanPropertyWriter<ObjectMethodPropertyWriter>

@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +7,8 @@ import java.util.List;
 import org.objectweb.asm.*;
 import static org.objectweb.asm.Opcodes.*;
 
-import org.codehaus.jackson.map.deser.SettableBeanProperty;
-import org.codehaus.jackson.map.introspect.AnnotatedField;
+import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
