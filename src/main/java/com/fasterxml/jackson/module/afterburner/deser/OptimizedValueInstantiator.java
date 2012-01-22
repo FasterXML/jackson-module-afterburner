@@ -41,6 +41,6 @@ public abstract class OptimizedValueInstantiator
      * we get a specific error (too easy to break, and get cryptic error)
      */
     @Override
-    public abstract Object createFromObjectWith(DeserializationContext ctxt, Object[] args)
+    public abstract Object createUsingDefault(DeserializationContext ctxt)
             throws IOException, JsonProcessingException;
 }
