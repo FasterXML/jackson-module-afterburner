@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
 import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;
@@ -128,7 +129,8 @@ public class CreatorOptimizer
             mv.visitEnd();
 
             // And then override: public Object createUsingDefault()
-            mv = cw.visitMethod(ACC_PUBLIC, "createUsingDefault", "()Ljava/lang/Object;", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "createUsingDefault", "(" +
+            		Type.getDescriptor(DeserializationContext.class)+")Ljava/lang/Object;", null, null);
             mv.visitCode();
             
             if (ctor != null) {

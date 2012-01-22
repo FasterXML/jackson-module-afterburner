@@ -1,5 +1,9 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
 
 /**
@@ -32,4 +36,11 @@ public abstract class OptimizedValueInstantiator
     }
     
     protected abstract OptimizedValueInstantiator with(StdValueInstantiator src);
+
+    /* Define as abstract to ensure that it gets reimplemented; or if not,
+     * we get a specific error (too easy to break, and get cryptic error)
+     */
+    @Override
+    public abstract Object createFromObjectWith(DeserializationContext ctxt, Object[] args)
+            throws IOException, JsonProcessingException;
 }
