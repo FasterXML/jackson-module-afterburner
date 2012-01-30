@@ -65,10 +65,10 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
      * properties.
      */
     @Override
-    public void resolve(DeserializationConfig config, DeserializerProvider provider)
+    public void resolve(DeserializationContext ctxt)
         throws JsonMappingException
     {
-        super.resolve(config, provider);
+        super.resolve(ctxt);
         /* Ok, now; need to find actual property instances to go with order
          * defined based on property names.
          */

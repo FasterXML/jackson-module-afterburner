@@ -107,7 +107,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
             // (may need to add accessor(s) to BeanPropertyWriter?)
             
             if (prop instanceof SettableBeanProperty.MethodProperty) { // simple setter methods
-                Class<?> type = ((AnnotatedMethod) member).getParameterClass(0);
+                Class<?> type = ((AnnotatedMethod) member).getRawParameterType(0);
                 if (type.isPrimitive()) {
                     if (type == Integer.TYPE) {
                         newProps.add(collector.addIntSetter(prop));
