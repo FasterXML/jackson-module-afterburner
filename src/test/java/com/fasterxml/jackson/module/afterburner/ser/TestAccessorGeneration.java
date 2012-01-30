@@ -2,10 +2,9 @@ package com.fasterxml.jackson.module.afterburner.ser;
 
 import java.lang.reflect.Method;
 
-import com.fasterxml.jackson.core.io.SerializedString;
-
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
@@ -49,10 +48,11 @@ public class TestAccessorGeneration extends AfterburnerTestBase
         Method method = Bean1.class.getDeclaredMethod("getX");
         AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
         PropertyAccessorCollector coll = new PropertyAccessorCollector();
-        BeanPropertyWriter bpw = new BeanPropertyWriter(annMethod, null,
-                new SerializedString("x"), null,
+        BeanPropertyWriter bpw = new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, "x"),
+                annMethod, null,
+                null,
                 null, null, null,
-                method, null, false, null);
+                false, null);
         coll.addIntGetter(bpw);
         BeanPropertyAccessor acc = coll.findAccessor(Bean1.class, null);
         Bean1 bean = new Bean1();
@@ -67,13 +67,24 @@ public class TestAccessorGeneration extends AfterburnerTestBase
         String[] methodNames = new String[] {
                 "getX", "getY", "get3"
         };
+        
+        /*
+    public BeanPropertyWriter(BeanPropertyDefinition propDef,
+            AnnotatedMember member, Annotations contextAnnotations,
+            JavaType declaredType,
+            JsonSerializer<Object> ser, TypeSerializer typeSer, JavaType serType,
+            boolean suppressNulls, Object suppressableValue)
+         */
+        
         for (String methodName : methodNames) {
             Method method = Bean3.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
-            coll.addIntGetter(new BeanPropertyWriter(annMethod, null,
-                    new SerializedString(methodName), null,
+            // should we translate from method name to property name?
+            coll.addIntGetter(new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, methodName),
+                    annMethod, null,
+                    null,
                     null, null, null,
-                    method, null, false, null));
+                    false, null));
         }
 
         BeanPropertyAccessor acc = coll.findAccessor(Bean3.class, null);
@@ -94,10 +105,11 @@ public class TestAccessorGeneration extends AfterburnerTestBase
         for (String methodName : methodNames) {
             Method method = BeanN.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
-            coll.addIntGetter(new BeanPropertyWriter(annMethod, null,
-                    new SerializedString(methodName), null,
+            coll.addIntGetter(new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, methodName),
+                    annMethod, null,
+                    null,
                     null, null, null,
-                    method, null, false, null));
+                    false, null));
         }
 
         BeanPropertyAccessor acc = coll.findAccessor(BeanN.class, null);
