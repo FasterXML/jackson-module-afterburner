@@ -35,7 +35,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     }
 
     protected OptimizedSettableBeanProperty(OptimizedSettableBeanProperty<T> src,
-            JsonDeserializer<Object> deser)
+            JsonDeserializer<?> deser)
     {
         super(src, deser);
         _originalSettable = src;
@@ -54,7 +54,8 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     
     public abstract T withMutator(BeanPropertyMutator mut);
 
-    public abstract T withValueDeserializer(JsonDeserializer<Object> deser);
+    @Override
+    public abstract T withValueDeserializer(JsonDeserializer<?> deser);
     
     @Override
     public abstract void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,

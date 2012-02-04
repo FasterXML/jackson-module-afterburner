@@ -15,7 +15,7 @@ public final class SettableLongMethodProperty
         super(src, mutator, index);
     }
 
-    public SettableLongMethodProperty(SettableLongMethodProperty src, JsonDeserializer<Object> deser) {
+    public SettableLongMethodProperty(SettableLongMethodProperty src, JsonDeserializer<?> deser) {
         super(src, deser);
     }
 
@@ -29,7 +29,7 @@ public final class SettableLongMethodProperty
     }
     
     @Override
-    public SettableLongMethodProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+    public SettableLongMethodProperty withValueDeserializer(JsonDeserializer<?> deser) {
         return new SettableLongMethodProperty(this, deser);
     }
     

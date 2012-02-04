@@ -15,7 +15,7 @@ public final class SettableStringMethodProperty
         super(src, mutator, index);
     }
 
-    public SettableStringMethodProperty(SettableStringMethodProperty src, JsonDeserializer<Object> deser) {
+    public SettableStringMethodProperty(SettableStringMethodProperty src, JsonDeserializer<?> deser) {
         super(src, deser);
     }
 
@@ -29,7 +29,7 @@ public final class SettableStringMethodProperty
     }
     
     @Override
-    public SettableStringMethodProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+    public SettableStringMethodProperty withValueDeserializer(JsonDeserializer<?> deser) {
         return new SettableStringMethodProperty(this, deser);
     }
     

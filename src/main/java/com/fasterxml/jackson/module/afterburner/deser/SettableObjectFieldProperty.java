@@ -15,7 +15,7 @@ public final class SettableObjectFieldProperty
         super(src, mutator, index);
     }
 
-    public SettableObjectFieldProperty(SettableObjectFieldProperty src, JsonDeserializer<Object> deser) {
+    public SettableObjectFieldProperty(SettableObjectFieldProperty src, JsonDeserializer<?> deser) {
         super(src, deser);
     }
 
@@ -29,7 +29,7 @@ public final class SettableObjectFieldProperty
     }
     
     @Override
-    public SettableObjectFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+    public SettableObjectFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
         return new SettableObjectFieldProperty(this, deser);
     }
     

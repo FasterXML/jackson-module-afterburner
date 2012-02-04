@@ -15,7 +15,7 @@ public final class SettableLongFieldProperty
         super(src, mutator, index);
     }
 
-    public SettableLongFieldProperty(SettableLongFieldProperty src, JsonDeserializer<Object> deser) {
+    public SettableLongFieldProperty(SettableLongFieldProperty src, JsonDeserializer<?> deser) {
         super(src, deser);
     }
 
@@ -29,7 +29,7 @@ public final class SettableLongFieldProperty
     }
     
     @Override
-    public SettableLongFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+    public SettableLongFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
         return new SettableLongFieldProperty(this, deser);
     }
     

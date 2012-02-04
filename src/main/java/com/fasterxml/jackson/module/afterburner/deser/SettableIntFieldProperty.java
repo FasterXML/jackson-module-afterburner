@@ -16,7 +16,7 @@ public final class SettableIntFieldProperty
     }
 
     public SettableIntFieldProperty(SettableIntFieldProperty src,
-            JsonDeserializer<Object> deser)
+            JsonDeserializer<?> deser)
     {
         super(src, deser);
     }
@@ -31,7 +31,7 @@ public final class SettableIntFieldProperty
     }
     
     @Override
-    public SettableIntFieldProperty withValueDeserializer(JsonDeserializer<Object> deser) {
+    public SettableIntFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
         return new SettableIntFieldProperty(this, deser);
     }
     
