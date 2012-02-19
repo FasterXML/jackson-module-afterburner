@@ -24,6 +24,12 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     
     protected final BeanPropertyMutator _propertyMutator;
     protected final int _propertyIndex;
+
+    /*
+    /********************************************************************** 
+    /* Life-cycle
+    /********************************************************************** 
+     */
     
     public OptimizedSettableBeanProperty(SettableBeanProperty src,
             BeanPropertyMutator mutator, int index)
@@ -56,10 +62,13 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
     @Override
     public abstract T withValueDeserializer(JsonDeserializer<?> deser);
+
     
-    @Override
-    public abstract void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object arg2) throws IOException, JsonProcessingException;
+    /*
+    /********************************************************************** 
+    /* Overridden getters
+    /********************************************************************** 
+     */
 
     @Override
     public <A extends Annotation> A getAnnotation(Class<A> ann) {
@@ -70,9 +79,92 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     public AnnotatedMember getMember() {
         return _originalSettable.getMember();
     }
+    
+    /*
+    /********************************************************************** 
+    /* Deserialization, regular
+    /********************************************************************** 
+     */
+    
+    @Override
+    public abstract void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
+            Object arg2) throws IOException, JsonProcessingException;
 
     @Override
     public abstract void set(Object bean, Object value) throws IOException;
+
+    /*
+    /********************************************************************** 
+    /* Deserialization, builders
+    /********************************************************************** 
+     */
+    
+    /* !!! 19-Feb-2012, tatu:
+     * 
+     * We do not yet generate code for these methods: it would not be hugely
+     * difficult to add them, but let's first see if anyone needs them...
+     * (it is non-trivial, adds code etc, so not without cost).
+     * 
+     * That is: we'll use Reflection fallback for Builder-based deserialization,
+     * so it will not be significantly faster.
+     */
+
+    @Override
+    public abstract Object deserializeSetAndReturn(JsonParser jp,
+            DeserializationContext ctxt, Object instance)
+        throws IOException, JsonProcessingException;
+
+
+    @Override
+    public Object setAndReturn(Object instance, Object value) throws IOException
+    {
+        return _originalSettable.setAndReturn(instance, value);
+    }
+
+    /*
+    /********************************************************************** 
+    /* Helper methods
+    /********************************************************************** 
+     */
+    
+    protected final int _deserializeInt(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            return jp.getIntValue();
+        }
+        return jp.getValueAsInt();
+    }
+
+    protected final long _deserializeLong(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            return jp.getLongValue();
+        }
+        return jp.getValueAsLong();
+    }
+
+    /*
+    protected final boolean _deserializeBoolean(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
+            return jp.getLongValue();
+        }
+        return jp.getValueAsLong();
+    }
+    */
+    
+    protected final String _deserializeString(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        JsonToken curr = jp.getCurrentToken();
+        if (curr == JsonToken.VALUE_STRING) {
+            return jp.getText();
+        }
+        return _convertToString(jp, ctxt, curr);
+    }
 
     /**
      * Helper method for coercing JSON values other than Strings into

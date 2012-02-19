@@ -37,18 +37,18 @@ public final class SettableLongFieldProperty
     public SettableLongFieldProperty withMutator(BeanPropertyMutator mut) {
         return new SettableLongFieldProperty(_originalSettable, mut, _propertyIndex);
     }
+
+    /*
+    /********************************************************************** 
+    /* Deserialization
+    /********************************************************************** 
+     */
     
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        long value;
-        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-            value = jp.getLongValue();
-        } else {
-            value = jp.getValueAsLong();
-        }
-        _propertyMutator.longField(bean, _propertyIndex, value);
+        _propertyMutator.longField(bean, _propertyIndex, _deserializeLong(jp, ctxt));
     }
 
     @Override
@@ -56,4 +56,12 @@ public final class SettableLongFieldProperty
         // not optimal (due to boxing), but better than using reflection:
         _propertyMutator.longField(bean, _propertyIndex, ((Number) value).longValue());
     }
+
+    @Override
+    public Object deserializeSetAndReturn(JsonParser jp,
+            DeserializationContext ctxt, Object instance)
+        throws IOException, JsonProcessingException
+    {
+        return setAndReturn(instance, _deserializeLong(jp, ctxt));
+    }    
 }

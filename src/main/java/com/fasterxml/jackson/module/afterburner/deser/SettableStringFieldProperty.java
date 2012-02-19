@@ -37,23 +37,30 @@ public final class SettableStringFieldProperty
     public SettableStringFieldProperty withMutator(BeanPropertyMutator mut) {
         return new SettableStringFieldProperty(_originalSettable, mut, _propertyIndex);
     }
-    
+
+    /*
+    /********************************************************************** 
+    /* Deserialization
+    /********************************************************************** 
+     */
+
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        String value;
-        JsonToken curr = jp.getCurrentToken();
-        if (curr == JsonToken.VALUE_STRING) {
-            value = jp.getText();
-        } else {
-            value = _convertToString(jp, ctxt, curr);
-        }
-        _propertyMutator.stringField(bean, _propertyIndex, value);
+        _propertyMutator.stringField(bean, _propertyIndex, _deserializeString(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         _propertyMutator.stringField(bean, _propertyIndex, (String) value);
+    }
+
+    @Override
+    public Object deserializeSetAndReturn(JsonParser jp,
+            DeserializationContext ctxt, Object instance)
+        throws IOException, JsonProcessingException
+    {
+        return setAndReturn(instance, _deserializeString(jp, ctxt));
     }
 }

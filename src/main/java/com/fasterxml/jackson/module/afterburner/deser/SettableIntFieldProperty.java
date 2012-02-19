@@ -39,18 +39,18 @@ public final class SettableIntFieldProperty
     public SettableIntFieldProperty withMutator(BeanPropertyMutator mut) {
         return new SettableIntFieldProperty(_originalSettable, mut, _propertyIndex);
     }
-    
+
+    /*
+    /********************************************************************** 
+    /* Deserialization
+    /********************************************************************** 
+     */
+
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        int value;
-        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-            value = jp.getIntValue();
-        } else {
-            value = jp.getValueAsInt();
-        }
-        _propertyMutator.intField(bean, _propertyIndex, value);
+        _propertyMutator.intField(bean, _propertyIndex, _deserializeInt(jp, ctxt));
     }
 
     @Override
@@ -58,4 +58,12 @@ public final class SettableIntFieldProperty
         // not optimal (due to boxing), but better than using reflection:
         _propertyMutator.intField(bean, _propertyIndex, ((Number) value).intValue());
     }
+
+    @Override
+    public Object deserializeSetAndReturn(JsonParser jp,
+            DeserializationContext ctxt, Object instance)
+        throws IOException, JsonProcessingException
+    {
+        return setAndReturn(instance, _deserializeInt(jp, ctxt));
+    }    
 }
