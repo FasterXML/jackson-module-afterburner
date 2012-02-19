@@ -5,6 +5,8 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.deser.impl.FieldProperty;
+import com.fasterxml.jackson.databind.deser.impl.MethodProperty;
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
 import com.fasterxml.jackson.databind.introspect.*;
 
@@ -106,7 +108,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
             // !!! TODO: skip entries with non-standard serializer
             // (may need to add accessor(s) to BeanPropertyWriter?)
             
-            if (prop instanceof SettableBeanProperty.MethodProperty) { // simple setter methods
+            if (prop instanceof MethodProperty) { // simple setter methods
                 Class<?> type = ((AnnotatedMethod) member).getRawParameterType(0);
                 if (type.isPrimitive()) {
                     if (type == Integer.TYPE) {
@@ -121,7 +123,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
                         newProps.add(collector.addObjectSetter(prop));
                     }
                 }
-            } else if (prop instanceof SettableBeanProperty.FieldProperty) { // regular fields
+            } else if (prop instanceof FieldProperty) { // regular fields
                 Class<?> type = ((AnnotatedField) member).getRawType();
                 if (type.isPrimitive()) {
                     if (type == Integer.TYPE) {

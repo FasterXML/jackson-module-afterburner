@@ -2,10 +2,7 @@ package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.util.*;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
-import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
+import com.fasterxml.jackson.databind.deser.*;
 
 public class CustomDeserializerBuilder extends BeanDeserializerBuilder
 {
@@ -15,9 +12,9 @@ public class CustomDeserializerBuilder extends BeanDeserializerBuilder
     }
 
     @Override
-    public JsonDeserializer<?> build()
+    public BeanDeserializer build()
     {
-        JsonDeserializer<?> deser = (BeanDeserializer) super.build();
+        BeanDeserializer deser = (BeanDeserializer) super.build();
         // only create custom one, if existing one is standard deserializer;
         if (deser.getClass() == BeanDeserializer.class) {
             BeanDeserializer beanDeser = (BeanDeserializer) deser;
