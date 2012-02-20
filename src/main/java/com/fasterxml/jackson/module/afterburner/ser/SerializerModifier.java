@@ -6,7 +6,6 @@ import java.util.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
-import com.fasterxml.jackson.databind.introspect.BasicBeanDescription;
 import com.fasterxml.jackson.databind.ser.*;
 
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
@@ -25,8 +24,9 @@ public class SerializerModifier extends BeanSerializerModifier
         _classLoader = (cl == null) ? null : new MyClassLoader(cl, false);
     }
 
+    @Override
     public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-            BasicBeanDescription beanDesc, List<BeanPropertyWriter> beanProperties)
+            BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties)
     {
         final Class<?> beanClass = beanDesc.getBeanClass();
         /* Hmmh. Can we access stuff from private classes?

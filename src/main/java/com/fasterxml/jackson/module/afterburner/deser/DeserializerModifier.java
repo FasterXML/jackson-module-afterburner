@@ -34,9 +34,10 @@ public class DeserializerModifier extends BeanDeserializerModifier
     /* BeanDeserializerModifier methods
     /********************************************************************** 
      */
-    
+   
+    @Override
     public BeanDeserializerBuilder updateBuilder(DeserializationConfig config,
-            BasicBeanDescription beanDesc, BeanDeserializerBuilder builder) 
+            BeanDescription beanDesc, BeanDeserializerBuilder builder) 
     {
         final Class<?> beanClass = beanDesc.getBeanClass();
         /* Hmmh. Can we access stuff from private classes?
