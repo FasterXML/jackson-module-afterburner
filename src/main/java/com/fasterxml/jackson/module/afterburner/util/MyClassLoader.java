@@ -21,7 +21,7 @@ public class MyClassLoader extends ClassLoader
     }
     
     /**
-     * @param targetClass Interface or abstract class that class to load should extend or 
+     * @param className Interface or abstract class that class to load should extend or 
      *   implement
      */
     public Class<?> loadAndResolve(String className, byte[] byteCode)

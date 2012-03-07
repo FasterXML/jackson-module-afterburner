@@ -27,7 +27,7 @@ public class AfterburnerModule extends SimpleModule
 
     /**
      * Flag to indicate whether we should use an optimized sub-class of
-     * {@link org.codehaus.jackson.map.deser.BeanDeserializer} or not.
+     * {@link com.fasterxml.jackson.databind.deser.BeanDeserializer} or not.
      * Use of optimized version should further improve performance, but
      * it can be disabled in case it causes issues.
      *<p>
