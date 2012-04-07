@@ -9,8 +9,6 @@ Current master branch is based on Jackson 2.0.0-SNAPSHOT: older builds (1.9.4) a
 
 ## Usage
 
-## Usage
-
 ### Maven dependency
 
 To use module on Maven-based projects, use following dependency:
@@ -23,9 +21,20 @@ To use module on Maven-based projects, use following dependency:
 
 (or whatever version is most up-to-date at the moment)
 
+### Non-Maven
+
+For non-Maven use cases, you download jars from [Central Maven repository](http://repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-afterburner/) or [Download page](jackson-databind/wiki/JacksonDownload).
+
+Databind jar is also a functional OSGi bundle, with proper import/export declarations, so it can be use on OSGi container as is.
+
 ### Registering module
 
 To use the the Module in Jackson, simply register it with the ObjectMapper instance:
 
     Object mapper = new ObjectMapper()
     mapper.registerModule(new AfterburnerModule());
+
+after which you just do data-binding as usual:
+
+    Value val = mapper.readValue(jsonSource, Value.class);
+    mapper.writeValue(new File("result.json"), val);
