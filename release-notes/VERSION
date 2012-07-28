@@ -1,17 +1,21 @@
-Version: 2.0.4
+Version: 2.0.5
 
 Release date:
-  28-Jun-2012
+  27-Jul-2012
 
 Description:
-  Another 2.0 patch release.
-  No changes, updated dependencies.
+
+No fixes, just dependency updates.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
 
-(note: 2.0.3 skipped)
+2.0.4 (28-Jun-2012)
+
+No fixes, just dependency updates.
+
+2.0.3: skipped
 
 2.0.2 (14-May-2012)
 
