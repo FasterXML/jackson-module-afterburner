@@ -88,6 +88,17 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public void setString(String s) { stringMethod = s; }
         public void setEnum(MyEnum e) { enumMethod = e; }
     }
+
+    static class BeanWithNonVoidPropertyGetter {
+        private String stringField;
+
+        public String getStringField() { return stringField; }
+
+        public BeanWithNonVoidPropertyGetter setStringField(String username) {
+            this.stringField = username;
+            return this;
+        }
+    }
     
     /*
     /**********************************************************************
@@ -200,5 +211,17 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(11L, bean.longMethod);
         assertEquals(MyEnum.A, bean.enumField);
         assertEquals(MyEnum.B, bean.enumMethod);
+    }
+
+    public void testNonVoidProperty() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "{ \"stringField\" : \"zoobar\" }";
+        BeanWithNonVoidPropertyGetter bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class);
+        assertEquals("zoobar", bean.getStringField());
+        mapper = mapperWithModule(); // if I don't do this, the module won't be picked up
+        // current fails with java.lang.NoSuchMethodError
+        bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class);
+        assertEquals("zoobar", bean.getStringField());
     }
 }
