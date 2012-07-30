@@ -2,10 +2,9 @@ package com.fasterxml.jackson.module.afterburner.deser;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
+import org.junit.Assert;
 
 public class TestSimpleDeserialize extends AfterburnerTestBase
 {
@@ -18,45 +17,45 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     public enum MyEnum {
         A, B, C;
     }
-    
+
     /* Keep this as package access, since we can't handle private; but
-     * public is pretty much always available.
-     */
+    * public is pretty much always available.
+    */
     static class IntBean {
         protected int _x;
-        
+
         void setX(int v) { _x = v; }
     }
 
     @JsonPropertyOrder({"c","a","b","e","d"})
     static class IntsBean {
         protected int _a, _b, _c, _d, _e;
-        
+
         void setA(int v) { _a = v; }
         void setB(int v) { _b = v; }
         void setC(int v) { _c = v; }
         void setD(int v) { _d = v; }
         void setE(int v) { _e = v; }
     }
-    
+
     public static class LongBean {
         protected long _x;
-        
+
         public void setX(long v) { _x = v; }
     }
 
     public static class StringBean {
         protected String _x;
-        
+
         public void setX(String v) { _x = v; }
     }
 
     public static class EnumBean {
         protected MyEnum _x;
-        
+
         public void setX(MyEnum v) { _x = v; }
     }
-    
+
     public static class IntFieldBean {
         @JsonProperty("value") int x;
     }
@@ -71,7 +70,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     }
 
     @JsonPropertyOrder
-    ({"stringField", "string", "intField", "int", "longField", "long", "enumField", "enum"})
+            ({"stringField", "string", "intField", "int", "longField", "long", "enumField", "enum"})
     static class MixedBean {
         public String stringField;
         public int intField;
@@ -88,12 +87,23 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public void setString(String s) { stringMethod = s; }
         public void setEnum(MyEnum e) { enumMethod = e; }
     }
-    
+
+    static class BeanWithNonVoidPropertyGetter {
+        private String stringField;
+
+        public String getStringField() { return stringField; }
+
+        public BeanWithNonVoidPropertyGetter setStringField(String username) {
+            this.stringField = username;
+            return this;
+        }
+    }
+
     /*
-    /**********************************************************************
-    /* Test methods, method access
-    /**********************************************************************
-     */
+   /**********************************************************************
+   /* Test methods, method access
+   /**********************************************************************
+    */
 
     public void testIntMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
@@ -110,7 +120,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(1, bean._d);
         assertEquals(-9999, bean._e);
     }
-    
+
     public void testLongMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         LongBean bean = mapper.readValue("{\"x\":-1}", LongBean.class);
@@ -128,12 +138,12 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         EnumBean bean = mapper.readValue("{\"x\":\"A\"}", EnumBean.class);
         assertEquals(MyEnum.A, bean._x);
     }
-    
+
     /*
-    /**********************************************************************
-    /* Test methods, field access
-    /**********************************************************************
-     */
+   /**********************************************************************
+   /* Test methods, field access
+   /**********************************************************************
+    */
 
     public void testIntField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
@@ -158,18 +168,18 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         EnumFieldBean bean = mapper.readValue("{\"x\":\"C\"}", EnumFieldBean.class);
         assertEquals(MyEnum.C, bean.x);
     }
-    
+
     /*
-    /**********************************************************************
-    /* Test methods, other
-    /**********************************************************************
-     */
+   /**********************************************************************
+   /* Test methods, other
+   /**********************************************************************
+    */
 
     public void testFiveMinuteDoc() throws Exception
     {
         ObjectMapper abMapper = mapperWithModule();
         FiveMinuteUser input = new FiveMinuteUser("First", "Name", true,
-                FiveMinuteUser.Gender.FEMALE, new byte[] { 1 } );
+                                                  FiveMinuteUser.Gender.FEMALE, new byte[] { 1 } );
         String jsonAb = abMapper.writeValueAsString(input);
 
         FiveMinuteUser output = abMapper.readValue(jsonAb, FiveMinuteUser.class);
@@ -177,20 +187,20 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
             fail("Round-trip test failed: intermediate JSON = "+jsonAb);
         }
     }
-    
+
     public void testMixed() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
         MixedBean bean = mapper.readValue("{"
-                +"\"stringField\":\"a\","
-                +"\"string\":\"b\","
-                +"\"intField\":3,"
-                +"\"int\":4,"
-                +"\"longField\":-3,"
-                +"\"long\":11,"
-                +"\"enumField\":\"A\","
-                +"\"enum\":\"B\""
-                +"}", MixedBean.class);
+                                          +"\"stringField\":\"a\","
+                                          +"\"string\":\"b\","
+                                          +"\"intField\":3,"
+                                          +"\"int\":4,"
+                                          +"\"longField\":-3,"
+                                          +"\"long\":11,"
+                                          +"\"enumField\":\"A\","
+                                          +"\"enum\":\"B\""
+                                          +"}", MixedBean.class);
 
         assertEquals("a", bean.stringField);
         assertEquals("b", bean.stringMethod);
@@ -200,5 +210,18 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(11L, bean.longMethod);
         assertEquals(MyEnum.A, bean.enumField);
         assertEquals(MyEnum.B, bean.enumMethod);
+    }
+
+    public void testNonVoidProperty() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = "{ \"stringField\" : \"zoobar\" }";
+        BeanWithNonVoidPropertyGetter bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class);
+        Assert.assertNotNull(bean);
+        Assert.assertEquals("zoobar", bean.getStringField());
+        mapper = mapperWithModule(); // if I don't do this, the module won't be picked up
+        bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class); // current fails with java.lang.NoSuchMethodError: com.teachscape.provisioning.util.AfterburnerTest$Person.setUsername(Ljava/lang/String;)V
+        Assert.assertNotNull(bean);
+        Assert.assertEquals("zoobar", bean.getStringField());
     }
 }
