@@ -357,8 +357,12 @@ public class PropertyMutatorCollector
         if (mustCast) {
             mv.visitTypeInsn(CHECKCAST, type.getInternalName());
         }
+        // to fix [Issue-5] (don't assume return type is 'void'), we need to:
+        Class<?> returnType = method.getReturnType();
+        String returnTypeStr = (returnType == Void.class) ? "V"
+            : Type.getType(returnType).getDescriptor();
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")V");
+        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")"+returnTypeStr);
         mv.visitInsn(RETURN);
 
         // And from this point on, loop a bit

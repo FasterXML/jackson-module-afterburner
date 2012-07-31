@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.ser.*;
+import com.fasterxml.jackson.databind.util.ClassUtil;
 
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -39,7 +40,7 @@ public class SerializerModifier extends BeanSerializerModifier
             }
         }
         
-        PropertyAccessorCollector collector = findProperties(beanProperties);
+        PropertyAccessorCollector collector = findProperties(config, beanProperties);
         if (collector.isEmpty()) {
             return beanProperties;
         }
@@ -57,7 +58,8 @@ public class SerializerModifier extends BeanSerializerModifier
         return beanProperties;
     }
 
-    protected PropertyAccessorCollector findProperties(List<BeanPropertyWriter> beanProperties)
+    protected PropertyAccessorCollector findProperties(SerializationConfig config,
+            List<BeanPropertyWriter> beanProperties)
     {
         PropertyAccessorCollector collector = new PropertyAccessorCollector();
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
@@ -72,8 +74,12 @@ public class SerializerModifier extends BeanSerializerModifier
             }
             // (although, interestingly enough, can seem to access private classes...)
 
-            // !!! TODO: skip entries with non-standard serializer
-            // (may need to add accessor(s) to BeanPropertyWriter?)
+            // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom serializers, if any.
+            if (bpw.hasSerializer()) {
+                if (!isDefaultSerializer(config, bpw.getSerializer())) {
+                    continue;
+                }
+            }
             
             boolean isMethod = (member instanceof AnnotatedMethod);
             if (type.isPrimitive()) {
@@ -107,5 +113,16 @@ public class SerializerModifier extends BeanSerializerModifier
             }
         }
         return collector;
+    }
+
+    /**
+     * Helper method used to check whether given serializer is the default
+     * serializer implementation: this is necessary to avoid overriding other
+     * kinds of serializers.
+     */
+    protected boolean isDefaultSerializer(SerializationConfig config,
+            JsonSerializer<?> ser)
+    {
+        return ClassUtil.isJacksonStdImpl(ser);
     }
 }

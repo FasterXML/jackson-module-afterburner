@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.impl.FieldProperty;
 import com.fasterxml.jackson.databind.deser.impl.MethodProperty;
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
 import com.fasterxml.jackson.databind.introspect.*;
+import com.fasterxml.jackson.databind.util.ClassUtil;
 
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -51,7 +52,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
         }
         PropertyMutatorCollector collector = new PropertyMutatorCollector();
         List<OptimizedSettableBeanProperty<?>> newProps = findOptimizableProperties(
-                collector, builder.getProperties());
+                config, collector, builder.getProperties());
         // and if we found any, create mutator proxy, replace property objects
         if (!newProps.isEmpty()) {
             BeanPropertyMutator mutator = collector.buildMutator(beanClass, _classLoader);
@@ -90,7 +91,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
      */
     
     protected List<OptimizedSettableBeanProperty<?>> findOptimizableProperties(
-            PropertyMutatorCollector collector,
+            DeserializationConfig config, PropertyMutatorCollector collector,
             Iterator<SettableBeanProperty> propIterator)
     {
         ArrayList<OptimizedSettableBeanProperty<?>> newProps = new ArrayList<OptimizedSettableBeanProperty<?>>();
@@ -106,8 +107,12 @@ public class DeserializerModifier extends BeanDeserializerModifier
             }
             // (although, interestingly enough, can seem to access private classes...)
 
-            // !!! TODO: skip entries with non-standard serializer
-            // (may need to add accessor(s) to BeanPropertyWriter?)
+            // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom deserializers, if any.
+            if (prop.hasValueDeserializer()) {
+                if (!isDefaultDeserializer(config, prop.getValueDeserializer())) {
+                    continue;
+                }
+            }
             
             if (prop instanceof MethodProperty) { // simple setter methods
                 Class<?> type = ((AnnotatedMethod) member).getRawParameterType(0);
@@ -142,5 +147,17 @@ public class DeserializerModifier extends BeanDeserializerModifier
             }
         }
         return newProps;
+    }
+
+
+    /**
+     * Helper method used to check whether given deserializer is the default
+     * deserializer implementation: this is necessary to avoid overriding other
+     * kinds of deserializers.
+     */
+    protected boolean isDefaultDeserializer(DeserializationConfig config,
+            JsonDeserializer<?> ser)
+    {
+        return ClassUtil.isJacksonStdImpl(ser);
     }
 }

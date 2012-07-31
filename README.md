@@ -9,7 +9,8 @@ For Javadocs, Download, see: [Wiki](jackson-module-afterburner/wiki).
 
 At this point module should be considered experimental, but it does work for use cases I have tried so far; including jvm-serializers [https://github.com/eishay/jvm-serializers] benchmark (where it helps Jackson data-bind get within 10-15% of "jackson/manual" performance; and 15-20 for Smile).
 
-Current master branch is based on Jackson 2.0.0-SNAPSHOT: older builds (1.9.4) are still available, and source is under "1.x" branch.
+Current master branch works with Jackson 2.0.x:, and this is the actively developed version.
+Older builds (1.9.4) are still available, and source is under "1.x" branch, but no further development is planned for this version.
 
 ## Usage
 
@@ -20,7 +21,7 @@ To use module on Maven-based projects, use following dependency:
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-afterburner</artifactId>
-      <version>1.9.4</version>
+      <version>2.0.5</version>
     </dependency>    
 
 (or whatever version is most up-to-date at the moment)
@@ -42,6 +43,18 @@ after which you just do data-binding as usual:
 
     Value val = mapper.readValue(jsonSource, Value.class);
     mapper.writeValue(new File("result.json"), val);
+
+### What is optimized?
+
+Following things are optimized:
+
+* For serialization (POJOs to JSON):
+ * Mutators for "setting" value (field access, calling setter method) are inlined using generated code instead of reflection
+ * Serializers for small number of 'primitive' types (`int`, `long`, String) are replaced with direct calls, instead of getting delegated to `JsonSerializer`s
+* For deserialization (JSON to POJOs)
+ * Calls to default (no-argument) constructors are byte-generated instead of using reflection
+ * Accessors for "getting" values  (field access, calling setter method) are inlined using generated code instead of reflection
+ * Deserializers for small number of 'primitive' types (`int`, `long`, String) are replaced with direct calls, instead of getting delegated to `JsonDeserializer`s
 
 ### More
 

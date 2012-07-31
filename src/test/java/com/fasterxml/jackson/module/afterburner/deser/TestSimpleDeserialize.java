@@ -89,12 +89,12 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public void setEnum(MyEnum e) { enumMethod = e; }
     }
 
-    static class BeanWithNonVoidPropertyGetter {
+    static class BeanWithNonVoidPropertySetter {
         private String stringField;
 
         public String getStringField() { return stringField; }
 
-        public BeanWithNonVoidPropertyGetter setStringField(String username) {
+        public BeanWithNonVoidPropertySetter setStringField(String username) {
             this.stringField = username;
             return this;
         }
@@ -213,15 +213,18 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(MyEnum.B, bean.enumMethod);
     }
 
+    // Test for [Issue-5]
     public void testNonVoidProperty() throws Exception
     {
+        final String json = "{ \"stringField\" : \"zoobar\" }";
+
         ObjectMapper mapper = new ObjectMapper();
-        String json = "{ \"stringField\" : \"zoobar\" }";
-        BeanWithNonVoidPropertyGetter bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class);
+        BeanWithNonVoidPropertySetter bean = mapper.readValue(json, BeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
-        mapper = mapperWithModule(); // if I don't do this, the module won't be picked up
+        
+        ObjectMapper abMapper = mapperWithModule(); // if I don't do this, the module won't be picked up
         // current fails with java.lang.NoSuchMethodError
-        bean = mapper.readValue(json, BeanWithNonVoidPropertyGetter.class);
+        bean = abMapper.readValue(json, BeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
     }
 }

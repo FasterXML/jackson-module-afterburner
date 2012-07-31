@@ -122,5 +122,4 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         String jsonAb = abMapper.writeValueAsString(input);
         assertEquals(jsonPlain, jsonAb);
     }
-
 }
