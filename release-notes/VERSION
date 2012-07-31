@@ -1,15 +1,25 @@
-Version: 2.0.5
+Version: 2.0.6
 
 Release date:
-  27-Jul-2012
+  xx-Aug-2012
 
 Description:
+  Another patch release for 2.0.
 
-No fixes, just dependency updates.
+Fixes:
+
+* [Issue-5] Failed to use setters that return something (non-void setters)
+ (reported by chillenious@GH)
+* [Issue-6] Annotation-indicated (de)serializers were being overridden
+  by Afterburner optimizer.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.0.5 (27-Jul-2012)
+
+No fixes, just dependency updates.
 
 2.0.4 (28-Jun-2012)
 
