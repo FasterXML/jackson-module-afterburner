@@ -149,10 +149,13 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     protected final boolean _deserializeBoolean(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
-        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-            return jp.getLongValue();
+        if (jp.getCurrentToken() == JsonToken.VALUE_TRUE) {
+            return true;
         }
-        return jp.getValueAsLong();
+        if (jp.getCurrentToken() == JsonToken.VALUE_FALSE) {
+            return false;
+        }
+        return jp.getValueAsBoolean();
     }
     */
     
