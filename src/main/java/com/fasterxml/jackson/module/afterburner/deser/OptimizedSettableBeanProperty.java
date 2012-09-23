@@ -162,24 +162,21 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     protected final String _deserializeString(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
-        JsonToken curr = jp.getCurrentToken();
-        if (curr == JsonToken.VALUE_STRING) {
-            return jp.getText();
+        String text = jp.getValueAsString();
+        if (text != null) {
+            return text;
         }
-        return _convertToString(jp, ctxt, curr);
+        return _convertToString(jp, ctxt);
     }
 
     /**
      * Helper method for coercing JSON values other than Strings into
      * Java String value.
      */
-    protected final String _convertToString(JsonParser jp, DeserializationContext ctxt,
-            JsonToken curr)
+    protected final String _convertToString(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
-        if (curr == JsonToken.VALUE_NULL) {
-            return null;
-        }
+        JsonToken curr = jp.getCurrentToken();
         if (curr == JsonToken.VALUE_EMBEDDED_OBJECT) {
             Object ob = jp.getEmbeddedObject();
             if (ob == null) {
@@ -191,8 +188,11 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
             return ob.toString();
         }
         // Can deserialize any scalar value
-        if (curr.isScalarValue()) {
+        if (curr.isScalarValue()) { // should have been handled earlier, but just in case...
             return jp.getText();
+        }
+        if (curr == JsonToken.VALUE_NULL) { // should this ever happen?
+            return null;
         }
         // but not markers:
         throw ctxt.mappingException(String.class);

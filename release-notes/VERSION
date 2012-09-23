@@ -1,10 +1,16 @@
-Version: 2.0.6
+Version: 2.1.0
 
 Release date:
-  22-Aug-2012
+  xx-Sep-2012
 
 Description:
-  Another patch release for 2.0.
+  Branch new minor version!
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.0.6 (22-Sep-2012)
 
 Fixes:
 
@@ -12,10 +18,6 @@ Fixes:
  (reported by chillenious@GH)
 * [Issue-6] Annotation-indicated (de)serializers were being overridden
   by Afterburner optimizer.
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.0.5 (27-Jul-2012)
 
