@@ -1,10 +1,11 @@
 Version: 2.1.0
 
 Release date:
-  xx-Sep-2012
+  08-Oct-2012
 
 Description:
-  Branch new minor version!
+  Brand new minor version. No functional changes, but has to be updated to
+  ensure that 2.1 core methods are covered.
 
 ------------------------------------------------------------------------
 === History: ===
