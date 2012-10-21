@@ -4,6 +4,7 @@ Plugs in using standard Module interface (requiring Jackson 2.0.0 or above).
 
 For Javadocs, Download, see: [Wiki](jackson-module-afterburner/wiki).
 
+[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-afterburner-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-afterburner-master/)
 
 ## Status
 
