@@ -162,6 +162,12 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     protected final String _deserializeString(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
+        if (jp.getCurrentToken() == JsonToken.VALUE_NULL) {
+            if (_nullProvider == null) {
+                return null;
+            }
+            return (String) _nullProvider.nullValue(ctxt);
+        }
         String text = jp.getValueAsString();
         if (text != null) {
             return text;

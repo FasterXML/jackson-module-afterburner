@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.util.NameTransformer;
 
 public class SuperSonicBeanDeserializer extends BeanDeserializer
 {
+    private static final long serialVersionUID = -8468272764223072933L;
+
     /**
      * Names of properties being deserialized, in ordered they are
      * expected to have been written (as per serialization settings);

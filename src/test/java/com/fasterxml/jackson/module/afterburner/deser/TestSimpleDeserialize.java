@@ -70,6 +70,10 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public MyEnum x;
     }
 
+    static class StringAsObject {
+        public Object value;
+    }
+    
     @JsonPropertyOrder
     ({"stringField", "string", "intField", "int", "longField", "long", "enumField", "enum"})
     static class MixedBean {
@@ -172,6 +176,14 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         ObjectMapper mapper = mapperWithModule();
         EnumFieldBean bean = mapper.readValue("{\"x\":\"C\"}", EnumFieldBean.class);
         assertEquals(MyEnum.C, bean.x);
+    }
+
+    // Verify [Issue#10], so that nulls do not get coerced to String "null"
+    public void testStringAsObjectField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        StringAsObject bean = mapper.readValue("{\"value\":null}", StringAsObject.class);
+        assertNotNull(bean);
+        assertNull(bean.value);
     }
     
     /*
