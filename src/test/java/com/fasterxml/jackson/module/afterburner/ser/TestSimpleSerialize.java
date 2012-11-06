@@ -53,6 +53,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
     public static class EnumFieldBean {
         public MyEnum value = MyEnum.C;
     }
+
+    public static class StringsBean {
+        public String a = null;
+    }
     
     /*
     /**********************************************************************
@@ -101,9 +105,14 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new StringFieldBean()));
     }
 
+    public void testStringField2() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new StringFieldBean()));
+    }
+    
     public void testObjectField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
-        assertEquals("{\"value\":\"C\"}", mapper.writeValueAsString(new EnumFieldBean()));
+        assertEquals("{\"a\":null}", mapper.writeValueAsString(new StringsBean()));
     }
 
     /*
