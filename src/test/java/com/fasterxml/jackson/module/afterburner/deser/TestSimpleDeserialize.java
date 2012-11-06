@@ -162,6 +162,10 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         ObjectMapper mapper = mapperWithModule();
         StringFieldBean bean = mapper.readValue("{\"x\":\"\"}", StringFieldBean.class);
         assertEquals("", bean.x);
+
+        // also, null handling:
+        bean = mapper.readValue("{\"x\":null}", StringFieldBean.class);
+        assertNull(bean.x);
     }
 
     public void testEnumField() throws Exception {
