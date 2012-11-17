@@ -1,7 +1,5 @@
 package perf;
 
-import java.io.IOException;
-import java.io.OutputStream;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -10,6 +8,7 @@ public class ManualDatabindPerf
 {
     protected int hash;
     
+    @SuppressWarnings("resource")
     private <T1, T2> void test(ObjectMapper mapper1, ObjectMapper mapper2,
             T1 inputValue, Class<T1> inputClass)
         throws Exception
@@ -65,6 +64,8 @@ public class ManualDatabindPerf
             String msg;
             boolean lf = (round == 0);
 
+round = 1;
+            
             long msecs;
             ObjectReader reader = null;
             ObjectWriter writer = null;
@@ -159,46 +160,5 @@ public class ManualDatabindPerf
         TestPojo input = new TestPojo(1245, -99, "Billy-Bob",
                 new Value(27, 116));
         new ManualDatabindPerf().test(vanilla, burnt, input, TestPojo.class);
-    }
-
-    static class TestPojo
-    {
-        public int a = 1, b;
-        public String name = "Something";
-        public Value value1, value2;
-
-        public TestPojo() { }
-        public TestPojo(int a, int b,
-                String name, Value v) {
-            this.a = a;
-            this.b = b;
-            this.name = name;
-            this.value1 = v;
-            this.value2 = v;
-        }
-    }
-
-    static class Value {
-        public int x, y;
-        
-        public Value() { }
-        public Value(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    static class NopOutputStream extends OutputStream
-    {
-        public NopOutputStream() { }
-
-        @Override
-        public void write(int b) throws IOException { }
-
-        @Override
-        public void write(byte[] b) throws IOException {  }
-
-        @Override
-        public void write(byte[] b, int offset, int len) throws IOException {  }
     }
 }

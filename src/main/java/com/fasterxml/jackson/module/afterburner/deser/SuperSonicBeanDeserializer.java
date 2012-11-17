@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.*;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 
-public class SuperSonicBeanDeserializer extends BeanDeserializer
+public final class SuperSonicBeanDeserializer extends BeanDeserializer
 {
     private static final long serialVersionUID = -8468272764223072933L;
 
@@ -32,7 +32,7 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
     /* Life-cycle, construction, initialization
     /**********************************************************
      */
-    
+
     public SuperSonicBeanDeserializer(BeanDeserializer src, List<SettableBeanProperty> props)
     {
         super(src);
@@ -96,7 +96,7 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
 
     // much of below is cut'n pasted from BeanSerializer
     @Override
-    public Object deserialize(JsonParser jp, DeserializationContext ctxt, Object bean)
+    public final Object deserialize(JsonParser jp, DeserializationContext ctxt, Object bean)
         throws IOException, JsonProcessingException
     {
         if (_injectables != null) {
@@ -153,7 +153,7 @@ public class SuperSonicBeanDeserializer extends BeanDeserializer
 
     // much of below is cut'n pasted from BeanSerializer
     @Override
-    public Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt)
+    public final Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         if (_nonStandardCreation) {
