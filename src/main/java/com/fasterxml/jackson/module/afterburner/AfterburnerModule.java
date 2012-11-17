@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.afterburner.deser.DeserializerModifier;
 
 public class AfterburnerModule extends SimpleModule
 {
+    private static final long serialVersionUID = 1L;
+
     /*
     /********************************************************************** 
     /* Configuration settings
