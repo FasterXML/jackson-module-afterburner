@@ -51,11 +51,18 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
     }
     
     @Override
-    public JsonDeserializer<Object> unwrappingDeserializer(NameTransformer unwrapper)
-    {
+    public JsonDeserializer<Object> unwrappingDeserializer(NameTransformer unwrapper) {
         return new SuperSonicBeanDeserializer(this, unwrapper);
     }
 
+    // // Others, let's just leave as is; will not be optimized?
+    
+    //public BeanDeserializer withObjectIdReader(ObjectIdReader oir) {
+
+    //public BeanDeserializer withIgnorableProperties(HashSet<String> ignorableProps)
+    
+    //protected BeanDeserializerBase asArrayDeserializer()
+    
     /*
     /**********************************************************
     /* BenaDeserializer overrides
