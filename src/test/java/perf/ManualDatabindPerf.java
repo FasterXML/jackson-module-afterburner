@@ -65,7 +65,7 @@ public class ManualDatabindPerf
             boolean lf = (round == 0);
 
 round = 1;
-            
+
             long msecs;
             ObjectReader reader = null;
             ObjectWriter writer = null;
@@ -157,8 +157,14 @@ round = 1;
         ObjectMapper burnt = new ObjectMapper();
         burnt.registerModule(new AfterburnerModule());
 
+        /*
         TestPojo input = new TestPojo(1245, -99, "Billy-Bob",
                 new Value(27, 116));
+
         new ManualDatabindPerf().test(vanilla, burnt, input, TestPojo.class);
+        */
+
+        MediaItem media = MediaItem.buildItem();
+        new ManualDatabindPerf().test(vanilla, burnt, media, MediaItem.class);
     }
 }

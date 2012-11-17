@@ -103,7 +103,7 @@ public abstract class AfterburnerTestBase extends junit.framework.TestCase
 
     /*
     /**********************************************************
-    /* Helper methods; low-level
+    /* Helper methods; assertions
     /**********************************************************
      */
 
@@ -129,7 +129,7 @@ public abstract class AfterburnerTestBase extends junit.framework.TestCase
             fail("Expected type "+expType.getName()+", got "+cls.getName());
         }
     }
-
+    
     /**
      * Method that gets textual contents of the current token using
      * available methods, and ensures results are consistent, before
@@ -177,5 +177,15 @@ public abstract class AfterburnerTestBase extends junit.framework.TestCase
             }
         }
         fail("Expected an exception with one of substrings ("+Arrays.asList(matches)+"): got one with message \""+msg+"\"");
+    }
+
+    /*
+    /**********************************************************
+    /* Helper methods, other
+    /**********************************************************
+     */
+
+    public String quote(String str) {
+        return '"'+str+'"';
     }
 }
