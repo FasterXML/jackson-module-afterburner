@@ -1,9 +1,9 @@
-Version: 2.1.2 (xx-Dec-2012)
+Project: jackson-module-afterburner
+Version: 2.1.2 (04-Dec-2012)
 
-Description:
-  Second patch release for 2.1
+Second patch release for 2.1.
 
-Fixes
+Fixes:
 
 * [Issue#11]: problems with property-based @JsonCreator
 

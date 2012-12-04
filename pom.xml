@@ -32,7 +32,7 @@ used to enhance access functionality using bytecode generation.
   </prerequisites>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.core.version>2.1.1</jackson.core.version>
+    <jackson.core.version>2.1.2</jackson.core.version>
   </properties>
 
   <!-- Licensing -->
