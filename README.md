@@ -8,7 +8,7 @@ For Javadocs, Download, see: [Wiki](jackson-module-afterburner/wiki).
 
 ## Status
 
-At this point module should be considered experimental, but it does work for use cases I have tried so far; including jvm-serializers [https://github.com/eishay/jvm-serializers] benchmark (where it helps Jackson data-bind get within 10-15% of "jackson/manual" performance; and 15-20 for Smile).
+At this point module should be considered experimental, but it does work for use cases I have tried so far; including [jvm-serializers](https://github.com/eishay/jvm-serializers) benchmark (where it helps Jackson data-bind get within 10-15% of "jackson/manual" performance; and 15-20 for Smile).
 
 Current master branch works with Jackson 2.0.x:, and this is the actively developed version.
 Older builds (1.9.4) are still available, and source is under "1.x" branch, but no further development is planned for this version.
@@ -19,11 +19,13 @@ Older builds (1.9.4) are still available, and source is under "1.x" branch, but 
 
 To use module on Maven-based projects, use following dependency:
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-afterburner</artifactId>
-      <version>2.1.1</version>
-    </dependency>    
+```xml
+<dependency>
+  <groupId>com.fasterxml.jackson.module</groupId>
+  <artifactId>jackson-module-afterburner</artifactId>
+  <version>2.1.1</version>
+</dependency>
+```
 
 (or whatever version is most up-to-date at the moment)
 
@@ -37,13 +39,17 @@ Databind jar is also a functional OSGi bundle, with proper import/export declara
 
 To use the the Module in Jackson, simply register it with the ObjectMapper instance:
 
-    Object mapper = new ObjectMapper()
-    mapper.registerModule(new AfterburnerModule());
+```java
+Object mapper = new ObjectMapper()
+mapper.registerModule(new AfterburnerModule());
+```
 
 after which you just do data-binding as usual:
 
-    Value val = mapper.readValue(jsonSource, Value.class);
-    mapper.writeValue(new File("result.json"), val);
+```java
+Value val = mapper.readValue(jsonSource, Value.class);
+mapper.writeValue(new File("result.json"), val);
+```
 
 ### What is optimized?
 
