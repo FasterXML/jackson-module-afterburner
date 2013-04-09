@@ -37,21 +37,28 @@ public class TestIssue14 extends AfterburnerTestBase
         
         order.setCreatedAt(now);
         order.setUpdatedAt(now);
+
+        ObjectMapper vanillaMapper = new ObjectMapper();
+        ObjectMapper abMapper = new ObjectMapper();
+        abMapper.registerModule(new AfterburnerModule());
+
+        // First: ensure that serialization produces identical output
         
-        // create the mapper
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new AfterburnerModule());
-        
-        // write the object to a string
-        String json = mapper
+        String origJson = vanillaMapper
                 .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(order);
 
-//System.out.println("JSON: "+json);
+        String abJson = abMapper
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(order);
+
+        assertEquals(origJson, abJson);
         
-        // read the string and turn it back into an object
+//System.out.println("JSON: "+abJson);
+        
+        // Then read the string and turn it back into an object
         // this will cause an exception unless the AfterburnerModule is commented out
-        order = mapper.readValue(json, PlaceOrderRequest.class);
+        order = abMapper.readValue(abJson, PlaceOrderRequest.class);
         assertNotNull(order);
         assertEquals(250, order.getAmount());
     }
