@@ -50,7 +50,7 @@ public class TestDeserializePerf
         ObjectMapper mapperFast = new ObjectMapper(f);
         
         // !!! TEST -- to get profile info, comment out:
-        mapperSlow.registerModule(new AfterburnerModule());
+//        mapperSlow.registerModule(new AfterburnerModule());
 
         mapperFast.registerModule(new AfterburnerModule());
         new TestDeserializePerf().testWith(mapperSlow, mapperFast);

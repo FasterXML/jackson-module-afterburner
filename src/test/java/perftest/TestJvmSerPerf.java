@@ -81,7 +81,7 @@ public final class TestJvmSerPerf
             int round = (i % 2);
 
             // override?
-            round = 0;
+//            round = 0;
 
             long curr = System.currentTimeMillis();
             String msg;
