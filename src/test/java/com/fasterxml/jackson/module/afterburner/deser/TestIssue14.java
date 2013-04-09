@@ -77,15 +77,14 @@ class Item {
       @JsonProperty("product_id") public int productId;
       public int quantity;
       public ItemData data;
- }
- 
+}
+
 @JsonInclude(Include.NON_NULL)
 class ItemData {
      public int denomination;
      public List<VLTBet> bets;
 }
- 
-@JsonInclude(Include.NON_NULL)
+
 class VLTBet {
       public int index;
       public String selection;
