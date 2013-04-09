@@ -133,13 +133,12 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
         } catch (Exception e) {
             wrapAndThrow(e, bean, prop.getName(), ctxt);
         }
-
         // then rest of properties
         for (int i = 1, len = _orderedProperties.length; i < len; ++i) {
             prop = _orderedProperties[i];
             if (!jp.nextFieldName(_orderedPropertyNames[i])) { // miss...
                 if (jp.getCurrentToken() == JsonToken.END_OBJECT) {
-                    break;
+                    return bean;
                 }
                 // we likely point to FIELD_NAME, so can just call parent impl
                 return super.deserialize(jp, ctxt, bean);
@@ -200,7 +199,7 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
             prop = _orderedProperties[i];
             if (!jp.nextFieldName(_orderedPropertyNames[i])) { // miss...
                 if (jp.getCurrentToken() == JsonToken.END_OBJECT) {
-                    break;
+                    return bean;
                 }
                 // we likely point to FIELD_NAME, so can just call parent impl
                 return super.deserialize(jp, ctxt, bean);
