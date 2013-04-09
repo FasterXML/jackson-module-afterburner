@@ -16,14 +16,6 @@ public class TestIssue14 extends AfterburnerTestBase
     public void testIssue() throws Exception
     {
         // create this ridiculously complicated object
-        ApplicationInfo app = new ApplicationInfo();
-        app.setId("3");
-        app.setName("foo");
-        
-        ClientInfo client = new ClientInfo();
-        client.setClientId("bar");
-        client.setSiteId("baz");
-        
         ItemData data = new ItemData();
         data.setDenomination(100);
         
@@ -37,10 +29,8 @@ public class TestIssue14 extends AfterburnerTestBase
         PlaceOrderRequest order = new PlaceOrderRequest();
         order.setOrderId(68723496);
         order.setUserId("123489043");
-        order.setApplication(app);
         order.setAmount(250);
         order.setStatus("placed");
-        order.setClient(client);
         order.setItems(itemList);
         
         final Date now = new Date(999999L);
@@ -53,7 +43,11 @@ public class TestIssue14 extends AfterburnerTestBase
         mapper.registerModule(new AfterburnerModule());
         
         // write the object to a string
-        String json = mapper.writeValueAsString(order);
+        String json = mapper
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(order);
+
+//System.out.println("JSON: "+json);
         
         // read the string and turn it back into an object
         // this will cause an exception unless the AfterburnerModule is commented out
@@ -75,10 +69,6 @@ class PlaceOrderRequest
      private int amount;
      
      private String status;
-
-     private ApplicationInfo application;
-     
-     private ClientInfo client;
      
      private List<Item> items;
      
@@ -120,22 +110,6 @@ class PlaceOrderRequest
           this.status = status;
      }
 
-     public ApplicationInfo getApplication() {
-          return application;
-     }
-
-     public void setApplication(ApplicationInfo application) {
-          this.application = application;
-     }
-
-     public ClientInfo getClient() {
-          return client;
-     }
-
-     public void setClient(ClientInfo client) {
-          this.client = client;
-     }
-
      public List<Item> getItems() {
           return items;
      }
@@ -160,53 +134,8 @@ class PlaceOrderRequest
           this.updatedAt = updatedAt;
      }
 }
-
-class ApplicationInfo {
-      private String id;
-      private String name;
-
-      public String getId() {
-           return id;
-      }
-
-      public void setId(String id) {
-           this.id = id;
-      }
-
-      public String getName() {
-           return name;
-      }
-
-      public void setName(String name) {
-           this.name = name;
-      }
- }
      
-class ClientInfo {
-      @JsonProperty("id")
-      private String clientId;
-      
-      @JsonProperty("site_id")
-      private String siteId;
-
-      public String getClientId() {
-           return clientId;
-      }
-
-      public void setClientId(String clientId) {
-           this.clientId = clientId;
-      }
-
-      public String getSiteId() {
-           return siteId;
-      }
-
-      public void setSiteId(String siteId) {
-           this.siteId = siteId;
-      }
- }
-     
- class Item {
+class Item {
       @JsonProperty("product_id")
       private int productId;
       
