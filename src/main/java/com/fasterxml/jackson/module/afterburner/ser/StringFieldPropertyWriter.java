@@ -19,6 +19,7 @@ public final class StringFieldPropertyWriter
         return new StringFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
+    @Override
     public StringFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new StringFieldPropertyWriter(this, acc, _propertyIndex, _serializer);

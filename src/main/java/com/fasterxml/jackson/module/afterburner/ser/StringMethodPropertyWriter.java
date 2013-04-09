@@ -19,6 +19,7 @@ public class StringMethodPropertyWriter
         return new StringMethodPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
+    @Override
     public StringMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new StringMethodPropertyWriter(this, acc, _propertyIndex, _serializer);

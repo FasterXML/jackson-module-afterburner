@@ -1,15 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion> 
   <parent>
-    <groupId>org.sonatype.oss</groupId>
+    <groupId>com.fasterxml</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <version>8</version>
   </parent>
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
   <name>Jackson-module-Afterburner</name>
-  <version>2.1.3-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <version>2.2.0-SNAPSHOT</version>
   <description>Experimental extension to Jackson (http://jackson.codehaus.org)
 used to enhance access functionality using bytecode generation.
   </description>
@@ -18,35 +17,46 @@ used to enhance access functionality using bytecode generation.
     <connection>scm:git:git@github.com:FasterXML/jackson-module-afterburner.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-afterburner.git</developerConnection>
     <url>http://github.com/FasterXML/jackson-module-afterburner</url>    
+    <tag>HEAD</tag>
   </scm>
-  <developers>
-        <developer>
-            <id>tatu</id>
-            <name>Tatu Saloranta</name>
-            <email>tatu@fasterxml.com</email>
-        </developer>
-  </developers>
 
   <prerequisites>
     <maven>2.2.1</maven>
   </prerequisites>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.core.version>2.1.2</jackson.core.version>
-  </properties>
+    <jackson.core.version>2.2.0-SNAPSHOT</jackson.core.version>
+    <jackson.annotation.version>2.2.0-SNAPSHOT</jackson.annotation.version>
 
-  <!-- Licensing -->
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <organization>
-    <name>fasterxml.com</name>
-    <url>http://fasterxml.com</url>
-  </organization>
+    <!-- Generate PackageVersion.java into this directory. -->
+    <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
+    <packageVersion.package>com.fasterxml.jackson.module.afterburner</packageVersion.package>
+
+    <osgi.export>com.fasterxml.jackson.module.afterburner;version=${project.version},
+com.fasterxml.jackson.module.afterburner.deser;version=${project.version},
+com.fasterxml.jackson.module.afterburner.ser;version=${project.version}
+    </osgi.export>
+    <!-- 09-Oct-2011, tatu: should NOT require "com.fasterxml.jackson.databind.deser.impl", but
+       Maven Bundle plug-in insists for some reason?!?
+       Similarly, org.objectweb.asm is shaded... why require?
+       (will try to hide via resolution directive)
+      -->
+    <osgi.import>com.fasterxml.jackson.core
+,com.fasterxml.jackson.core.io
+,com.fasterxml.jackson.core.type
+,com.fasterxml.jackson.core.util
+,com.fasterxml.jackson.databind
+,com.fasterxml.jackson.databind.introspect
+,com.fasterxml.jackson.databind.module
+,com.fasterxml.jackson.databind.deser
+,com.fasterxml.jackson.databind.deser.impl
+,com.fasterxml.jackson.databind.deser.std
+,com.fasterxml.jackson.databind.jsontype
+,com.fasterxml.jackson.databind.ser
+,com.fasterxml.jackson.databind.ser.impl
+,com.fasterxml.jackson.databind.util
+,org.objectweb.asm;resolution:=optional
+     </osgi.import>
+  </properties>
 
   <dependencies>
     <!-- Extends Jackson core, mapper, requires version 2.x
@@ -78,20 +88,25 @@ used to enhance access functionality using bytecode generation.
     <dependency> <!--  tests use Jackson annoations -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson.core.version}</version>
+      <version>${jackson.annotation.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <!--  need to enable filtering to add version info -->
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>  
-    </resources>
     <plugins>
+      <plugin>
+        <!-- Inherited from oss-base. Generate PackageVersion.java.-->
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <executions>
+          <execution>
+            <id>process-packageVersion</id>
+            <phase>generate-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <!--  We will shade ASM, to simplify deployment, avoid version conflicts -->
         <groupId>org.apache.maven.plugins</groupId>
@@ -119,133 +134,6 @@ used to enhance access functionality using bytecode generation.
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-        <plugin><!-- plug-in to attach source bundle in repo -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.8.1</version>
-          <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <encoding>UTF-8</encoding>
-                    <maxmemory>512m</maxmemory>
-                    <links>
-                        <link>http://docs.oracle.com/javase/6/docs/api/</link>
-                    </links>
-           </configuration>
-           <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-           </executions>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.1</version>
-            <configuration>
-                <mavenExecutorId>forked-path</mavenExecutorId>
-            </configuration>
-        </plugin>
-
-        <!-- Plus, let's make jars OSGi bundles as well  -->
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.7</version>
-          <extensions>true</extensions>
-          <configuration>
-            <instructions>
-              <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-              <Bundle-Vendor>fasterml.com</Bundle-Vendor>
-              <!-- 09-Oct-2011, tatu: should NOT require "com.fasterxml.jackson.databind.deser.impl", but
-                   Maven Bundle plug-in insists for some reason?!?
-                   
-                   Similarly, org.objectweb.asm is shaded... why require?
-                   (will try to hide via resolution directive)
-                -->
-              <Import-Package>
-com.fasterxml.jackson.core
-,com.fasterxml.jackson.core.io
-,com.fasterxml.jackson.core.type
-,com.fasterxml.jackson.core.util
-,com.fasterxml.jackson.databind
-,com.fasterxml.jackson.databind.introspect
-,com.fasterxml.jackson.databind.module
-,com.fasterxml.jackson.databind.deser
-,com.fasterxml.jackson.databind.deser.impl
-,com.fasterxml.jackson.databind.deser.std
-,com.fasterxml.jackson.databind.jsontype
-,com.fasterxml.jackson.databind.ser
-,com.fasterxml.jackson.databind.ser.impl
-,com.fasterxml.jackson.databind.util
-,org.objectweb.asm;resolution:=optional
-</Import-Package>
-              <Private-Package>
-com.fasterxml.jackson.module.afterburner.util
-</Private-Package>
-              <Export-Package>
-com.fasterxml.jackson.module.afterburner
-,com.fasterxml.jackson.module.afterburner.deser
-,com.fasterxml.jackson.module.afterburner.ser
-</Export-Package>
-            </instructions>
-          </configuration>
-        </plugin>
     </plugins>
   </build>
-  <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.1</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-  </profiles>
-  <!-- NOTE: repositories from parent POM -->
 </project>

@@ -48,7 +48,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
         Method method = Bean1.class.getDeclaredMethod("getX");
         AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
         PropertyAccessorCollector coll = new PropertyAccessorCollector();
-        BeanPropertyWriter bpw = new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, "x"),
+        BeanPropertyWriter bpw = new BeanPropertyWriter(SimpleBeanPropertyDefinition.construct(null, annMethod, "x"),
                 annMethod, null,
                 null,
                 null, null, null,
@@ -80,7 +80,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
             Method method = Bean3.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
             // should we translate from method name to property name?
-            coll.addIntGetter(new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, methodName),
+            coll.addIntGetter(new BeanPropertyWriter(SimpleBeanPropertyDefinition.construct(null, annMethod, methodName),
                     annMethod, null,
                     null,
                     null, null, null,
@@ -105,7 +105,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
         for (String methodName : methodNames) {
             Method method = BeanN.class.getDeclaredMethod(methodName);
             AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
-            coll.addIntGetter(new BeanPropertyWriter(new SimpleBeanPropertyDefinition(annMethod, methodName),
+            coll.addIntGetter(new BeanPropertyWriter(SimpleBeanPropertyDefinition.construct(null, annMethod, methodName),
                     annMethod, null,
                     null,
                     null, null, null,

@@ -22,6 +22,8 @@ public class TestStdDeserializerOverrides extends AfterburnerTestBase
 
     static class MyStringDeserializer extends StdDeserializer<String>
     {
+        private static final long serialVersionUID = 1L;
+
         public MyStringDeserializer() { super(String.class); }
 
         @Override

@@ -19,7 +19,8 @@ public class ObjectFieldPropertyWriter
     public BeanPropertyWriter withSerializer(JsonSerializer<Object> ser) {
         return new ObjectFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
-    
+
+    @Override
     public ObjectFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new ObjectFieldPropertyWriter(this, acc, _propertyIndex, _serializer);

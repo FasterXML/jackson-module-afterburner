@@ -19,6 +19,7 @@ public final class IntMethodPropertyWriter
         return new IntMethodPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
+    @Override
     public IntMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new IntMethodPropertyWriter(this, acc, _propertyIndex, _serializer);

@@ -1,4 +1,4 @@
-package test;
+package perftest;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -85,7 +85,7 @@ public final class TestJvmDeserPerf
 
             case 1:
                 msg = "Deserialize/manual, JSON";
-                sum += testDeser(jsonMapper.getJsonFactory(), json, REPS);
+                sum += testDeser(jsonMapper.getFactory(), json, REPS);
                 break;
 
             default:
@@ -117,7 +117,7 @@ public final class TestJvmDeserPerf
     {
         MediaItem item = null;
         for (int i = 0; i < reps; ++i) {
-            JsonParser jp = jf.createJsonParser(input);
+            JsonParser jp = jf.createParser(input);
             item = MediaItem.deserialize(jp);
             jp.close();
         }

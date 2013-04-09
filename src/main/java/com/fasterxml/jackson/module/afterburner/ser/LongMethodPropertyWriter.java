@@ -18,7 +18,8 @@ public final class LongMethodPropertyWriter
     public BeanPropertyWriter withSerializer(JsonSerializer<Object> ser) {
         return new LongMethodPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
-    
+
+    @Override
     public LongMethodPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new LongMethodPropertyWriter(this, acc, _propertyIndex, _serializer);

@@ -1,4 +1,4 @@
-package test;
+package perftest;
 
 import java.io.IOException;
 import java.util.*;

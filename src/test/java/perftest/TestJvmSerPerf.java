@@ -1,4 +1,4 @@
-package test;
+package perftest;
 
 import java.io.ByteArrayOutputStream;
 
@@ -95,7 +95,7 @@ public final class TestJvmSerPerf
 
             case 1:
                 msg = "Serialize, JSON/manual";
-                sum += testObjectSer(jsonMapper.getJsonFactory(), item, REPS+REPS, result);
+                sum += testObjectSer(jsonMapper.getFactory(), item, REPS+REPS, result);
                 break;
 
                 /*
@@ -141,7 +141,7 @@ public final class TestJvmSerPerf
     {
         for (int i = 0; i < reps; ++i) {
             result.reset();
-            JsonGenerator jgen = jf.createJsonGenerator(result, JsonEncoding.UTF8);
+            JsonGenerator jgen = jf.createGenerator(result, JsonEncoding.UTF8);
             value.serialize(jgen);
             jgen.close();
         }

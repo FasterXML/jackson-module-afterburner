@@ -19,6 +19,7 @@ public final class IntFieldPropertyWriter
         return new IntFieldPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
     }
     
+    @Override
     public IntFieldPropertyWriter withAccessor(BeanPropertyAccessor acc) {
         if (acc == null) throw new IllegalArgumentException();
         return new IntFieldPropertyWriter(this, acc, _propertyIndex, _serializer);
