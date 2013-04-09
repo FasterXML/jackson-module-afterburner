@@ -17,8 +17,7 @@ public class TestIssue14 extends AfterburnerTestBase
     {
         // create this ridiculously complicated object
         ItemData data = new ItemData();
-        data.setDenomination(100);
-        
+        data.denomination = 100;
         Item item = new Item();
         item.data = data;
         item.productId = 123;
@@ -64,87 +63,30 @@ public class TestIssue14 extends AfterburnerTestBase
     }
 }
 
-class PlaceOrderRequest
-{
-
-     @JsonProperty("id")
-     public long orderId;
-     
-     @JsonProperty("from")
-     public String userId;
-     
+class PlaceOrderRequest {
+     @JsonProperty("id") public long orderId;
+     @JsonProperty("from") public String userId;
      public int amount;
-     
      public String status;
-     
      public List<Item> items;
-     
-     @JsonProperty("created_at")
-     public Date createdAt;
-     
-     @JsonProperty("updated_at")
-     public Date updatedAt;
+     @JsonProperty("created_at") public Date createdAt;
+     @JsonProperty("updated_at") public Date updatedAt;
 }
      
 class Item {
-      @JsonProperty("product_id")
-      public int productId;
-      
+      @JsonProperty("product_id") public int productId;
       public int quantity;
-      
       public ItemData data;
-
-      /*
-      public int getProductId() {
-           return productId;
-      }
-
-      public void setProductId(int productId) {
-           this.productId = productId;
-      }
-
-      public int getQuantity() {
-           return quantity;
-      }
-
-      public void setQuantity(int quantity) {
-           this.quantity = quantity;
-      }
-
-      public ItemData getData() {
-           return data;
-      }
-
-      public void setData(ItemData data) {
-           this.data = data;
-      }
-      */
  }
  
- @JsonInclude(Include.NON_NULL)
- class ItemData {
-      private int denomination;
-      private List<VLTBet> bets;
-      
-      public int getDenomination() {
-           return denomination;
-      }
-      
-      public void setDenomination(int denomination) {
-           this.denomination = denomination;
-      }
-      
-      public List<VLTBet> getBets() {
-           return bets;
-      }
-      
-      public void setBets(List<VLTBet> bets) {
-           this.bets = bets;
-      }
- }
+@JsonInclude(Include.NON_NULL)
+class ItemData {
+     public int denomination;
+     public List<VLTBet> bets;
+}
  
- @JsonInclude(Include.NON_NULL)
- class VLTBet {
+@JsonInclude(Include.NON_NULL)
+class VLTBet {
       public int index;
       public String selection;
       public int stake;
