@@ -40,7 +40,7 @@ Databind jar is also a functional OSGi bundle, with proper import/export declara
 To use the the Module in Jackson, simply register it with the ObjectMapper instance:
 
 ```java
-Object mapper = new ObjectMapper()
+ObjectMapper mapper = new ObjectMapper()
 mapper.registerModule(new AfterburnerModule());
 ```
 
