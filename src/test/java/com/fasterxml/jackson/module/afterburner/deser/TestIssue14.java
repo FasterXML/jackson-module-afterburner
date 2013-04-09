@@ -192,32 +192,8 @@ class Item {
  
  @JsonInclude(Include.NON_NULL)
  class VLTBet {
-      private int index;
-      private String selection;
-      private int stake;
-      private int won;
-      public int getIndex() {
-           return index;
-      }
-      public void setIndex(int index) {
-           this.index = index;
-      }
-      public String getSelection() {
-           return selection;
-      }
-      public void setSelection(String selection) {
-           this.selection = selection;
-      }
-      public int getStake() {
-           return stake;
-      }
-      public void setStake(int stake) {
-           this.stake = stake;
-      }
-      public int getWon() {
-           return won;
-      }
-      public void setWon(int won) {
-           this.won = won;
-      }
+      public int index;
+      public String selection;
+      public int stake;
+      public int won;
 }
