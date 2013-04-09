@@ -52,8 +52,6 @@ public class TestIssue14 extends AfterburnerTestBase
                 .writeValueAsString(order);
 
         assertEquals(origJson, abJson);
-
-//System.out.println("JSON: "+abJson);
         
         // Then read the string and turn it back into an object
         // this will cause an exception unless the AfterburnerModule is commented out
