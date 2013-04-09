@@ -20,23 +20,23 @@ public class TestIssue14 extends AfterburnerTestBase
         data.setDenomination(100);
         
         Item item = new Item();
-        item.setData(data);
-        item.setProductId(123);
+        item.data = data;
+        item.productId = 123;
         
         List<Item> itemList = new ArrayList<Item>();
         itemList.add(item);
     
         PlaceOrderRequest order = new PlaceOrderRequest();
-        order.setOrderId(68723496);
-        order.setUserId("123489043");
-        order.setAmount(250);
-        order.setStatus("placed");
-        order.setItems(itemList);
+        order.orderId = 68723496;
+        order.userId = "123489043";
+        order.amount = 250;
+        order.status = "placed";
+        order.items = itemList;
         
         final Date now = new Date(999999L);
         
-        order.setCreatedAt(now);
-        order.setUpdatedAt(now);
+        order.createdAt = now;
+        order.updatedAt = now;
 
         ObjectMapper vanillaMapper = new ObjectMapper();
         ObjectMapper abMapper = new ObjectMapper();
@@ -53,14 +53,14 @@ public class TestIssue14 extends AfterburnerTestBase
                 .writeValueAsString(order);
 
         assertEquals(origJson, abJson);
-        
+
 //System.out.println("JSON: "+abJson);
         
         // Then read the string and turn it back into an object
         // this will cause an exception unless the AfterburnerModule is commented out
         order = abMapper.readValue(abJson, PlaceOrderRequest.class);
         assertNotNull(order);
-        assertEquals(250, order.getAmount());
+        assertEquals(250, order.amount);
     }
 }
 
@@ -68,88 +68,33 @@ class PlaceOrderRequest
 {
 
      @JsonProperty("id")
-     private long orderId;
+     public long orderId;
      
      @JsonProperty("from")
-     private String userId;
+     public String userId;
      
-     private int amount;
+     public int amount;
      
-     private String status;
+     public String status;
      
-     private List<Item> items;
+     public List<Item> items;
      
      @JsonProperty("created_at")
-     private Date createdAt;
+     public Date createdAt;
      
      @JsonProperty("updated_at")
-     private Date updatedAt;
-     
-     public long getOrderId() {
-          return orderId;
-     }
-
-     public void setOrderId(long orderId) {
-          this.orderId = orderId;
-     }
-
-     public String getUserId() {
-          return userId;
-     }
-
-     public void setUserId(String userId) {
-          this.userId = userId;
-     }
-
-     public int getAmount() {
-          return amount;
-     }
-
-     public void setAmount(int amount) {
-          this.amount = amount;
-     }
-
-     public String getStatus() {
-          return status;
-     }
-
-     public void setStatus(String status) {
-          this.status = status;
-     }
-
-     public List<Item> getItems() {
-          return items;
-     }
-
-     public void setItems(List<Item> items) {
-          this.items = items;
-     }
-
-     public Date getCreatedAt() {
-          return createdAt;
-     }
-
-     public void setCreatedAt(Date createdAt) {
-          this.createdAt = createdAt;
-     }
-
-     public Date getUpdatedAt() {
-          return updatedAt;
-     }
-
-     public void setUpdatedAt(Date updatedAt) {
-          this.updatedAt = updatedAt;
-     }
+     public Date updatedAt;
 }
      
 class Item {
       @JsonProperty("product_id")
-      private int productId;
+      public int productId;
       
-      private int quantity;
+      public int quantity;
       
-      private ItemData data;
+      public ItemData data;
 
+      /*
       public int getProductId() {
            return productId;
       }
@@ -173,6 +118,7 @@ class Item {
       public void setData(ItemData data) {
            this.data = data;
       }
+      */
  }
  
  @JsonInclude(Include.NON_NULL)
