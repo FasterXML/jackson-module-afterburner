@@ -95,15 +95,46 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
 
     static class BeanWithNonVoidPropertySetter {
         private String stringField;
+        private String stringField2;
 
         public String getStringField() { return stringField; }
+        public String getStringField2() { return stringField2; }
 
         public BeanWithNonVoidPropertySetter setStringField(String username) {
             this.stringField = username;
             return this;
         }
+
+        public BeanWithNonVoidPropertySetter setStringField2(String stringField2) {
+            this.stringField2 = stringField2;
+            return this;
+        }
     }
-    
+
+    static class BigBeanWithNonVoidPropertySetter {
+        private String stringField;
+
+        public String getStringField() { return stringField; }
+
+        public BigBeanWithNonVoidPropertySetter setStringField(String username) {
+            this.stringField = username;
+            return this;
+        }
+
+        public BigBeanWithNonVoidPropertySetter setBogus1(String bogus) { return this; }
+        public BigBeanWithNonVoidPropertySetter setBogus2(String bogus) { return this; }
+        public BigBeanWithNonVoidPropertySetter setBogus3(String bogus) { return this; }
+        public BigBeanWithNonVoidPropertySetter setBogus4(String bogus) { return this; }
+        public BigBeanWithNonVoidPropertySetter setBogus5(String bogus) { return this; }
+
+        public String getBogus1() { return ""; }
+        public String getBogus2() { return ""; }
+        public String getBogus3() { return ""; }
+        public String getBogus4() { return ""; }
+        public String getBogus5() { return ""; }
+    }
+
+
     /*
     /**********************************************************************
     /* Test methods, method access
@@ -232,15 +263,31 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     // Test for [Issue-5]
     public void testNonVoidProperty() throws Exception
     {
-        final String json = "{ \"stringField\" : \"zoobar\" }";
+        final String json = "{ \"stringField\" : \"zoobar\", \"stringField2\" : \"barzoo\" }";
 
         ObjectMapper mapper = new ObjectMapper();
         BeanWithNonVoidPropertySetter bean = mapper.readValue(json, BeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
-        
+
         ObjectMapper abMapper = mapperWithModule(); // if I don't do this, the module won't be picked up
         // current fails with java.lang.NoSuchMethodError
         bean = abMapper.readValue(json, BeanWithNonVoidPropertySetter.class);
+        assertEquals("zoobar", bean.getStringField());
+        assertEquals("barzoo", bean.getStringField2());
+    }
+
+    // Test for [Issue-16]
+    public void testBigNonVoidProperty() throws Exception
+    {
+        final String json = "{ \"stringField\" : \"zoobar\" }";
+
+        ObjectMapper mapper = new ObjectMapper();
+        BigBeanWithNonVoidPropertySetter bean = mapper.readValue(json, BigBeanWithNonVoidPropertySetter.class);
+        assertEquals("zoobar", bean.getStringField());
+
+        ObjectMapper abMapper = mapperWithModule(); // if I don't do this, the module won't be picked up
+        // current fails with java.lang.NoSuchMethodError
+        bean = abMapper.readValue(json, BigBeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
     }
 }
