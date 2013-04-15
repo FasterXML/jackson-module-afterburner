@@ -376,10 +376,15 @@ public class PropertyMutatorCollector
             mv.visitVarInsn(loadValueCode, 3);
             method = (Method) (props.get(i).getMember().getMember());
             type = Type.getType(method.getParameterTypes()[0]);
+
+            returnType = method.getReturnType();
+            returnTypeStr = (returnType == Void.class) ? "V"
+                : Type.getType(returnType).getDescriptor();
+
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")V");
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")"+returnTypeStr);
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(next);
@@ -403,14 +408,19 @@ public class PropertyMutatorCollector
             mv.visitVarInsn(loadValueCode, 3);
             Method method = (Method) (props.get(i).getMember().getMember());
             Type type = Type.getType(method.getParameterTypes()[0]);
+
+            Class<?> returnType = method.getReturnType();
+            String returnTypeStr = (returnType == Void.class) ? "V"
+                : Type.getType(returnType).getDescriptor();
+
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")V");
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "("+type.getDescriptor()+")"+returnTypeStr);
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(defaultLabel);
-    }        
+    }
 
     private static <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingIf(MethodVisitor mv,
             List<T> props, String beanClass, int loadValueCode, int beanIndex,
