@@ -45,7 +45,7 @@ public class AfterburnerModule extends SimpleModule
     
     public AfterburnerModule()
     {
-        super("Afterburner", ModuleVersion.instance.version());
+        super("Afterburner", PackageVersion.VERSION);
     }
     
     @Override
