@@ -1,9 +1,9 @@
 Project: jackson-module-afterburner
-Version: 2.2.0 (xx-Apr-2013)
+Version: 2.2.0 (22-Apr-2013)
 
 New minor version.
 
-Fixes:
+Changes:
 
 #14: Problems deserializing a complex POJO with serialization inclusion of
   NotNull.
