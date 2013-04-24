@@ -1,7 +1,6 @@
-package com.fasterxml.jackson.module.afterburner.ser;
+package com.fasterxml.jackson.module.afterburner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestAccessFallback extends AfterburnerTestBase
 {

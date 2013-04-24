@@ -32,7 +32,7 @@ public class StringMethodPropertyWriter
      */
 
     @Override
-    public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
+    public void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
         String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
