@@ -3,7 +3,7 @@ Version: 2.2.1 (xx-May-2013)
 
 Changes:
 
-#18: Problems with non-void setters, part 2
+#16: Problems with non-void setters, part 2
  (contributed by Steven S)
 
 ------------------------------------------------------------------------
