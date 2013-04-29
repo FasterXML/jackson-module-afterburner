@@ -53,10 +53,12 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         try {
             unsafeSerializeAsField(bean, jgen, prov);
         } catch (IllegalAccessError e) {
+            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
             e.printStackTrace(); // TODO
             broken = true;
             fallbackWriter.serializeAsField(bean, jgen, prov);
         } catch (SecurityException e) {
+            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
             e.printStackTrace(); // TODO
             broken = true;
             fallbackWriter.serializeAsField(bean, jgen, prov);

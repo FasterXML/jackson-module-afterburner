@@ -55,7 +55,7 @@ public final class SettableObjectMethodProperty
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.objectSetter(bean, _propertyIndex, value);
+        _propertyMutator.objectSetter(_originalSettable, bean, _propertyIndex, value);
     }
 
     @Override

@@ -50,13 +50,13 @@ public final class SettableIntMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.intSetter(bean, _propertyIndex, _deserializeInt(jp, ctxt));
+        _propertyMutator.intSetter(_originalSettable, bean, _propertyIndex, _deserializeInt(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.intSetter(bean, _propertyIndex, ((Number) value).intValue());
+        _propertyMutator.intSetter(_originalSettable, bean, _propertyIndex, ((Number) value).intValue());
     }
 
     @Override
