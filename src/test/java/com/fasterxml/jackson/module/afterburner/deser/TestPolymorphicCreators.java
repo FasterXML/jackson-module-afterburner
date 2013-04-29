@@ -11,12 +11,6 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
  */
 public class TestPolymorphicCreators extends AfterburnerTestBase
 {
-    /*
-    /**********************************************************
-    /* Helper beans
-    /**********************************************************
-     */
-
     static class Animal
     {
         // All animals have names, for our demo purposes...
