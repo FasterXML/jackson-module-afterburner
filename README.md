@@ -8,9 +8,11 @@ For Javadocs, Download, see: [Wiki](jackson-module-afterburner/wiki).
 
 ## Status
 
-At this point module should be considered experimental, but it does work for use cases I have tried so far; including [jvm-serializers](https://github.com/eishay/jvm-serializers) benchmark (where it helps Jackson data-bind get within 10-15% of "jackson/manual" performance; and 15-20 for Smile).
+Module is stable and has been used in production environments. Its adoption is not quite as wide as that of
+core Jackson components, so rough edges may still exist. However, versions from 2.2 up are considered
+production ready.
 
-Current master branch works with Jackson 2.0.x:, and this is the actively developed version.
+Master branch works with Jackson 2.x.
 Older builds (1.9.4) are still available, and source is under "1.x" branch, but no further development is planned for this version.
 
 ## Usage
@@ -23,7 +25,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
