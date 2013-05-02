@@ -58,13 +58,13 @@ mapper.writeValue(new File("result.json"), val);
 Following things are optimized:
 
 * For serialization (POJOs to JSON):
- * Mutators for "setting" value (field access, calling setter method) are inlined using generated code instead of reflection
+ * Accessors for "getting" values (field access, calling getter method) are inlined using generated code instead of reflection
  * Serializers for small number of 'primitive' types (`int`, `long`, String) are replaced with direct calls, instead of getting delegated to `JsonSerializer`s
 * For deserialization (JSON to POJOs)
  * Calls to default (no-argument) constructors are byte-generated instead of using reflection
- * Accessors for "getting" values  (field access, calling setter method) are inlined using generated code instead of reflection
+ * Mutators for "setting" values (field access, calling setter method) are inlined using generated code instead of reflection
  * Deserializers for small number of 'primitive' types (`int`, `long`, String) are replaced with direct calls, instead of getting delegated to `JsonDeserializer`s
 
 ### More
 
-Check out [Wiki](jackson-module-afterburner/wiki).
+Check out [Wiki](https://github.com/FasterXML/jackson-module-afterburner/wiki).
