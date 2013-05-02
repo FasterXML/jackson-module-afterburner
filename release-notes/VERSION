@@ -5,6 +5,8 @@ Changes:
 
 #16: Problems with non-void setters, part 2
  (contributed by Steven S)
+#21: Prevent attempts to generate classes in sealed packages
+ (contributed by Steven S)
 
 ------------------------------------------------------------------------
 === History: ===

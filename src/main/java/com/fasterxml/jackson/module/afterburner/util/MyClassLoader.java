@@ -19,6 +19,27 @@ public class MyClassLoader extends ClassLoader
         super(parent);
         _cfgUseParentLoader = tryToUseParent;
     }
+
+    /**
+     * Helper method called to check whether it is acceptable to create a new
+     * class in package that given class is part of.
+     * This is used to prevent certain class of failures, related to access
+     * limitations: for example, we can not add classes in sealed packages,
+     * or core Java packages (java.*).
+     * 
+     * @since 2.2.1
+     */
+    public static boolean canAddClassInPackageOf(Class<?> cls)
+    {
+        final Package beanPackage = cls.getPackage();
+        if (beanPackage != null) {
+            // 01-May-2013, tatu: How about "javax."?
+            if (beanPackage.isSealed() || beanPackage.getName().startsWith("java.")) {
+                return false;
+            }
+        } 
+        return true;
+    }
     
     /**
      * @param className Interface or abstract class that class to load should extend or 

@@ -41,6 +41,10 @@ public class DeserializerModifier extends BeanDeserializerModifier
             BeanDescription beanDesc, BeanDeserializerBuilder builder) 
     {
         final Class<?> beanClass = beanDesc.getBeanClass();
+        // [Issue#21]: Can't force access to sealed packages, or anything within "java."
+        if (!MyClassLoader.canAddClassInPackageOf(beanClass)) {
+            return builder;
+        } 
         /* Hmmh. Can we access stuff from private classes?
          * Possibly, if we can use parent class loader.
          * (should probably skip all non-public?)
