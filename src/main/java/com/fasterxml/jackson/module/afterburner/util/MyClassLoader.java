@@ -31,6 +31,11 @@ public class MyClassLoader extends ClassLoader
      */
     public static boolean canAddClassInPackageOf(Class<?> cls)
     {
+        // TODO: we should be able to do this, but currently causes IncompatibleClassChangeError
+        if (cls.isInterface()) {
+            return false;
+        }
+
         final Package beanPackage = cls.getPackage();
         if (beanPackage != null) {
             // 01-May-2013, tatu: How about "javax."?
