@@ -50,12 +50,12 @@ public final class SettableStringFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.stringField(bean, _propertyIndex, _deserializeString(jp, ctxt));
+        _propertyMutator.stringField(_originalSettable, bean, _propertyIndex, _deserializeString(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.stringField(bean, _propertyIndex, (String) value);
+        _propertyMutator.stringField(_originalSettable, bean, _propertyIndex, (String) value);
     }
 
     @Override

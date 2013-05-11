@@ -13,7 +13,7 @@ public final class LongMethodPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
     }
-    
+
     @Override
     public BeanPropertyWriter withSerializer(JsonSerializer<Object> ser) {
         return new LongMethodPropertyWriter(this, _propertyAccessor, _propertyIndex, ser);
@@ -24,15 +24,15 @@ public final class LongMethodPropertyWriter
         if (acc == null) throw new IllegalArgumentException();
         return new LongMethodPropertyWriter(this, acc, _propertyIndex, _serializer);
     }
-    
+
     /*
     /**********************************************************
     /* Overrides
     /**********************************************************
      */
-    
+
     @Override
-    public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
+    public void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
         jgen.writeFieldName(_name);

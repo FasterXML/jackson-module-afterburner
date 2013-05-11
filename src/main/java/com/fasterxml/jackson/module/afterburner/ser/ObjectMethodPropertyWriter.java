@@ -33,7 +33,7 @@ public class ObjectMethodPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
+    public final void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
         Object value = _propertyAccessor.objectGetter(bean, _propertyIndex);

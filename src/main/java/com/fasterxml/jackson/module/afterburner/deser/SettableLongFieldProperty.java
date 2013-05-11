@@ -50,13 +50,13 @@ public final class SettableLongFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.longField(bean, _propertyIndex, _deserializeLong(jp, ctxt));
+        _propertyMutator.longField(_originalSettable, bean, _propertyIndex, _deserializeLong(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.longField(bean, _propertyIndex, ((Number) value).longValue());
+        _propertyMutator.longField(_originalSettable, bean, _propertyIndex, ((Number) value).longValue());
     }
 
     @Override
