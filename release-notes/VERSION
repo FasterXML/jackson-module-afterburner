@@ -1,16 +1,21 @@
 Project: jackson-module-afterburner
-Version: 2.2.1 (03-May-2013)
+Version: 2.2.2 (xx-xxx-2013)
 
 Changes:
 
-#16: Problems with non-void setters, part 2
- (contributed by Steven S)
-#21: Prevent attempts to generate classes in sealed packages
+#20: Protect Afterburner against IllegalAccessError and SecurityException
  (contributed by Steven S)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.2.1 (03-May-2013)
+
+#16: Problems with non-void setters, part 2
+ (contributed by Steven S)
+#21: Prevent attempts to generate classes in sealed packages
+ (contributed by Steven S)
 
 2.2.0 (22-Apr-2013)
 
