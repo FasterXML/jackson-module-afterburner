@@ -5,6 +5,9 @@ Changes:
 
 #20: Protect Afterburner against IllegalAccessError and SecurityException
  (contributed by Steven S)
+#22: Problems with Builder-style deserialization (actual bug in jackson-databind;
+  requires 2.2.2 of databind)
+ (reported by celkings@github)
 
 ------------------------------------------------------------------------
 === History: ===

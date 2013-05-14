@@ -20,17 +20,14 @@ used to enhance access functionality using bytecode generation.
     <tag>HEAD</tag>
   </scm>
 
-  <prerequisites>
-    <maven>2.2.1</maven>
-  </prerequisites>
   <properties>
     <!-- annotations more stable, no patch versions -->
     <jackson.annotation.version>2.2.1</jackson.annotation.version>
-    <jackson.core.version>2.2.1</jackson.core.version>
+    <jackson.core.version>2.2.2-SNAPSHOT</jackson.core.version>
 
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
-    <packageVersion.package>com.fasterxml.jackson.module.afterburner</packageVersion.package>
+    <packageVersion.package>${project.groupId}.afterburner</packageVersion.package>
 
     <osgi.export>com.fasterxml.jackson.module.afterburner;version=${project.version},
 com.fasterxml.jackson.module.afterburner.deser;version=${project.version},
