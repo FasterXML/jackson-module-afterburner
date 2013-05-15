@@ -31,8 +31,14 @@ public class PropertyAccessorCollector
     private final ArrayList<LongFieldPropertyWriter> _longFields = new ArrayList<LongFieldPropertyWriter>();
     private final ArrayList<StringFieldPropertyWriter> _stringFields = new ArrayList<StringFieldPropertyWriter>();
     private final ArrayList<ObjectFieldPropertyWriter> _objectFields = new ArrayList<ObjectFieldPropertyWriter>();
-    
-    public PropertyAccessorCollector() { }
+
+    private final Class<?> beanClass;
+    private final String beanClassName;
+
+    public PropertyAccessorCollector(Class<?> beanClass) {
+        this.beanClass = beanClass;
+        this.beanClassName = Type.getInternalName(beanClass);
+    }
     
     /*
     /**********************************************************
@@ -84,15 +90,14 @@ public class PropertyAccessorCollector
     /**********************************************************
      */
 
-    public BeanPropertyAccessor findAccessor(Class<?> beanType,
-            MyClassLoader classLoader)
+    public BeanPropertyAccessor findAccessor(MyClassLoader classLoader)
     {
         // if we weren't passed a class loader, we will base it on value type CL, try to use parent
         if (classLoader == null) {
-            classLoader = new MyClassLoader(beanType.getClassLoader(), true);
+            classLoader = new MyClassLoader(beanClass.getClassLoader(), true);
         }
         
-        String srcName = beanType.getName() + "$Access4JacksonSerializer";
+        String srcName = beanClass.getName() + "$Access4JacksonSerializer";
         
         String generatedClass = internalClassName(srcName);
         Class<?> accessorClass = null;
@@ -100,7 +105,7 @@ public class PropertyAccessorCollector
             accessorClass = classLoader.loadClass(srcName);
         } catch (ClassNotFoundException e) { }
         if (accessorClass == null) {
-            accessorClass = generateAccessorClass(beanType, classLoader, srcName, generatedClass);
+            accessorClass = generateAccessorClass(classLoader, srcName, generatedClass);
         }
         try {
             return (BeanPropertyAccessor) accessorClass.newInstance();
@@ -108,9 +113,9 @@ public class PropertyAccessorCollector
             throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
         }
     }
-        
-    public Class<?> generateAccessorClass(Class<?> beanType,
-            MyClassLoader classLoader, String srcName, String generatedClass)
+
+    public Class<?> generateAccessorClass(MyClassLoader classLoader,
+                                          String srcName, String generatedClass)
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String superClass = internalClassName(BeanPropertyAccessor.class.getName());
@@ -127,35 +132,33 @@ public class PropertyAccessorCollector
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
-        
-        final String beanClass = internalClassName(beanType.getName());
- 
+
         // and then add various accessors; first field accessors:
         if (!_intFields.isEmpty()) {
-            _addFields(cw, _intFields, beanClass, "intField", Type.INT_TYPE, IRETURN);
+            _addFields(cw, _intFields, "intField", Type.INT_TYPE, IRETURN);
         }
         if (!_longFields.isEmpty()) {
-            _addFields(cw, _longFields, beanClass, "longField", Type.LONG_TYPE, LRETURN);
+            _addFields(cw, _longFields, "longField", Type.LONG_TYPE, LRETURN);
         }
         if (!_stringFields.isEmpty()) {
-            _addFields(cw, _stringFields, beanClass, "stringField", STRING_TYPE, ARETURN);
+            _addFields(cw, _stringFields, "stringField", STRING_TYPE, ARETURN);
         }
         if (!_objectFields.isEmpty()) {
-            _addFields(cw, _objectFields, beanClass, "objectField", OBJECT_TYPE, ARETURN);
+            _addFields(cw, _objectFields, "objectField", OBJECT_TYPE, ARETURN);
         }
 
         // and then method accessors:
         if (!_intGetters.isEmpty()) {
-            _addGetters(cw, _intGetters, beanClass, "intGetter", Type.INT_TYPE, IRETURN);
+            _addGetters(cw, _intGetters, "intGetter", Type.INT_TYPE, IRETURN);
         }
         if (!_longGetters.isEmpty()) {
-            _addGetters(cw, _longGetters, beanClass, "longGetter", Type.LONG_TYPE, LRETURN);
+            _addGetters(cw, _longGetters, "longGetter", Type.LONG_TYPE, LRETURN);
         }
         if (!_stringGetters.isEmpty()) {
-            _addGetters(cw, _stringGetters, beanClass, "stringGetter", STRING_TYPE, ARETURN);
+            _addGetters(cw, _stringGetters, "stringGetter", STRING_TYPE, ARETURN);
         }
         if (!_objectGetters.isEmpty()) {
-            _addGetters(cw, _objectGetters, beanClass, "objectGetter", OBJECT_TYPE, ARETURN);
+            _addGetters(cw, _objectGetters, "objectGetter", OBJECT_TYPE, ARETURN);
         }
 
         cw.visitEnd();
@@ -169,24 +172,24 @@ public class PropertyAccessorCollector
     /**********************************************************
      */
 
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addGetters(ClassWriter cw, List<T> props,
-            String beanClass, String methodName, Type returnType, int returnOpcode)
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addGetters(ClassWriter cw, List<T> props,
+            String methodName, Type returnType, int returnOpcode)
     {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I)"+returnType, /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitTypeInsn(CHECKCAST, beanClassName);
         mv.visitVarInsn(ASTORE, 3);
 
         // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
         if (props.size() <= 4) {
-            _addGettersUsingIf(mv, props, beanClass, returnOpcode, ALL_INT_CONSTS);
+            _addGettersUsingIf(mv, props, returnOpcode, ALL_INT_CONSTS);
         } else {
-            _addGettersUsingSwitch(mv, props, beanClass, returnOpcode);
+            _addGettersUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClass, props.size());
+        generateException(mv, beanClassName, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -197,24 +200,24 @@ public class PropertyAccessorCollector
     /**********************************************************
      */
     
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addFields(ClassWriter cw, List<T> props,
-            String beanClass, String methodName, Type returnType, int returnOpcode)
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addFields(ClassWriter cw, List<T> props,
+            String methodName, Type returnType, int returnOpcode)
     {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I)"+returnType, /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitTypeInsn(CHECKCAST, beanClass);
+        mv.visitTypeInsn(CHECKCAST, beanClassName);
         mv.visitVarInsn(ASTORE, 3);
 
         // Ok; minor optimization, less than 4 accessors, just do IFs; over that, use switch
         if (props.size() < 4) {
-            _addFieldsUsingIf(mv, props, beanClass, returnOpcode, ALL_INT_CONSTS);
+            _addFieldsUsingIf(mv, props, returnOpcode, ALL_INT_CONSTS);
         } else {
-            _addFieldsUsingSwitch(mv, props, beanClass, returnOpcode);
+            _addFieldsUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClass, props.size());
+        generateException(mv, beanClassName, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -225,9 +228,8 @@ public class PropertyAccessorCollector
     /**********************************************************
      */
 
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingIf(MethodVisitor mv,
-            List<T> props, String beanClass, int returnOpcode,
-            int[] constantOpcodes)
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingIf(MethodVisitor mv,
+            List<T> props, int returnOpcode, int[] constantOpcodes)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
         Label next = new Label();
@@ -236,8 +238,9 @@ public class PropertyAccessorCollector
 
         // call first getter:
         mv.visitVarInsn(ALOAD, 3); // load local for cast bean
+        int invokeInsn = beanClass.isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
         Method method = (Method) (props.get(0).getMember().getMember());
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "()"+Type.getDescriptor(method.getReturnType()));
+        mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
@@ -249,14 +252,14 @@ public class PropertyAccessorCollector
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
             method = (Method) (props.get(i).getMember().getMember());
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "()"+Type.getDescriptor(method.getReturnType()));
+            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(next);
     }
 
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingSwitch(MethodVisitor mv,
-            List<T> props, String beanClass, int returnOpcode)
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingSwitch(MethodVisitor mv,
+            List<T> props, int returnOpcode)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
 
@@ -266,18 +269,19 @@ public class PropertyAccessorCollector
         }
         Label defaultLabel = new Label();
         mv.visitTableSwitchInsn(0, labels.length - 1, defaultLabel, labels);
+        int invokeInsn = beanClass.isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
         for (int i = 0, len = labels.length; i < len; ++i) {
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, 3); // load bean
             Method method = (Method) (props.get(i).getMember().getMember());
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClass, method.getName(), "()"+Type.getDescriptor(method.getReturnType()));
+            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(defaultLabel);
     }
 
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingIf(MethodVisitor mv,
-            List<T> props, String beanClass, int returnOpcode,
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingIf(MethodVisitor mv,
+            List<T> props, int returnOpcode,
             int[] constantOpcodes)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
@@ -288,7 +292,7 @@ public class PropertyAccessorCollector
         // first field accessor
         mv.visitVarInsn(ALOAD, 3); // load local for cast bean
         AnnotatedField field = (AnnotatedField) props.get(0).getMember();
-        mv.visitFieldInsn(GETFIELD, beanClass, field.getName(), Type.getDescriptor(field.getRawType()));
+        mv.visitFieldInsn(GETFIELD, beanClassName, field.getName(), Type.getDescriptor(field.getRawType()));
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
@@ -300,14 +304,14 @@ public class PropertyAccessorCollector
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
             field = (AnnotatedField) props.get(i).getMember();
-            mv.visitFieldInsn(GETFIELD, beanClass, field.getName(), Type.getDescriptor(field.getRawType()));
+            mv.visitFieldInsn(GETFIELD, beanClassName, field.getName(), Type.getDescriptor(field.getRawType()));
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(next);
     }
 
-    private static <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
-            List<T> props, String beanClass, int returnOpcode)
+    private <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
+            List<T> props, int returnOpcode)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
 
@@ -321,7 +325,7 @@ public class PropertyAccessorCollector
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, 3); // load bean
             AnnotatedField field = (AnnotatedField) props.get(i).getMember();
-            mv.visitFieldInsn(GETFIELD, beanClass, field.getName(), Type.getDescriptor(field.getRawType()));
+            mv.visitFieldInsn(GETFIELD, beanClassName, field.getName(), Type.getDescriptor(field.getRawType()));
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(defaultLabel);

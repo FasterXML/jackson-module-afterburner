@@ -46,13 +46,13 @@ public class SerializerModifier extends BeanSerializerModifier
             }
         }
         
-        PropertyAccessorCollector collector = findProperties(config, beanProperties);
+        PropertyAccessorCollector collector = findProperties(beanClass, config, beanProperties);
         if (collector.isEmpty()) {
             return beanProperties;
         }
         
         // if we had a match, need to materialize
-        BeanPropertyAccessor acc = collector.findAccessor(beanClass, _classLoader);
+        BeanPropertyAccessor acc = collector.findAccessor(_classLoader);
         // and then link accessors to bean property writers:
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
@@ -64,10 +64,10 @@ public class SerializerModifier extends BeanSerializerModifier
         return beanProperties;
     }
 
-    protected PropertyAccessorCollector findProperties(SerializationConfig config,
-            List<BeanPropertyWriter> beanProperties)
+    protected PropertyAccessorCollector findProperties(Class<?> beanClass,
+            SerializationConfig config, List<BeanPropertyWriter> beanProperties)
     {
-        PropertyAccessorCollector collector = new PropertyAccessorCollector();
+        PropertyAccessorCollector collector = new PropertyAccessorCollector(beanClass);
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
             BeanPropertyWriter bpw = it.next();
