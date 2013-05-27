@@ -1,5 +1,5 @@
 Project: jackson-module-afterburner
-Version: 2.2.2 (xx-xxx-2013)
+Version: 2.2.2 (27-May-2013)
 
 Changes:
 
@@ -8,6 +8,7 @@ Changes:
 #22: Problems with Builder-style deserialization (actual bug in jackson-databind;
   requires 2.2.2 of databind)
  (reported by celkings@github)
+#24: Disable handling of interface types (for now)
 
 ------------------------------------------------------------------------
 === History: ===
