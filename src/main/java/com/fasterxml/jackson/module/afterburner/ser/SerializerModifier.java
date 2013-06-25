@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.ser.*;
+import com.fasterxml.jackson.databind.ser.impl.UnwrappingBeanPropertyWriter;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
@@ -85,6 +86,14 @@ public class SerializerModifier extends BeanSerializerModifier
                 if (!isDefaultSerializer(config, bpw.getSerializer())) {
                     continue;
                 }
+            }
+            /* [Issue#9]: also skip unwrapping stuff...
+             * 
+             * TODO: 24-Jul-2013, tatu: should use "BeanPropertyWriter.isUnwrapping()" when
+             *   Jackson 2.3 is out (and adds it)
+             */
+            if (bpw instanceof UnwrappingBeanPropertyWriter) {
+                continue;
             }
             
             boolean isMethod = (member instanceof AnnotatedMethod);

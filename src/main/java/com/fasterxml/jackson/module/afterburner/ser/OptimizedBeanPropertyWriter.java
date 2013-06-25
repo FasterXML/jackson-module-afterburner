@@ -66,5 +66,5 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     }
 
     public abstract void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-    throws Exception;
+            throws Exception;
 }
