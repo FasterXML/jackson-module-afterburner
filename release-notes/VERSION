@@ -1,7 +1,11 @@
 Project: jackson-module-afterburner
-Version: 2.2.2 (27-May-2013)
+Version: 2.2.3 (xx-xxx-2013)
 
-Changes:
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.2.2 (27-May-2013)
 
 #20: Protect Afterburner against IllegalAccessError and SecurityException
  (contributed by Steven S)
@@ -9,10 +13,6 @@ Changes:
   requires 2.2.2 of databind)
  (reported by celkings@github)
 #24: Disable handling of interface types (for now)
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.2.1 (03-May-2013)
 
