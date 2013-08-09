@@ -9,9 +9,20 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 public final class IntFieldPropertyWriter
     extends OptimizedBeanPropertyWriter<IntFieldPropertyWriter>
 {
+    private final int _suppressableInt;
+    private final boolean _suppressableIntSet;
+
     public IntFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
+
+        if (_suppressableValue != null && _suppressableValue instanceof Integer) {
+            _suppressableInt = (Integer)_suppressableValue;
+            _suppressableIntSet = true;
+        } else {
+            _suppressableInt = 0;
+            _suppressableIntSet = false;
+        }
     }
 
     @Override
@@ -35,7 +46,10 @@ public final class IntFieldPropertyWriter
     public final void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
-        jgen.writeFieldName(_name);
-        jgen.writeNumber(_propertyAccessor.intField(bean, _propertyIndex));
+        int value = _propertyAccessor.intField(bean, _propertyIndex);
+        if (!_suppressableIntSet || _suppressableInt != value) {
+            jgen.writeFieldName(_name);
+            jgen.writeNumber(value);
+        }
     }
 }
