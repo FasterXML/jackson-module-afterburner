@@ -9,9 +9,20 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 public final class LongFieldPropertyWriter
     extends OptimizedBeanPropertyWriter<LongFieldPropertyWriter>
 {
+    private final long _suppressableLong;
+    private final boolean _suppressableLongSet;
+
     public LongFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
+
+        if (_suppressableValue != null && _suppressableValue instanceof Long) {
+            _suppressableLong = (Long)_suppressableValue;
+            _suppressableLongSet = true;
+        } else {
+            _suppressableLong = 0;
+            _suppressableLongSet = false;
+        }
     }
 
     @Override
@@ -35,7 +46,10 @@ public final class LongFieldPropertyWriter
     public final void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
         throws Exception
     {
-        jgen.writeFieldName(_name);
-        jgen.writeNumber(_propertyAccessor.longField(bean, _propertyIndex));
+        long value = _propertyAccessor.longField(bean, _propertyIndex);
+        if (!_suppressableLongSet || _suppressableLong != value) {
+            jgen.writeFieldName(_name);
+            jgen.writeNumber(value);
+        }
     }
 }
