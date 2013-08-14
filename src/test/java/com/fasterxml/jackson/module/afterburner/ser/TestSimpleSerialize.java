@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,8 +27,38 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         int getX() { return 123; }
     }
 
+    static class NonDefaultIntBean {
+        private final int _x;
+
+        public NonDefaultIntBean() {
+            _x = 123;
+        }
+
+        public NonDefaultIntBean(int x) {
+            _x = x;
+        }
+
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        public long getX() { return _x; }
+    }
+
     public static class LongBean {
         public long getValue() { return -99L; }
+    }
+
+    public static class NonDefaultLongBean {
+        private final long _value;
+
+        public NonDefaultLongBean() {
+            _value = -99L;
+        }
+
+        public NonDefaultLongBean(long value) {
+            _value = value;
+        }
+
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        public long getValue() { return _value; }
     }
 
     static class StringBean {
@@ -42,8 +73,28 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         @JsonProperty("intF") int x = 17;
     }
 
+    static class NonDefaultIntFieldBean {
+        @JsonProperty("intF") @JsonInclude(JsonInclude.Include.NON_DEFAULT) int x = 17;
+
+        NonDefaultIntFieldBean() {}
+
+        NonDefaultIntFieldBean(int x) {
+            this.x = x;
+        }
+    }
+
     static class LongFieldBean {
         @JsonProperty("long") long l = -123L;
+    }
+
+    static class NonDefaultLongFieldBean {
+        @JsonProperty("long") @JsonInclude(JsonInclude.Include.NON_DEFAULT) long l = -123L;
+
+        NonDefaultLongFieldBean() {}
+
+        NonDefaultLongFieldBean(long l) {
+            this.l = l;
+        }
     }
 
     public static class StringFieldBean {
@@ -57,7 +108,7 @@ public class TestSimpleSerialize extends AfterburnerTestBase
     public static class StringsBean {
         public String a = null;
     }
-    
+
     /*
     /**********************************************************************
     /* Test methods, method access
@@ -69,9 +120,21 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"x\":123}", mapper.writeValueAsString(new IntBean()));
     }
 
+    public void testNonDefaultIntMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{}", mapper.writeValueAsString(new NonDefaultIntBean()));
+        assertEquals("{\"x\":-181}", mapper.writeValueAsString(new NonDefaultIntBean(-181)));
+    }
+
     public void testLongMethod() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         assertEquals("{\"value\":-99}", mapper.writeValueAsString(new LongBean()));
+    }
+
+    public void testNonDefaultLongMethod() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{}", mapper.writeValueAsString(new NonDefaultLongBean()));
+        assertEquals("{\"value\":45}", mapper.writeValueAsString(new NonDefaultLongBean(45L)));
     }
 
     public void testStringMethod() throws Exception {
@@ -95,9 +158,21 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"intF\":17}", mapper.writeValueAsString(new IntFieldBean()));
     }
 
+    public void testNonDefaultIntField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{}", mapper.writeValueAsString(new NonDefaultIntFieldBean()));
+        assertEquals("{\"intF\":91}", mapper.writeValueAsString(new NonDefaultIntFieldBean(91)));
+    }
+
     public void testLongField() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         assertEquals("{\"long\":-123}", mapper.writeValueAsString(new LongFieldBean()));
+    }
+
+    public void testNonDefaultLongField() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals("{}", mapper.writeValueAsString(new NonDefaultLongFieldBean()));
+        assertEquals("{\"long\":58}", mapper.writeValueAsString(new NonDefaultLongFieldBean(58L)));
     }
 
     public void testStringField() throws Exception {
