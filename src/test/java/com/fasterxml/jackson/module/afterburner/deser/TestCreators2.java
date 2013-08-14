@@ -171,6 +171,20 @@ public class TestCreators2 extends AfterburnerTestBase
 
         public String getItem() { return null; }
     }
+
+    static class FromString
+    {
+        protected String value;
+        
+        @JsonCreator
+        public FromString(String s) {
+            value = s;
+        }
+    }
+
+    static class FromStringWrapper {
+        public FromString wrapped;
+    }
     
     /*
     /**********************************************************
@@ -308,5 +322,13 @@ public class TestCreators2 extends AfterburnerTestBase
     {
         Issue700Bean value = MAPPER.readValue("{ \"item\" : \"foo\" }", Issue700Bean.class);
         assertNotNull(value);
+    }
+
+    public void testSingleStringCreator() throws Exception
+    {
+        FromStringWrapper w = MAPPER.readValue("{\"wrapped\":\"foo\"}",
+                FromStringWrapper.class);
+        assertNotNull(w);
+        assertEquals("foo", w.wrapped.value);
     }
 }
