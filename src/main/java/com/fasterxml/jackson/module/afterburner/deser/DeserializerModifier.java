@@ -54,12 +54,12 @@ public class DeserializerModifier extends BeanDeserializerModifier
                 return builder;
             }
         }
-        PropertyMutatorCollector collector = new PropertyMutatorCollector();
+        PropertyMutatorCollector collector = new PropertyMutatorCollector(beanClass);
         List<OptimizedSettableBeanProperty<?>> newProps = findOptimizableProperties(
                 config, collector, builder.getProperties());
         // and if we found any, create mutator proxy, replace property objects
         if (!newProps.isEmpty()) {
-            BeanPropertyMutator mutator = collector.buildMutator(beanClass, _classLoader);
+            BeanPropertyMutator mutator = collector.buildMutator(_classLoader);
             for (OptimizedSettableBeanProperty<?> prop : newProps) {
                 builder.addOrReplaceProperty(prop.withMutator(mutator), true);
             }
@@ -134,7 +134,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
                     }
                 }
             } else if (prop instanceof FieldProperty) { // regular fields
-                Class<?> type = ((AnnotatedField) member).getRawType();
+                Class<?> type = member.getRawType();
                 if (type.isPrimitive()) {
                     if (type == Integer.TYPE) {
                         newProps.add(collector.addIntField(prop));

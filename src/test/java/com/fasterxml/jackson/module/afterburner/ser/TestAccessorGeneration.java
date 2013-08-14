@@ -47,14 +47,14 @@ public class TestAccessorGeneration extends AfterburnerTestBase
     {
         Method method = Bean1.class.getDeclaredMethod("getX");
         AnnotatedMethod annMethod = new AnnotatedMethod(method, null, null);
-        PropertyAccessorCollector coll = new PropertyAccessorCollector();
+        PropertyAccessorCollector coll = new PropertyAccessorCollector(Bean1.class);
         BeanPropertyWriter bpw = new BeanPropertyWriter(SimpleBeanPropertyDefinition.construct(null, annMethod, "x"),
                 annMethod, null,
                 null,
                 null, null, null,
                 false, null);
         coll.addIntGetter(bpw);
-        BeanPropertyAccessor acc = coll.findAccessor(Bean1.class, null);
+        BeanPropertyAccessor acc = coll.findAccessor(null);
         Bean1 bean = new Bean1();
         int value = acc.intGetter(bean, 0);
         assertEquals(bean.getX(), value);
@@ -62,7 +62,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
 
     public void testDualIntAccessorGeneration() throws Exception
     {
-        PropertyAccessorCollector coll = new PropertyAccessorCollector();
+        PropertyAccessorCollector coll = new PropertyAccessorCollector(Bean3.class);
 
         String[] methodNames = new String[] {
                 "getX", "getY", "get3"
@@ -87,7 +87,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                     false, null));
         }
 
-        BeanPropertyAccessor acc = coll.findAccessor(Bean3.class, null);
+        BeanPropertyAccessor acc = coll.findAccessor(null);
         Bean3 bean = new Bean3();
 
         assertEquals(bean.getX(), acc.intGetter(bean, 0));
@@ -98,7 +98,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
     // And then test to ensure Switch-table construction also works...
     public void testLotsaIntAccessorGeneration() throws Exception
     {
-        PropertyAccessorCollector coll = new PropertyAccessorCollector();
+        PropertyAccessorCollector coll = new PropertyAccessorCollector(BeanN.class);
         String[] methodNames = new String[] {
                 "getX", "getY", "get3", "get4", "get5", "get6", "get7"
         };
@@ -112,7 +112,7 @@ public class TestAccessorGeneration extends AfterburnerTestBase
                     false, null));
         }
 
-        BeanPropertyAccessor acc = coll.findAccessor(BeanN.class, null);
+        BeanPropertyAccessor acc = coll.findAccessor(null);
         BeanN bean = new BeanN();
 
         assertEquals(bean.getX(), acc.intGetter(bean, 0));
