@@ -53,18 +53,24 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         try {
             unsafeSerializeAsField(bean, jgen, prov);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, e);
             fallbackWriter.serializeAsField(bean, jgen, prov);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, e);
             fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
 
     public abstract void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
             throws Exception;
+
+    protected void _reportProblem(Object bean, Throwable e)
+    {
+        broken = true;
+        System.err.format("Disabling Afterburner serialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+                bean.getClass(), _propertyIndex,
+                e.getClass().getName(), e.getMessage());
+        e.printStackTrace(); // TODO
+    }
+
 }

@@ -15,7 +15,8 @@ public abstract class BeanPropertyMutator
     private boolean broken = false;
 
     public void intSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, int value)
-    throws IOException {
+            throws IOException
+    {
         if (broken) {
             originalMutator.set(bean, value);
             return;
@@ -23,19 +24,17 @@ public abstract class BeanPropertyMutator
         try {
             intSetter(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
+    
     public void longSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, long value)
-    throws IOException {
+            throws IOException
+    {
         if (broken) {
             originalMutator.set(bean, value);
             return;
@@ -43,14 +42,10 @@ public abstract class BeanPropertyMutator
         try {
             longSetter(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -63,14 +58,10 @@ public abstract class BeanPropertyMutator
         try {
             stringSetter(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -83,14 +74,10 @@ public abstract class BeanPropertyMutator
         try {
             objectSetter(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -103,14 +90,10 @@ public abstract class BeanPropertyMutator
         try {
             intField(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -123,14 +106,10 @@ public abstract class BeanPropertyMutator
         try {
             longField(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -143,14 +122,10 @@ public abstract class BeanPropertyMutator
         try {
             stringField(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -163,14 +138,10 @@ public abstract class BeanPropertyMutator
         try {
             objectField(bean, propertyIndex, value);
         } catch (IllegalAccessError e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            System.err.format("Disabling Afterburner for %s due to access error%n", bean.getClass());
-            e.printStackTrace(); // TODO
-            broken = true;
+            _reportProblem(bean, propertyIndex, e);
             originalMutator.set(bean, value);
         }
     }
@@ -198,5 +169,14 @@ public abstract class BeanPropertyMutator
     }
     protected void objectField(Object bean, int propertyIndex, Object value) {
         throw new UnsupportedOperationException("No objectFields defined");
+    }
+
+    protected void _reportProblem(Object bean, int index, Throwable e)
+    {
+        broken = true;
+        System.err.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+                bean.getClass(), index,
+                e.getClass().getName(), e.getMessage());
+        e.printStackTrace(); // TODO
     }
 }
