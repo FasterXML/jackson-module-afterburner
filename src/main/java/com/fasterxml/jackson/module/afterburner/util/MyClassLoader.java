@@ -31,18 +31,13 @@ public class MyClassLoader extends ClassLoader
      */
     public static boolean canAddClassInPackageOf(Class<?> cls)
     {
-        // TODO: we should be able to do this, but currently causes IncompatibleClassChangeError
-        if (cls.isInterface()) {
-            return false;
-        }
-
         final Package beanPackage = cls.getPackage();
         if (beanPackage != null) {
             // 01-May-2013, tatu: How about "javax."?
             if (beanPackage.isSealed() || beanPackage.getName().startsWith("java.")) {
                 return false;
             }
-        } 
+        }
         return true;
     }
     
@@ -64,12 +59,12 @@ public class MyClassLoader extends ClassLoader
         // First: let's try calling it directly on parent, to be able to access protected/package-access stuff:
         if (_cfgUseParentLoader) {
             try {
-                Method method = ClassLoader.class.getDeclaredMethod("defineClass", 
+                Method method = ClassLoader.class.getDeclaredMethod("defineClass",
                         new Class[] {String.class, byte[].class, int.class,
                         int.class});
                 method.setAccessible(true);
                 return (Class<?>)method.invoke(getParent(),
-                        new Object[] { className, byteCode, Integer.valueOf(0), Integer.valueOf(byteCode.length)});
+                        className, byteCode, 0, byteCode.length);
             } catch (Exception e) { }
         }
 
@@ -77,7 +72,7 @@ public class MyClassLoader extends ClassLoader
         try {
             impl = defineClass(className, byteCode, 0, byteCode.length);
         } catch (LinkageError e) {
-            throw new IllegalArgumentException("Failed to load class '"+className+"': "+e.getMessage() ,e);
+            throw new IllegalArgumentException("Failed to load class '"+className+"': "+e.getMessage(), e);
         }
         // important: must also resolve the class...
         resolveClass(impl);
