@@ -1,5 +1,5 @@
 Project: jackson-module-afterburner
-Version: 2.2.3 (xx-xxx-2013)
+Version: 2.2.3 (23-Aug-2013)
 
 #9: Ensure that `@JsonUnwrapped` handling still works
 #23: Support deserialization of interface types

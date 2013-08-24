@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.fasterxml</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>10</version>
+    <version>11</version>
   </parent>
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
@@ -22,8 +22,8 @@ used to enhance access functionality using bytecode generation.
 
   <properties>
     <!-- annotations more stable, no patch versions -->
-    <jackson.annotation.version>2.2.2</jackson.annotation.version>
-    <jackson.core.version>2.2.2</jackson.core.version>
+    <jackson.annotation.version>2.2.3</jackson.annotation.version>
+    <jackson.core.version>2.2.3</jackson.core.version>
 
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
