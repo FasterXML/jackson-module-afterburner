@@ -9,6 +9,7 @@
   <artifactId>jackson-module-afterburner</artifactId>
   <name>Jackson-module-Afterburner</name>
   <version>2.3.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <description>Experimental extension to Jackson (http://jackson.codehaus.org)
 used to enhance access functionality using bytecode generation.
   </description>
@@ -29,9 +30,9 @@ used to enhance access functionality using bytecode generation.
     <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
     <packageVersion.package>${project.groupId}.afterburner</packageVersion.package>
 
-    <osgi.export>com.fasterxml.jackson.module.afterburner;version=${project.version},
-com.fasterxml.jackson.module.afterburner.deser;version=${project.version},
-com.fasterxml.jackson.module.afterburner.ser;version=${project.version}
+    <osgi.export>com.fasterxml.jackson.module.afterburner,
+com.fasterxml.jackson.module.afterburner.deser,
+com.fasterxml.jackson.module.afterburner.ser
     </osgi.export>
     <!-- 09-Oct-2011, tatu: should NOT require "com.fasterxml.jackson.databind.deser.impl", but
        Maven Bundle plug-in insists for some reason?!?
@@ -54,6 +55,7 @@ com.fasterxml.jackson.module.afterburner.ser;version=${project.version}
 ,com.fasterxml.jackson.databind.util
 ,org.objectweb.asm;resolution:=optional
      </osgi.import>
+     <osgi.private>com.fasterxml.jackson.module.afterburner.asm</osgi.private>
   </properties>
 
   <dependencies>
