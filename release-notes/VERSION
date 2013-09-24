@@ -4,6 +4,8 @@ Version: 2.2.3 (23-Aug-2013)
 #9: Ensure that `@JsonUnwrapped` handling still works
 #23: Support deserialization of interface types
  (contributed by bonifaido@github)
+#26: Use `java.util.logging` for logging warnings: it sucks, but is
+ overridable, does not require a new dependency
 #29: NON_DEFAULT inclusion setting ignored by primitive writers
  (reported by rwbergstrom@github)
 

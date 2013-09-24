@@ -21,12 +21,12 @@ public final class SettableObjectFieldProperty
         super(src, deser);
     }
 
-    public SettableObjectFieldProperty(SettableObjectFieldProperty src, String name) {
+    public SettableObjectFieldProperty(SettableObjectFieldProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableObjectFieldProperty withName(String name) {
+    public SettableObjectFieldProperty withName(PropertyName name) {
         return new SettableObjectFieldProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableObjectFieldProperty
     
     @Override
     public SettableObjectFieldProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableObjectFieldProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableObjectFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -55,7 +55,7 @@ public final class SettableObjectFieldProperty
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.objectField(_originalSettable, bean, _propertyIndex, value);
+        _propertyMutator.objectField(_originalSettable, bean, _optimizedIndex, value);
     }
 
     @Override

@@ -290,4 +290,11 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         bean = abMapper.readValue(json, BigBeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
     }
+
+    public void testStringBuilder() throws Exception
+    {
+        ObjectMapper abMapper = mapperWithModule();
+        StringBuilder sb = abMapper.readValue(quote("foobar"), StringBuilder.class);
+        assertEquals("foobar", sb.toString());
+    }
 }

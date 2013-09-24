@@ -21,12 +21,12 @@ public final class SettableLongMethodProperty
         super(src, deser);
     }
 
-    public SettableLongMethodProperty(SettableLongMethodProperty src, String name) {
+    public SettableLongMethodProperty(SettableLongMethodProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableLongMethodProperty withName(String name) {
+    public SettableLongMethodProperty withName(PropertyName name) {
         return new SettableLongMethodProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableLongMethodProperty
     
     @Override
     public SettableLongMethodProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableLongMethodProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableLongMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -50,13 +50,13 @@ public final class SettableLongMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.longSetter(_originalSettable, bean, _propertyIndex, _deserializeLong(jp, ctxt));
+        _propertyMutator.longSetter(_originalSettable, bean, _optimizedIndex, _deserializeLong(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.longSetter(_originalSettable, bean, _propertyIndex, ((Number) value).longValue());
+        _propertyMutator.longSetter(_originalSettable, bean, _optimizedIndex, ((Number) value).longValue());
     }
 
     @Override

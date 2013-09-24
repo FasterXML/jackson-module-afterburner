@@ -21,12 +21,12 @@ public final class SettableStringFieldProperty
         super(src, deser);
     }
 
-    public SettableStringFieldProperty(SettableStringFieldProperty src, String name) {
+    public SettableStringFieldProperty(SettableStringFieldProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableStringFieldProperty withName(String name) {
+    public SettableStringFieldProperty withName(PropertyName name) {
         return new SettableStringFieldProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableStringFieldProperty
     
     @Override
     public SettableStringFieldProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableStringFieldProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableStringFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -50,12 +50,12 @@ public final class SettableStringFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.stringField(_originalSettable, bean, _propertyIndex, _deserializeString(jp, ctxt));
+        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, _deserializeString(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.stringField(_originalSettable, bean, _propertyIndex, (String) value);
+        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, (String) value);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
  */
 public abstract class BeanPropertyMutator
 {
+    
     // Intentionally not volatile for performance, worst case is we throw a few extra exceptions
     private boolean broken = false;
 
@@ -174,9 +177,9 @@ public abstract class BeanPropertyMutator
     protected void _reportProblem(Object bean, int index, Throwable e)
     {
         broken = true;
-        System.err.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+        String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
                 bean.getClass(), index,
                 e.getClass().getName(), e.getMessage());
-        e.printStackTrace(); // TODO
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
     }
 }

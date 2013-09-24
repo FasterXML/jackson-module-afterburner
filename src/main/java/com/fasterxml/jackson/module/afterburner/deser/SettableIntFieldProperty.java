@@ -23,12 +23,12 @@ public final class SettableIntFieldProperty
         super(src, deser);
     }
 
-    public SettableIntFieldProperty(SettableIntFieldProperty src, String name) {
+    public SettableIntFieldProperty(SettableIntFieldProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableIntFieldProperty withName(String name) {
+    public SettableIntFieldProperty withName(PropertyName name) {
         return new SettableIntFieldProperty(this, name);
     }
     
@@ -39,7 +39,7 @@ public final class SettableIntFieldProperty
     
     @Override
     public SettableIntFieldProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableIntFieldProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableIntFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -52,13 +52,13 @@ public final class SettableIntFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.intField(_originalSettable, bean, _propertyIndex, _deserializeInt(jp, ctxt));
+        _propertyMutator.intField(_originalSettable, bean, _optimizedIndex, _deserializeInt(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.intField(_originalSettable, bean, _propertyIndex, ((Number) value).intValue());
+        _propertyMutator.intField(_originalSettable, bean, _optimizedIndex, ((Number) value).intValue());
     }
 
     @Override

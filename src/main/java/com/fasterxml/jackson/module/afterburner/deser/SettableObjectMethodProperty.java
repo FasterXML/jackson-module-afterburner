@@ -21,12 +21,12 @@ public final class SettableObjectMethodProperty
         super(src, deser);
     }
 
-    public SettableObjectMethodProperty(SettableObjectMethodProperty src, String name) {
+    public SettableObjectMethodProperty(SettableObjectMethodProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableObjectMethodProperty withName(String name) {
+    public SettableObjectMethodProperty withName(PropertyName name) {
         return new SettableObjectMethodProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableObjectMethodProperty
     
     @Override
     public SettableObjectMethodProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableObjectMethodProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableObjectMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -55,7 +55,7 @@ public final class SettableObjectMethodProperty
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.objectSetter(_originalSettable, bean, _propertyIndex, value);
+        _propertyMutator.objectSetter(_originalSettable, bean, _optimizedIndex, value);
     }
 
     @Override

@@ -21,12 +21,12 @@ public final class SettableStringMethodProperty
         super(src, deser);
     }
 
-    public SettableStringMethodProperty(SettableStringMethodProperty src, String name) {
+    public SettableStringMethodProperty(SettableStringMethodProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableStringMethodProperty withName(String name) {
+    public SettableStringMethodProperty withName(PropertyName name) {
         return new SettableStringMethodProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableStringMethodProperty
     
     @Override
     public SettableStringMethodProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableStringMethodProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableStringMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -51,13 +51,13 @@ public final class SettableStringMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.stringSetter(_originalSettable, bean, _propertyIndex,
+        _propertyMutator.stringSetter(_originalSettable, bean, _optimizedIndex,
                 _deserializeString(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.stringSetter(_originalSettable, bean, _propertyIndex, (String) value);
+        _propertyMutator.stringSetter(_originalSettable, bean, _optimizedIndex, (String) value);
     }
 
     @Override

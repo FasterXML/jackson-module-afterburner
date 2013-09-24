@@ -21,12 +21,12 @@ public final class SettableLongFieldProperty
         super(src, deser);
     }
 
-    public SettableLongFieldProperty(SettableLongFieldProperty src, String name) {
+    public SettableLongFieldProperty(SettableLongFieldProperty src, PropertyName name) {
         super(src, name);
     }
     
     @Override
-    public SettableLongFieldProperty withName(String name) {
+    public SettableLongFieldProperty withName(PropertyName name) {
         return new SettableLongFieldProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableLongFieldProperty
     
     @Override
     public SettableLongFieldProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableLongFieldProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableLongFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -50,13 +50,13 @@ public final class SettableLongFieldProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.longField(_originalSettable, bean, _propertyIndex, _deserializeLong(jp, ctxt));
+        _propertyMutator.longField(_originalSettable, bean, _optimizedIndex, _deserializeLong(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.longField(_originalSettable, bean, _propertyIndex, ((Number) value).longValue());
+        _propertyMutator.longField(_originalSettable, bean, _optimizedIndex, ((Number) value).longValue());
     }
 
     @Override

@@ -21,12 +21,12 @@ public final class SettableIntMethodProperty
         super(src, deser);
     }
 
-    public SettableIntMethodProperty(SettableIntMethodProperty src, String name) {
+    public SettableIntMethodProperty(SettableIntMethodProperty src, PropertyName name) {
         super(src, name);
     }
 
     @Override
-    public SettableIntMethodProperty withName(String name) {
+    public SettableIntMethodProperty withName(PropertyName name) {
         return new SettableIntMethodProperty(this, name);
     }
     
@@ -37,7 +37,7 @@ public final class SettableIntMethodProperty
     
     @Override
     public SettableIntMethodProperty withMutator(BeanPropertyMutator mut) {
-        return new SettableIntMethodProperty(_originalSettable, mut, _propertyIndex);
+        return new SettableIntMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 
     /*
@@ -50,13 +50,13 @@ public final class SettableIntMethodProperty
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
             Object bean) throws IOException, JsonProcessingException
     {
-        _propertyMutator.intSetter(_originalSettable, bean, _propertyIndex, _deserializeInt(jp, ctxt));
+        _propertyMutator.intSetter(_originalSettable, bean, _optimizedIndex, _deserializeInt(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.intSetter(_originalSettable, bean, _propertyIndex, ((Number) value).intValue());
+        _propertyMutator.intSetter(_originalSettable, bean, _optimizedIndex, ((Number) value).intValue());
     }
 
     @Override

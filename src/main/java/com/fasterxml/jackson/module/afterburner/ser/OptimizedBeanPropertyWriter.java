@@ -1,5 +1,8 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -67,10 +70,10 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     protected void _reportProblem(Object bean, Throwable e)
     {
         broken = true;
-        System.err.format("Disabling Afterburner serialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+        String msg = String.format("Disabling Afterburner serialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
                 bean.getClass(), _propertyIndex,
                 e.getClass().getName(), e.getMessage());
-        e.printStackTrace(); // TODO
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
     }
 
 }

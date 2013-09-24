@@ -25,7 +25,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     protected final SettableBeanProperty _originalSettable;
     
     protected final BeanPropertyMutator _propertyMutator;
-    protected final int _propertyIndex;
+    protected final int _optimizedIndex;
 
     /*
     /********************************************************************** 
@@ -39,7 +39,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         super(src);
         _originalSettable = src;
         _propertyMutator = mutator;
-        _propertyIndex = index;
+        _optimizedIndex = index;
     }
 
     protected OptimizedSettableBeanProperty(OptimizedSettableBeanProperty<T> src,
@@ -48,16 +48,16 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         super(src, deser);
         _originalSettable = src;
         _propertyMutator = src._propertyMutator;
-        _propertyIndex = src._propertyIndex;
+        _optimizedIndex = src._optimizedIndex;
     }
 
     protected OptimizedSettableBeanProperty(OptimizedSettableBeanProperty<T> src,
-            String name)
+            PropertyName name)
     {
         super(src, name);
         _originalSettable = src;
         _propertyMutator = src._propertyMutator;
-        _propertyIndex = src._propertyIndex;
+        _optimizedIndex = src._optimizedIndex;
     }
     
     public abstract T withMutator(BeanPropertyMutator mut);
