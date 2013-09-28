@@ -1,5 +1,11 @@
 Project: jackson-module-afterburner
-Version: 2.2.3 (23-Aug-2013)
+Version: 2.3.0 (xx-Oct-2013)
+
+#33: `SuperSonicBeanDeserializer` not working (missing optimization)
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
 
 #9: Ensure that `@JsonUnwrapped` handling still works
 #23: Support deserialization of interface types
@@ -8,10 +14,6 @@ Version: 2.2.3 (23-Aug-2013)
  overridable, does not require a new dependency
 #29: NON_DEFAULT inclusion setting ignored by primitive writers
  (reported by rwbergstrom@github)
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.2.2 (27-May-2013)
 

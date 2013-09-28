@@ -5,7 +5,6 @@ import java.util.*;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.io.SerializedString;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.*;
 import com.fasterxml.jackson.databind.util.NameTransformer;
@@ -101,6 +100,24 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
         _orderedProperties = props.toArray(new SettableBeanProperty[props.size()]);
     }
 
+    @Override
+    public Object deserialize(JsonParser jp, DeserializationContext ctxt)
+        throws IOException, JsonProcessingException
+    {
+        if (!_vanillaProcessing || _objectIdReader != null) {
+            // should we ever get here? Just in case
+            return super.deserialize(jp, ctxt);
+        }
+        JsonToken t = jp.getCurrentToken();
+        // common case first:
+        if (t != JsonToken.START_OBJECT) {
+            return _deserializeOther(jp, ctxt, t);
+        }
+        t = jp.nextToken();
+        // Inlined version of:
+        return deserializeFromObject(jp, ctxt);
+    }
+    
     // much of below is cut'n pasted from BeanSerializer
     @Override
     public final Object deserialize(JsonParser jp, DeserializationContext ctxt, Object bean)

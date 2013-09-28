@@ -56,7 +56,9 @@ com.fasterxml.jackson.module.afterburner.util
 ,com.fasterxml.jackson.databind.util
 ,org.objectweb.asm;resolution:=optional
      </osgi.import>
+<!--
      <osgi.private>com.fasterxml.jackson.module.afterburner.asm</osgi.private>
+-->
   </properties>
 
   <dependencies>

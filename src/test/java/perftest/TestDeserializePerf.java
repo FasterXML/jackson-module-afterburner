@@ -11,34 +11,34 @@ public class TestDeserializePerf
 {
     public final static class Bean
     {
-        public int a, b, c, d;
-        public int e, f, g, h;
+        public int a, b, c123, d;
+        public int e, foobar, g, habitus;
 
         public Bean setUp() {
             a = 1;
             b = 999;
-            c = -1000;
+            c123 = -1000;
             d = 13;
             e = 6;
-            f = -33;
+            foobar = -33;
             g = 0;
-            h = 123456789;
+            habitus = 123456789;
             return this;
         }
         
         public void setA(int v) { a = v; }
         public void setB(int v) { b = v; }
-        public void setC(int v) { c = v; }
+        public void setC(int v) { c123 = v; }
         public void setD(int v) { d = v; }
 
         public void setE(int v) { e = v; }
-        public void setF(int v) { f = v; }
+        public void setF(int v) { foobar = v; }
         public void setG(int v) { g = v; }
-        public void setH(int v) { h = v; }
+        public void setH(int v) { habitus = v; }
 
         @Override
         public int hashCode() {
-            return a + b + c + d + e + f + g + h;
+            return a + b + c123 + d + e + foobar + g + habitus;
         }
     }
     

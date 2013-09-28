@@ -83,7 +83,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
         // also: may want to replace actual BeanDeserializer as well? For this, need to replace builder
         // (but only if builder is the original standard one; don't want to break other impls)
         if (_useCustomDeserializer && builder.getClass() == BeanDeserializerBuilder.class) {
-            return new CustomDeserializerBuilder(builder);
+            return new SuperSonicDeserializerBuilder(builder);
         }
         return builder;
     }
