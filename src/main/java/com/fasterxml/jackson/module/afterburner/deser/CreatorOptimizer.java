@@ -56,11 +56,16 @@ public class CreatorOptimizer
         if (defaultCreator != null) {
             AnnotatedElement elem = defaultCreator.getAnnotated();
             if (elem instanceof Constructor<?>) {
-                return createSubclass((Constructor<?>) elem, null);
-            }
-            if (elem instanceof Method) {
+                // First things first: as per [Issue#34], can NOT access private ctors or methods
+                Constructor<?> ctor = (Constructor<?>) elem;
+                if (!Modifier.isPrivate(ctor.getModifiers())) {
+                    return createSubclass(ctor, null);
+                }
+            } else if (elem instanceof Method) {
                 Method m = (Method) elem;
-                if (Modifier.isStatic(m.getModifiers())) {
+                int mods = m.getModifiers();
+                // and as above, can't access private ones
+                if (Modifier.isStatic(mods) && !Modifier.isPrivate(mods)) {
                     return createSubclass(null, m);
                 }
             }
