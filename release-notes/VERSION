@@ -8,6 +8,8 @@ Version: 2.3.0 (xx-Oct-2013)
 === History: ===
 ------------------------------------------------------------------------
 
+2.2.3 (23-Aug-2013)
+
 #9: Ensure that `@JsonUnwrapped` handling still works
 #23: Support deserialization of interface types
  (contributed by bonifaido@github)
