@@ -9,12 +9,6 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestSimpleDeserialize extends AfterburnerTestBase
 {
-    /*
-    /**********************************************************************
-    /* Helper types
-    /**********************************************************************
-     */
-
     public enum MyEnum {
         A, B, C;
     }
@@ -133,7 +127,6 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public String getBogus4() { return ""; }
         public String getBogus5() { return ""; }
     }
-
 
     /*
     /**********************************************************************
