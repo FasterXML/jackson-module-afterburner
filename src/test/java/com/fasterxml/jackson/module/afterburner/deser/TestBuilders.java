@@ -11,8 +11,8 @@ public class TestBuilders extends AfterburnerTestBase
     {
         private String foo;
 
-        public ThingBuilder withFoo(String foo) {
-            this.foo = foo;
+        public ThingBuilder withFoo(String str) {
+            foo = str;
             return this;
         }
 

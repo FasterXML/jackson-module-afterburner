@@ -13,14 +13,14 @@ public class TestSerializePerf
     public final static class IntBean
     {
         public int getA() { return 37; }
-        public int getB() { return -123; }
+        public int getBaobab() { return -123; }
         public int getC() { return 0; }
-        public int getD() { return 999999; }
+        public int getDonkey() { return 999999; }
 
         public int getE() { return 1; }
-        public int getF() { return 21; }
+        public int getFoobar() { return 21; }
         public int getG() { return 345; }
-        public int getH() { return 99; }
+        public int getHibernate() { return 99; }
     }
     
     public static void main(String[] args) throws Exception
@@ -31,7 +31,7 @@ public class TestSerializePerf
         ObjectMapper mapperFast = new ObjectMapper(f);
         
         // !!! TEST -- to get profile info, comment out:
-//        mapperSlow.registerModule(new AfterburnerModule());
+        mapperSlow.registerModule(new AfterburnerModule());
 
         mapperFast.registerModule(new AfterburnerModule());
         new TestSerializePerf().testWith(mapperSlow, mapperFast);
