@@ -1,12 +1,15 @@
 Project: jackson-module-afterburner
-Version: 2.3.0 (14-Nov-2013)
-
-#33: `SuperSonicBeanDeserializer` not working (missing optimization)
-#34: Needs to skip private creators, can not access even from sub-class.
+Version: 2.3.1 (xx-Dec-2013)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.0 (14-Nov-2013)
+
+#33: `SuperSonicBeanDeserializer` not working (missing optimization)
+#34: Needs to skip private creators, can not access even from sub-class.
+
 
 2.2.3 (23-Aug-2013)
 
