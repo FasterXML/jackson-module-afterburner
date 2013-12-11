@@ -87,12 +87,8 @@ public class SerializerModifier extends BeanSerializerModifier
                     continue;
                 }
             }
-            /* [Issue#9]: also skip unwrapping stuff...
-             * 
-             * TODO: 24-Jul-2013, tatu: should use "BeanPropertyWriter.isUnwrapping()" when
-             *   Jackson 2.3 is out (and adds it)
-             */
-            if (bpw instanceof UnwrappingBeanPropertyWriter) {
+            // [Issue#9]: also skip unwrapping stuff...
+            if (bpw.isUnwrapping()) {
                 continue;
             }
             

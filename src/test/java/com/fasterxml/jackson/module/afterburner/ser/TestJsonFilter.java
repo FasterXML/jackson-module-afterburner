@@ -59,7 +59,7 @@ public class TestJsonFilter extends AfterburnerTestBase
         @JsonFilter("b")
         public Bean second = new Bean();
     }
-    
+
     /*
     /**********************************************************
     /* Unit tests
