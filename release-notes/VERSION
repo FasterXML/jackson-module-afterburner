@@ -1,5 +1,5 @@
 Project: jackson-module-afterburner
-Version: 2.3.1 (xx-Dec-2013)
+Version: 2.3.1 (28-Dec-2013)
 
 #38: Handling of @JsonRawValue broken (require 2.3.1 of jackson-databind for fix)
  (reported by willcheck@github)
