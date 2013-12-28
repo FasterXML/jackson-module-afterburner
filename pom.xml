@@ -8,7 +8,7 @@
   <groupId>com.fasterxml.jackson.module</groupId>
   <artifactId>jackson-module-afterburner</artifactId>
   <name>Jackson-module-Afterburner</name>
-  <version>2.3.1-SNAPSHOT</version>
+  <version>2.3.1</version>
   <packaging>bundle</packaging>
   <description>Experimental extension to Jackson (http://jackson.codehaus.org)
 used to enhance access functionality using bytecode generation.
@@ -18,7 +18,7 @@ used to enhance access functionality using bytecode generation.
     <connection>scm:git:git@github.com:FasterXML/jackson-module-afterburner.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-afterburner.git</developerConnection>
     <url>http://github.com/FasterXML/jackson-module-afterburner</url>    
-    <tag>HEAD</tag>
+    <tag>jackson-module-afterburner-2.3.1</tag>
   </scm>
 
   <properties>
