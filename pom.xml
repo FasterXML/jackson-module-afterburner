@@ -10,7 +10,7 @@
   <name>Jackson-module-Afterburner</name>
   <version>2.3.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <description>Experimental extension to Jackson (http://jackson.codehaus.org)
+  <description>Jackson (https://github.com/FasterXML/jackson) extension module
 used to enhance access functionality using bytecode generation.
   </description>
   <url>http://wiki.fasterxml.com/JacksonHome</url>
