@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -16,7 +15,10 @@ public final class IntFieldPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
 
-        if (_suppressableValue != null && _suppressableValue instanceof Integer) {
+        if (MARKER_FOR_EMPTY == _suppressableValue) {
+            _suppressableInt = 0;
+            _suppressableIntSet = true;
+        } else if (_suppressableValue instanceof Integer) {
             _suppressableInt = (Integer)_suppressableValue;
             _suppressableIntSet = true;
         } else {

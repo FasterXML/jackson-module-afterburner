@@ -47,7 +47,7 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
 
     @Override
     public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-    throws Exception
+            throws Exception
     {
         if (broken) {
             fallbackWriter.serializeAsField(bean, jgen, prov);
@@ -65,7 +65,7 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     }
 
     public abstract void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-            throws Exception;
+        throws Exception;
 
     protected void _reportProblem(Object bean, Throwable e)
     {

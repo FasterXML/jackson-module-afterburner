@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -16,11 +15,14 @@ public final class LongMethodPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
 
-        if (_suppressableValue != null && _suppressableValue instanceof Long) {
+        if (MARKER_FOR_EMPTY == _suppressableValue) {
+            _suppressableLong = 0L;
+            _suppressableLongSet = true;
+        } else if (_suppressableValue instanceof Long) {
             _suppressableLong = (Long)_suppressableValue;
             _suppressableLongSet = true;
         } else {
-            _suppressableLong = 0;
+            _suppressableLong = 0L;
             _suppressableLongSet = false;
         }
     }

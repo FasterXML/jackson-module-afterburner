@@ -44,6 +44,15 @@ public class StringMethodPropertyWriter
             }
             return;
         }
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (value.length() == 0) {
+                    return;
+                }
+            } else if (_suppressableValue.equals(value)) {
+                return;
+            }
+        }
         jgen.writeFieldName(_name);
         jgen.writeString(value);
     }

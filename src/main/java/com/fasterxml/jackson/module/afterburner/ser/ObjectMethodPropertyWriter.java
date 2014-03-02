@@ -39,13 +39,13 @@ public class ObjectMethodPropertyWriter
         Object value = _propertyAccessor.objectGetter(bean, _propertyIndex);
         // Null (etc) handling; copied from super-class impl
         if (value == null) {
-            if (!_suppressNulls) {
+            if (_nullSerializer != null) {
+                jgen.writeFieldName(_name);
+                _nullSerializer.serialize(null, jgen, prov);
+            } else if (!_suppressNulls) {
                 jgen.writeFieldName(_name);
                 prov.defaultSerializeNull(jgen);
             }
-            return;
-        }
-        if (_suppressableValue != null && _suppressableValue.equals(value)) {
             return;
         }
         JsonSerializer<Object> ser = _serializer;
@@ -56,6 +56,20 @@ public class ObjectMethodPropertyWriter
             if (ser == null) {
                 ser = _findAndAddDynamic(map, cls, prov);
             }
+        }
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (ser.isEmpty(value)) {
+                    return;
+                }
+            } else if (_suppressableValue.equals(value)) {
+                return;
+            }
+        }
+        // !!! TODO: 01-Mar-2014, tatu: Fix in 2.4 to use the new method that allows
+        //    both detection of tight self refs AND Object Ids.
+        if (value == bean) {
+            _handleSelfReference(bean, ser);
         }
         jgen.writeFieldName(_name);
         if (_typeSerializer == null) {

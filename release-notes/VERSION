@@ -1,12 +1,17 @@
 Project: jackson-module-afterburner
-Version: 2.3.1 (28-Dec-2013)
+Version: 2.3.2 (01-Mar-2014)
 
-#38: Handling of @JsonRawValue broken (require 2.3.1 of jackson-databind for fix)
- (reported by willcheck@github)
+#39: Afterburner does not respect JsonInclude.Include.NON_EMPTY
+ (reported by mahileeb@github)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.1 (28-Dec-2013)
+
+#38: Handling of @JsonRawValue broken (require 2.3.1 of jackson-databind for fix)
+ (reported by willcheck@github)
 
 2.3.0 (14-Nov-2013)
 
