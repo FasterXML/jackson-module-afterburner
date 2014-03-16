@@ -66,10 +66,8 @@ public class ObjectFieldPropertyWriter
                 return;
             }
         }
-        // !!! TODO: 01-Mar-2014, tatu: Fix in 2.4 to use the new method that allows
-        //    both detection of tight self refs AND Object Ids.
         if (value == bean) {
-            _handleSelfReference(bean, ser);
+            _handleSelfReference(bean, jgen, prov, ser);
         }
         jgen.writeFieldName(_name);
         if (_typeSerializer == null) {
