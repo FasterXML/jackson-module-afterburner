@@ -1,12 +1,16 @@
 Project: jackson-module-afterburner
-Version: 2.3.2 (01-Mar-2014)
+Version: 2.3.3 (xx-xxx-2014)
 
-#39: Afterburner does not respect JsonInclude.Include.NON_EMPTY
- (reported by mahileeb@github)
+No changes since 2.3.2.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.2 (01-Mar-2014)
+
+#39: Afterburner does not respect JsonInclude.Include.NON_EMPTY
+ (reported by mahileeb@github)
 
 2.3.1 (28-Dec-2013)
 
