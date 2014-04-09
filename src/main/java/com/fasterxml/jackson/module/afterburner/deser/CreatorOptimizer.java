@@ -59,21 +59,21 @@ public class CreatorOptimizer
                 // First things first: as per [Issue#34], can NOT access private ctors or methods
                 Constructor<?> ctor = (Constructor<?>) elem;
                 if (!Modifier.isPrivate(ctor.getModifiers())) {
-                    return createSubclass(ctor, null);
+                    return createSubclass(ctor, null).with(_originalInstantiator);
                 }
             } else if (elem instanceof Method) {
                 Method m = (Method) elem;
                 int mods = m.getModifiers();
                 // and as above, can't access private ones
                 if (Modifier.isStatic(mods) && !Modifier.isPrivate(mods)) {
-                    return createSubclass(null, m);
+                    return createSubclass(null, m).with(_originalInstantiator);
                 }
             }
         }
         return null;
     }
 
-    protected ValueInstantiator createSubclass(Constructor<?> ctor, Method factory)
+    protected OptimizedValueInstantiator createSubclass(Constructor<?> ctor, Method factory)
     {
         MyClassLoader loader = (_classLoader == null) ?
             new MyClassLoader(_valueClass.getClassLoader(), true) : _classLoader;
@@ -86,77 +86,75 @@ public class CreatorOptimizer
             byte[] bytecode = generateOptimized(srcName, ctor, factory);
             impl = loader.loadAndResolve(srcName, bytecode);
         }
-        ValueInstantiator inst;
         try {
-            inst = (ValueInstantiator) impl.newInstance();
+            return (OptimizedValueInstantiator) impl.newInstance();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
         }
-        return inst;
     }
 
     protected byte[] generateOptimized(String srcName, Constructor<?> ctor, Method factory)
     {
-            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            String superClass = internalClassName(OptimizedValueInstantiator.class.getName());
-            String generatedClass = internalClassName(srcName);
-            
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, generatedClass, null, superClass, null);
-            cw.visitSource(srcName + ".java", null);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        String superClass = internalClassName(OptimizedValueInstantiator.class.getName());
+        String generatedClass = internalClassName(srcName);
 
-            // First: must define 2 constructors:
-            // (a) default constructor, for creating bogus instance (just calls default instance)
-            // (b) copy-constructor which takes StdValueInstantiator instance, passes to superclass
-            final String optimizedValueInstDesc = Type.getDescriptor(OptimizedValueInstantiator.class);
-            final String stdValueInstDesc = Type.getDescriptor(StdValueInstantiator.class);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, generatedClass, null, superClass, null);
+        cw.visitSource(srcName + ".java", null);
 
-            // default (no-arg) constructor:
-            MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-            mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
-            mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
-            // then single-arg constructor
-            mv = cw.visitMethod(ACC_PUBLIC, "<init>", "("+stdValueInstDesc+")V", null, null);
-            mv.visitCode();
-            mv.visitVarInsn(ALOAD, 0);
-            mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "("+stdValueInstDesc+")V");
-            mv.visitInsn(RETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
+        // First: must define 2 constructors:
+        // (a) default constructor, for creating bogus instance (just calls default instance)
+        // (b) copy-constructor which takes StdValueInstantiator instance, passes to superclass
+        final String optimizedValueInstDesc = Type.getDescriptor(OptimizedValueInstantiator.class);
+        final String stdValueInstDesc = Type.getDescriptor(StdValueInstantiator.class);
 
-            // and then non-static factory method to use second constructor (implements base-class method)
-            // protected abstract OptimizedValueInstantiator with(StdValueInstantiator src);
-            mv = cw.visitMethod(ACC_PUBLIC, "with", "("
-                    +stdValueInstDesc+")"+optimizedValueInstDesc, null, null);
-            mv.visitCode();
-            mv.visitTypeInsn(NEW, generatedClass);
-            mv.visitInsn(DUP);
-            mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", "("+stdValueInstDesc+")V");
-            mv.visitInsn(ARETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
+        // default (no-arg) constructor:
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+        // then single-arg constructor
+        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "("+stdValueInstDesc+")V", null, null);
+        mv.visitCode();
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "("+stdValueInstDesc+")V");
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
 
-            // And then override: public Object createUsingDefault()
-            mv = cw.visitMethod(ACC_PUBLIC, "createUsingDefault", "(" +
-            		Type.getDescriptor(DeserializationContext.class)+")Ljava/lang/Object;", null, null);
-            mv.visitCode();
-            
-            if (ctor != null) {
-                addCreator(mv, ctor);
-            } else {
-                addCreator(mv, factory);
-            }
-            mv.visitInsn(ARETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
+        // and then non-static factory method to use second constructor (implements base-class method)
+        // protected abstract OptimizedValueInstantiator with(StdValueInstantiator src);
+        mv = cw.visitMethod(ACC_PUBLIC, "with", "("
+                +stdValueInstDesc+")"+optimizedValueInstDesc, null, null);
+        mv.visitCode();
+        mv.visitTypeInsn(NEW, generatedClass);
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", "("+stdValueInstDesc+")V");
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
 
-            cw.visitEnd();
-            return cw.toByteArray();
+        // And then override: public Object createUsingDefault()
+        mv = cw.visitMethod(ACC_PUBLIC, "createUsingDefault", "(" +
+        		Type.getDescriptor(DeserializationContext.class)+")Ljava/lang/Object;", null, null);
+        mv.visitCode();
+
+        if (ctor != null) {
+            addCreator(mv, ctor);
+        } else {
+            addCreator(mv, factory);
+        }
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+
+        cw.visitEnd();
+        return cw.toByteArray();
     }
 
     protected void addCreator(MethodVisitor mv, Constructor<?> ctor)
