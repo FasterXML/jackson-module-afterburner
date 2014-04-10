@@ -1,5 +1,5 @@
 Project: jackson-module-afterburner
-Version: 2.3.3 (xx-xxx-2014)
+Version: 2.3.3 (10-Apr-2014)
 
 #28: JsonCreator deser with single-String-argument constructor fails
  (reported by Scott M, sgmiller@github)
