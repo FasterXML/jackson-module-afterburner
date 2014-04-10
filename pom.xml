@@ -107,7 +107,7 @@ com.fasterxml.jackson.module.afterburner.util
         <!--  We will shade ASM, to simplify deployment, avoid version conflicts -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.0</version>
+        <version>2.2</version>
         <executions>
           <execution>
             <phase>package</phase>
