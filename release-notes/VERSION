@@ -1,7 +1,7 @@
 Project: jackson-module-afterburner
 Version: 2.4.0 (xx-xxx-2014)
 
-- Upgrade to ASM4
+- #13: Upgrade to ASM5
 
 ------------------------------------------------------------------------
 === History: ===
