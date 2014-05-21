@@ -117,7 +117,7 @@ com.fasterxml.jackson.module.afterburner.util
             <configuration>
               <artifactSet>
                 <includes>
-                  <include>org.objectweb.asm::asm</include>
+                  <include>org.ow2.asm:asm</include>
                 </includes>
               </artifactSet>
               <relocations>
