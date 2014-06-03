@@ -62,6 +62,11 @@ Following things are optimized:
  * Mutators for "setting" values (field access, calling setter method) are inlined using generated code instead of reflection
  * Deserializers for small number of 'primitive' types (`int`, `long`, String) are replaced with direct calls, instead of getting delegated to `JsonDeserializer`s
 
+### ... and what is not?
+
+* Streaming parser/generator access (although it is possible that some optimizations may be added)
+* Tree Model: there isn't much that can be done at this level
+
 ### More
 
 Check out [Wiki](https://github.com/FasterXML/jackson-module-afterburner/wiki).
