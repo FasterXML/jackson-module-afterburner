@@ -121,7 +121,7 @@ public class PropertyAccessorCollector
         String superClass = internalClassName(BeanPropertyAccessor.class.getName());
         
         // muchos important: level at least 1.5 to get generics!!!
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, generatedClass, null, superClass, null);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
         cw.visitSource(srcName + ".java", null);
 
         // add default (no-arg) constructor:

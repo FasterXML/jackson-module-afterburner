@@ -99,7 +99,7 @@ public class CreatorOptimizer
         String superClass = internalClassName(OptimizedValueInstantiator.class.getName());
         String generatedClass = internalClassName(srcName);
 
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, generatedClass, null, superClass, null);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
         cw.visitSource(srcName + ".java", null);
 
         // First: must define 2 constructors:
