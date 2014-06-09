@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -33,47 +32,58 @@ public class ObjectMethodPropertyWriter
      */
 
     @Override
-    public final void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-        throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
     {
-        Object value = _propertyAccessor.objectGetter(bean, _propertyIndex);
-        // Null (etc) handling; copied from super-class impl
-        if (value == null) {
-            if (_nullSerializer != null) {
-                jgen.writeFieldName(_name);
-                _nullSerializer.serialize(null, jgen, prov);
-            } else if (!_suppressNulls) {
-                jgen.writeFieldName(_name);
-                prov.defaultSerializeNull(jgen);
-            }
+        if (broken) {
+            fallbackWriter.serializeAsField(bean, jgen, prov);
             return;
         }
-        JsonSerializer<Object> ser = _serializer;
-        if (ser == null) {
-            Class<?> cls = value.getClass();
-            PropertySerializerMap map = _dynamicSerializers;
-            ser = map.serializerFor(cls);
-            if (ser == null) {
-                ser = _findAndAddDynamic(map, cls, prov);
-            }
-        }
-        if (_suppressableValue != null) {
-            if (MARKER_FOR_EMPTY == _suppressableValue) {
-                if (ser.isEmpty(value)) {
-                    return;
+        try {
+            Object value = _propertyAccessor.objectGetter(bean, _propertyIndex);
+            // Null (etc) handling; copied from super-class impl
+            if (value == null) {
+                if (_nullSerializer != null) {
+                    jgen.writeFieldName(_name);
+                    _nullSerializer.serialize(null, jgen, prov);
+                } else if (!_suppressNulls) {
+                    jgen.writeFieldName(_name);
+                    prov.defaultSerializeNull(jgen);
                 }
-            } else if (_suppressableValue.equals(value)) {
                 return;
             }
-        }
-        if (value == bean) {
-            _handleSelfReference(bean, jgen, prov, ser);
-        }
-        jgen.writeFieldName(_name);
-        if (_typeSerializer == null) {
-            ser.serialize(value, jgen, prov);
-        } else {
-            ser.serializeWithType(value, jgen, prov, _typeSerializer);
+            JsonSerializer<Object> ser = _serializer;
+            if (ser == null) {
+                Class<?> cls = value.getClass();
+                PropertySerializerMap map = _dynamicSerializers;
+                ser = map.serializerFor(cls);
+                if (ser == null) {
+                    ser = _findAndAddDynamic(map, cls, prov);
+                }
+            }
+            if (_suppressableValue != null) {
+                if (MARKER_FOR_EMPTY == _suppressableValue) {
+                    if (ser.isEmpty(value)) {
+                        return;
+                    }
+                } else if (_suppressableValue.equals(value)) {
+                    return;
+                }
+            }
+            if (value == bean) {
+                _handleSelfReference(bean, jgen, prov, ser);
+            }
+            jgen.writeFieldName(_name);
+            if (_typeSerializer == null) {
+                ser.serialize(value, jgen, prov);
+            } else {
+                ser.serializeWithType(value, jgen, prov, _typeSerializer);
+            }
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+        } catch (SecurityException e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
 }

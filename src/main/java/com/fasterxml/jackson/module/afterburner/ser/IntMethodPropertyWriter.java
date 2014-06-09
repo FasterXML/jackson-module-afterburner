@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -46,13 +45,24 @@ public final class IntMethodPropertyWriter
      */
 
     @Override
-    public void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-        throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
     {
-        int value = _propertyAccessor.intGetter(bean, _propertyIndex);
-        if (!_suppressableIntSet || _suppressableInt != value) {
-            jgen.writeFieldName(_name);
-            jgen.writeNumber(value);
+        if (broken) {
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+            return;
+        }
+        try {
+            int value = _propertyAccessor.intGetter(bean, _propertyIndex);
+            if (!_suppressableIntSet || _suppressableInt != value) {
+                jgen.writeFieldName(_name);
+                jgen.writeNumber(value);
+            }
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+        } catch (SecurityException e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
 }

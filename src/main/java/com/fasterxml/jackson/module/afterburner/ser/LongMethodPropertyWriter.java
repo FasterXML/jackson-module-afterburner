@@ -45,13 +45,24 @@ public final class LongMethodPropertyWriter
      */
 
     @Override
-    public void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-        throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
     {
-        long value = _propertyAccessor.longGetter(bean, _propertyIndex);
-        if (!_suppressableLongSet || _suppressableLong != value) {
-            jgen.writeFieldName(_name);
-            jgen.writeNumber(value);
+        if (broken) {
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+            return;
+        }
+        try {
+        	long value = _propertyAccessor.longGetter(bean, _propertyIndex);
+            if (!_suppressableLongSet || _suppressableLong != value) {
+                jgen.writeFieldName(_name);
+                jgen.writeNumber(value);
+            }
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+        } catch (SecurityException e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
 }

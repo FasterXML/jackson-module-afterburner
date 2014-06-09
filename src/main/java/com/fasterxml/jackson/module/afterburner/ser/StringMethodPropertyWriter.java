@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -32,28 +31,39 @@ public class StringMethodPropertyWriter
      */
 
     @Override
-    public void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-        throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
     {
-        String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
-        // Null (etc) handling; copied from super-class impl
-        if (value == null) {
-            if (!_suppressNulls) {
-                jgen.writeFieldName(_name);
-                prov.defaultSerializeNull(jgen);
-            }
+        if (broken) {
+            fallbackWriter.serializeAsField(bean, jgen, prov);
             return;
         }
-        if (_suppressableValue != null) {
-            if (MARKER_FOR_EMPTY == _suppressableValue) {
-                if (value.length() == 0) {
-                    return;
+        try {
+            String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
+            // Null (etc) handling; copied from super-class impl
+            if (value == null) {
+                if (!_suppressNulls) {
+                    jgen.writeFieldName(_name);
+                    prov.defaultSerializeNull(jgen);
                 }
-            } else if (_suppressableValue.equals(value)) {
                 return;
             }
+            if (_suppressableValue != null) {
+                if (MARKER_FOR_EMPTY == _suppressableValue) {
+                    if (value.length() == 0) {
+                        return;
+                    }
+                } else if (_suppressableValue.equals(value)) {
+                    return;
+                }
+            }
+            jgen.writeFieldName(_name);
+            jgen.writeString(value);
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
+        } catch (SecurityException e) {
+            _reportProblem(bean, e);
+            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
-        jgen.writeFieldName(_name);
-        jgen.writeString(value);
     }
 }

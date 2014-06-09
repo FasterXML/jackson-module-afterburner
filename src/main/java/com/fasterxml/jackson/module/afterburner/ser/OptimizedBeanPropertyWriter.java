@@ -18,9 +18,9 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     protected final BeanPropertyAccessor _propertyAccessor;
     protected final int _propertyIndex;
 
-    private final BeanPropertyWriter fallbackWriter;
+    protected final BeanPropertyWriter fallbackWriter;
     // Not volatile to prevent overhead, worst case is we trip the exception a few extra times
-    private boolean broken = false;
+    protected boolean broken = false;
 
     protected OptimizedBeanPropertyWriter(BeanPropertyWriter src,
             BeanPropertyAccessor propertyAccessor, int propertyIndex,
@@ -46,26 +46,7 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     public abstract BeanPropertyWriter withSerializer(JsonSerializer<Object> ser);
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-            throws Exception
-    {
-        if (broken) {
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-            return;
-        }
-        try {
-            unsafeSerializeAsField(bean, jgen, prov);
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-        }
-    }
-
-    public abstract void unsafeSerializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov)
-        throws Exception;
+    public abstract void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception;
 
     protected void _reportProblem(Object bean, Throwable e)
     {
