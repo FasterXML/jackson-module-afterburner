@@ -1,11 +1,13 @@
 Project: jackson-module-afterburner
-Version: 2.4.1 (17-Jun-2014)
-
-- Make accessor class 'final'
+Version: 2.4.2 (13-Aug-2014)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.4.1 (17-Jun-2014)
+
+- Make accessor class 'final'
 
 2.4.0 (02-Jun-2014)
 
