@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.deser.impl.MethodProperty;
 import com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;
 import com.fasterxml.jackson.databind.introspect.*;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
 public class DeserializerModifier extends BeanDeserializerModifier
@@ -117,7 +116,6 @@ public class DeserializerModifier extends BeanDeserializerModifier
                     continue;
                 }
             }
-            
             if (prop instanceof MethodProperty) { // simple setter methods
                 Class<?> type = ((AnnotatedMethod) member).getRawParameterType(0);
                 if (type.isPrimitive()) {

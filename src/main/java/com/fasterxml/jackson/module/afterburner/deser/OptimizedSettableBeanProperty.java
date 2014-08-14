@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProperty<T>>
     extends SettableBeanProperty
 {
-    private static final long serialVersionUID = -6113781823964100309L;
+    private static final long serialVersionUID = -4221811783114701986L;
 
     /**
      * We will need to keep the original instance handy as

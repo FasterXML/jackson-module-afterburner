@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 public final class SettableStringMethodProperty
     extends OptimizedSettableBeanProperty<SettableStringMethodProperty>
 {
-    private static final long serialVersionUID = 5422222014693436118L;
+    private static final long serialVersionUID = 1L;
 
     public SettableStringMethodProperty(SettableBeanProperty src,
             BeanPropertyMutator mutator, int index)

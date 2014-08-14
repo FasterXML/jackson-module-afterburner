@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.util.NameTransformer;
 
 public final class SuperSonicBeanDeserializer extends BeanDeserializer
 {
-    private static final long serialVersionUID = -8468272764223072933L;
+    private static final long serialVersionUID = -7537438236857895421L;
 
     /**
      * Names of properties being deserialized, in ordered they are
@@ -140,11 +140,12 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
                 return super.deserialize(jp,  ctxt, bean);
             }
             t = jp.nextToken();
-        } else if (t != JsonToken.FIELD_NAME || !prop.getName().equals(jp.getCurrentName())) {
+        } else if (t == JsonToken.FIELD_NAME && prop.getName().equals(jp.getCurrentName())) {
+            // expected field, skip to value token
+            jp.nextToken();
+        } else { // no, something funky, use base impl for special cases
             return super.deserialize(jp,  ctxt, bean);
         }
-        // and deserialize
-        jp.nextToken();
         try {
             prop.deserializeAndSet(jp, ctxt, bean);
         } catch (Exception e) {
