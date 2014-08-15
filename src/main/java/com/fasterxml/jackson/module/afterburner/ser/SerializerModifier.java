@@ -34,7 +34,7 @@ public class SerializerModifier extends BeanSerializerModifier
         //    namespace. (how about javax.?)
         if (!MyClassLoader.canAddClassInPackageOf(beanClass)) {
             return beanProperties;
-        } 
+        }
 
         /* Hmmh. Can we access stuff from private classes?
          * Possibly, if we can use parent class loader.

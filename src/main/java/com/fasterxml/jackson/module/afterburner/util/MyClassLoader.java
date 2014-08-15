@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -33,8 +34,15 @@ public class MyClassLoader extends ClassLoader
     {
         final Package beanPackage = cls.getPackage();
         if (beanPackage != null) {
-            // 01-May-2013, tatu: How about "javax."?
-            if (beanPackage.isSealed() || beanPackage.getName().startsWith("java.")) {
+            if (beanPackage.isSealed()) {
+                return false;
+            }
+            String pname = beanPackage.getName();
+            /* 14-Aug-2014, tatu: java.* we do not want to touch, but
+             *    javax is bit trickier. For now let's 
+             */
+            if (pname.startsWith("java.")
+                    || pname.startsWith("javax.security.")) {
                 return false;
             }
         }
@@ -58,21 +66,34 @@ public class MyClassLoader extends ClassLoader
         
         // First: let's try calling it directly on parent, to be able to access protected/package-access stuff:
         if (_cfgUseParentLoader) {
-            try {
-                Method method = ClassLoader.class.getDeclaredMethod("defineClass",
-                        new Class[] {String.class, byte[].class, int.class,
-                        int.class});
-                method.setAccessible(true);
-                return (Class<?>)method.invoke(getParent(),
-                        className, byteCode, 0, byteCode.length);
-            } catch (Exception e) { }
+            ClassLoader cl = getParent();
+System.err.println("Parent CL == "+cl);
+
+            // if we have parent, that is
+            if (cl != null) {
+                try {
+                    Method method = ClassLoader.class.getDeclaredMethod("defineClass",
+                            new Class[] {String.class, byte[].class, int.class,
+                            int.class});
+                    method.setAccessible(true);
+                    return (Class<?>)method.invoke(getParent(),
+                            className, byteCode, 0, byteCode.length);
+                } catch (Exception e) {
+                    // Should we handle this somehow?
+                }
+            }
         }
 
         // but if that doesn't fly, try to do it from our own class loader
         try {
             impl = defineClass(className, byteCode, 0, byteCode.length);
         } catch (LinkageError e) {
-            throw new IllegalArgumentException("Failed to load class '"+className+"': "+e.getMessage(), e);
+            Throwable t = e;
+            while (t.getCause() != null) {
+                t = t.getCause();
+            }
+t.printStackTrace();            
+            throw new IllegalArgumentException("Failed to load class '"+className+"': "+t.getMessage(), t);
         }
         // important: must also resolve the class...
         resolveClass(impl);
