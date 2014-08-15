@@ -1,6 +1,5 @@
 package com.fasterxml.jackson.module.afterburner.util;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -67,8 +66,6 @@ public class MyClassLoader extends ClassLoader
         // First: let's try calling it directly on parent, to be able to access protected/package-access stuff:
         if (_cfgUseParentLoader) {
             ClassLoader cl = getParent();
-System.err.println("Parent CL == "+cl);
-
             // if we have parent, that is
             if (cl != null) {
                 try {
