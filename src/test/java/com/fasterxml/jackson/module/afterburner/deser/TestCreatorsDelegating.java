@@ -58,7 +58,7 @@ public class TestCreatorsDelegating extends AfterburnerTestBase
     /* Unit tests
     /**********************************************************
      */
-    
+
     public void testBooleanDelegate() throws Exception
     {
         ObjectMapper m = mapperWithModule();
