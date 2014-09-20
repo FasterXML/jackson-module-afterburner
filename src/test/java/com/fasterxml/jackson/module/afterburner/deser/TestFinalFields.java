@@ -53,4 +53,69 @@ public class TestFinalFields extends AfterburnerTestBase
         assertNotNull(result[0].address);
         assertEquals(98021, result[0].address.zip2);
     }
+
+    // For [Afterburner#42]
+    
+    public void testFinalFields42() throws Exception
+    {
+        JsonAddress address = new JsonAddress(-1L, "line1", "line2", "city", "state", "zip", "locale", "timezone");
+        JsonOrganization organization = new JsonOrganization(-1L, "name", address);
+        ObjectMapper mapper = mapperWithModule();
+        String json = mapper.writeValueAsString(organization);
+        assertNotNull(json);
+        
+        JsonOrganization result = mapper.readValue(json, JsonOrganization.class);
+        assertNotNull(result);
+    }
+ 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    static class JsonAddress extends Resource<JsonAddress> {
+        public final long id;
+        public final String state;
+        public final String timezone;
+        public final String locale;
+        public final String line1;
+        public final String line2;
+        public final String city;
+        public final String zipCode;
+ 
+        @JsonCreator
+        public JsonAddress(@JsonProperty("id") long id,
+                           @JsonProperty("line1") String line1,
+                           @JsonProperty("line2") String line2,
+                           @JsonProperty("city") String city,
+                           @JsonProperty("state") String state,
+                           @JsonProperty("zipCode") String zipCode,
+                           @JsonProperty("locale") String locale,
+                           @JsonProperty("timezone") String timezone)
+        {
+            this.id = id;
+            this.line1 = line1;
+            this.line2 = line2;
+            this.city = city;
+            this.state = state;
+            this.zipCode = zipCode;
+            this.locale = locale;
+            this.timezone = timezone;
+        }
+    }
+ 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    static class JsonOrganization extends Resource<JsonOrganization> {
+        public final long id;
+        public final String name;
+        public final JsonAddress address;
+ 
+        @JsonCreator
+        public JsonOrganization(@JsonProperty("id") long id,
+                                @JsonProperty("name") String name,
+                                @JsonProperty("address") JsonAddress address)
+        {
+            this.id = id;
+            this.name = name;
+            this.address = address;
+        }
+    }
+
+    static class Resource<T> { }
 }
