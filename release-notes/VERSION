@@ -4,6 +4,9 @@ Version: 2.4.2 (14-Aug-2014)
 #40: Failure to deserialize non-static inner classes
  (reported by nigelzor@github)
 #41: Serialization of `javax.security.auth.AuthPermission` fails
+#43: Problem deserializing type with one polymorphic property that
+  uses inclusion of `As.EXTERNAL_PROPERTY`
+ (reported by steveme@github)
 
 ------------------------------------------------------------------------
 === History: ===
