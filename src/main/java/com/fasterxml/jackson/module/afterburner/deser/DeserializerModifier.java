@@ -135,7 +135,6 @@ public class DeserializerModifier extends BeanDeserializerModifier
                 // And as to fields, can not overwrite final fields (which may
                 // be overwritable via Reflection)
                 if (Modifier.isFinal(prop.getMember().getMember().getModifiers())) {
-                    System.err.println("FINAL '"+prop.getName()+"' -- > NO GO!");
                     continue;
                 }
                 

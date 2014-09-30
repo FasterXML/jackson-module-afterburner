@@ -4,6 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestAccessFallback extends AfterburnerTestBase
 {
+    @SuppressWarnings("serial")
+    static class BogusTestError extends IllegalAccessError {
+        public BogusTestError(String msg) {
+            super(msg);
+        }
+    }
+    
     static class MyBean
     {
         private String e;
@@ -19,7 +26,7 @@ public class TestAccessFallback extends AfterburnerTestBase
         {
             for (StackTraceElement elem : new Throwable().getStackTrace()) {
                 if (elem.getClassName().contains("Access4Jackson")) {
-                    throw new IllegalAccessError("boom!");
+                    throw new BogusTestError("boom!");
                 }
             }
             this.e = e;
@@ -29,7 +36,7 @@ public class TestAccessFallback extends AfterburnerTestBase
         {
             for (StackTraceElement elem : new Throwable().getStackTrace()) {
                 if (elem.getClassName().contains("Access4Jackson")) {
-                    throw new IllegalAccessError("boom!");
+                    throw new BogusTestError("boom!");
                 }
             }
             return e;
