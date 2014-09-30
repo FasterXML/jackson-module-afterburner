@@ -78,16 +78,34 @@ public class TestFinalFields extends AfterburnerTestBase
         public final String line2;
         public final String city;
         public final String zipCode;
- 
+
+        // Note: missing last 2 fields, to trigger problem
         @JsonCreator
         public JsonAddress(@JsonProperty("id") long id,
                            @JsonProperty("line1") String line1,
                            @JsonProperty("line2") String line2,
                            @JsonProperty("city") String city,
                            @JsonProperty("state") String state,
-                           @JsonProperty("zipCode") String zipCode,
-                           @JsonProperty("locale") String locale,
-                           @JsonProperty("timezone") String timezone)
+                           @JsonProperty("zipCode") String zipCode)
+        {
+            this.id = id;
+            this.line1 = line1;
+            this.line2 = line2;
+            this.city = city;
+            this.state = state;
+            this.zipCode = zipCode;
+            this.locale = null;
+            this.timezone = null;
+        }
+
+        public JsonAddress(long id,
+                           String line1,
+                           String line2,
+                           String city,
+                           String state,
+                           String zipCode,
+                           String locale,
+                           String timezone)
         {
             this.id = id;
             this.line1 = line1;
