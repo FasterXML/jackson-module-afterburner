@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
  */
 public abstract class BeanPropertyMutator
 {
-    
     // Intentionally not volatile for performance, worst case is we throw a few extra exceptions
     private boolean broken = false;
 
