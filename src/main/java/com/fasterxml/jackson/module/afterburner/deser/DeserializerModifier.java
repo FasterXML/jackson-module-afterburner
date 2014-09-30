@@ -109,7 +109,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
                 continue;
             }
             // (although, interestingly enough, can seem to access private classes...)
-
+            
             // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom deserializers, if any.
             if (prop.hasValueDeserializer()) {
                 if (!isDefaultDeserializer(config, prop.getValueDeserializer())) {
@@ -132,6 +132,13 @@ public class DeserializerModifier extends BeanDeserializerModifier
                     }
                 }
             } else if (prop instanceof FieldProperty) { // regular fields
+                // And as to fields, can not overwrite final fields (which may
+                // be overwritable via Reflection)
+                if (Modifier.isFinal(prop.getMember().getMember().getModifiers())) {
+                    System.err.println("FINAL '"+prop.getName()+"' -- > NO GO!");
+                    continue;
+                }
+                
                 Class<?> type = member.getRawType();
                 if (type.isPrimitive()) {
                     if (type == Integer.TYPE) {
