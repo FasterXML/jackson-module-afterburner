@@ -22,15 +22,17 @@ public class PropertyAccessorCollector
     private static final Type STRING_TYPE = Type.getType(String.class);
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
-    private final ArrayList<IntMethodPropertyWriter> _intGetters = new ArrayList<IntMethodPropertyWriter>();
-    private final ArrayList<LongMethodPropertyWriter> _longGetters = new ArrayList<LongMethodPropertyWriter>();
-    private final ArrayList<StringMethodPropertyWriter> _stringGetters = new ArrayList<StringMethodPropertyWriter>();
-    private final ArrayList<ObjectMethodPropertyWriter> _objectGetters = new ArrayList<ObjectMethodPropertyWriter>();
+    private final List<BooleanMethodPropertyWriter> _booleanGetters = new LinkedList<BooleanMethodPropertyWriter>();
+    private final List<IntMethodPropertyWriter> _intGetters = new LinkedList<IntMethodPropertyWriter>();
+    private final List<LongMethodPropertyWriter> _longGetters = new LinkedList<LongMethodPropertyWriter>();
+    private final List<StringMethodPropertyWriter> _stringGetters = new LinkedList<StringMethodPropertyWriter>();
+    private final List<ObjectMethodPropertyWriter> _objectGetters = new LinkedList<ObjectMethodPropertyWriter>();
     
-    private final ArrayList<IntFieldPropertyWriter> _intFields = new ArrayList<IntFieldPropertyWriter>();
-    private final ArrayList<LongFieldPropertyWriter> _longFields = new ArrayList<LongFieldPropertyWriter>();
-    private final ArrayList<StringFieldPropertyWriter> _stringFields = new ArrayList<StringFieldPropertyWriter>();
-    private final ArrayList<ObjectFieldPropertyWriter> _objectFields = new ArrayList<ObjectFieldPropertyWriter>();
+    private final List<BooleanFieldPropertyWriter> _booleanFields = new LinkedList<BooleanFieldPropertyWriter>();
+    private final List<IntFieldPropertyWriter> _intFields = new LinkedList<IntFieldPropertyWriter>();
+    private final List<LongFieldPropertyWriter> _longFields = new LinkedList<LongFieldPropertyWriter>();
+    private final List<StringFieldPropertyWriter> _stringFields = new LinkedList<StringFieldPropertyWriter>();
+    private final List<ObjectFieldPropertyWriter> _objectFields = new LinkedList<ObjectFieldPropertyWriter>();
 
     private final Class<?> beanClass;
     private final String beanClassName;
@@ -45,7 +47,10 @@ public class PropertyAccessorCollector
     /* Methods for collecting properties
     /**********************************************************
      */
-    
+
+    public BooleanMethodPropertyWriter addBooleanGetter(BeanPropertyWriter bpw) {
+        return _add(_booleanGetters, new BooleanMethodPropertyWriter(bpw, null, _booleanGetters.size(), null));
+    }
     public IntMethodPropertyWriter addIntGetter(BeanPropertyWriter bpw) {
         return _add(_intGetters, new IntMethodPropertyWriter(bpw, null, _intGetters.size(), null));
     }
@@ -59,6 +64,9 @@ public class PropertyAccessorCollector
         return _add(_objectGetters, new ObjectMethodPropertyWriter(bpw, null, _objectGetters.size(), null));
     }
 
+    public BooleanFieldPropertyWriter addBooleanField(BeanPropertyWriter bpw) {
+        return _add(_booleanFields, new BooleanFieldPropertyWriter(bpw, null, _booleanFields.size(), null));
+    }
     public IntFieldPropertyWriter addIntField(BeanPropertyWriter bpw) {
         return _add(_intFields, new IntFieldPropertyWriter(bpw, null, _intFields.size(), null));
     }
@@ -77,10 +85,12 @@ public class PropertyAccessorCollector
             && _longGetters.isEmpty()
             && _stringGetters.isEmpty()
             && _objectGetters.isEmpty()
+            && _booleanGetters.isEmpty()
             && _intFields.isEmpty()
             && _longFields.isEmpty()
             && _stringFields.isEmpty()
             && _objectFields.isEmpty()
+            && _booleanFields.isEmpty()
         ;
     }
     
@@ -119,16 +129,17 @@ public class PropertyAccessorCollector
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String superClass = internalClassName(BeanPropertyAccessor.class.getName());
-        
+
         // muchos important: level at least 1.5 to get generics!!!
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
+        // also: since we require JDK 1.6 anyway, use that starting with Jackson 2.5
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
         cw.visitSource(srcName + ".java", null);
 
         // add default (no-arg) constructor:
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
@@ -146,6 +157,10 @@ public class PropertyAccessorCollector
         if (!_objectFields.isEmpty()) {
             _addFields(cw, _objectFields, "objectField", OBJECT_TYPE, ARETURN);
         }
+        if (!_booleanFields.isEmpty()) {
+            // booleans treated as ints 0 (false) and 1 (true)
+            _addFields(cw, _booleanFields, "booleanField", Type.BOOLEAN_TYPE, IRETURN);
+        }
 
         // and then method accessors:
         if (!_intGetters.isEmpty()) {
@@ -159,6 +174,9 @@ public class PropertyAccessorCollector
         }
         if (!_objectGetters.isEmpty()) {
             _addGetters(cw, _objectGetters, "objectGetter", OBJECT_TYPE, ARETURN);
+        }
+        if (!_booleanGetters.isEmpty()) {
+            _addGetters(cw, _booleanGetters, "booleanGetter", Type.BOOLEAN_TYPE, IRETURN);
         }
 
         cw.visitEnd();
@@ -240,7 +258,8 @@ public class PropertyAccessorCollector
         mv.visitVarInsn(ALOAD, 3); // load local for cast bean
         int invokeInsn = beanClass.isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
         Method method = (Method) (props.get(0).getMember().getMember());
-        mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
+        mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(),
+                Type.getMethodDescriptor(method), beanClass.isInterface());
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
@@ -252,7 +271,8 @@ public class PropertyAccessorCollector
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
             method = (Method) (props.get(i).getMember().getMember());
-            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
+            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(),
+                    Type.getMethodDescriptor(method), beanClass.isInterface());
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(next);
@@ -274,7 +294,8 @@ public class PropertyAccessorCollector
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, 3); // load bean
             Method method = (Method) (props.get(i).getMember().getMember());
-            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(), Type.getMethodDescriptor(method));
+            mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(),
+                    Type.getMethodDescriptor(method), beanClass.isInterface());
             mv.visitInsn(returnOpcode);
         }
         mv.visitLabel(defaultLabel);

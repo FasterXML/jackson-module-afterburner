@@ -105,6 +105,12 @@ public class SerializerModifier extends BeanSerializerModifier
                     } else {
                         it.set(collector.addLongField(bpw));
                     }
+                } else if (type == Boolean.TYPE) {
+                    if (isMethod) {
+                        it.set(collector.addBooleanGetter(bpw));
+                    } else {
+                        it.set(collector.addBooleanField(bpw));
+                    }
                 }
             } else {
                 if (type == String.class) {

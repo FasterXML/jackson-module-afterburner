@@ -132,7 +132,7 @@ public class PropertyMutatorCollector
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
@@ -254,7 +254,8 @@ public class PropertyMutatorCollector
         // to fix [Issue-5] (don't assume return type is 'void'), we need to:
         Type returnType = Type.getType(method.getReturnType());
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(), "("+type+")"+returnType);
+        mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
+                "("+type+")"+returnType,  method.getDeclaringClass().isInterface());
         mv.visitInsn(RETURN);
 
         // And from this point on, loop a bit
@@ -274,7 +275,8 @@ public class PropertyMutatorCollector
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(), "("+type+")"+returnType);
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
+                    "("+type+")"+returnType, method.getDeclaringClass().isInterface());
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(next);
@@ -303,7 +305,8 @@ public class PropertyMutatorCollector
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(), "("+type+")"+returnType);
+            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
+                    "("+type+")"+returnType, method.getDeclaringClass().isInterface());
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(defaultLabel);

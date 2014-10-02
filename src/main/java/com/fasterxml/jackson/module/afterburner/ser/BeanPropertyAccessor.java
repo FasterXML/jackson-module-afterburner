@@ -7,6 +7,10 @@ package com.fasterxml.jackson.module.afterburner.ser;
  */
 public abstract class BeanPropertyAccessor
 {
+    /** @since 2.5 */
+    public boolean booleanGetter(Object bean, int property) {
+        throw new UnsupportedOperationException("No booleanGetters defined");
+    }
     public int intGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No intGetters defined");
     }
@@ -19,7 +23,11 @@ public abstract class BeanPropertyAccessor
     public Object objectGetter(Object bean, int property) {
         throw new UnsupportedOperationException("No objectGetters defined");
     }
-    
+
+    /** @since 2.5 */
+    public boolean booleanField(Object bean, int property) {
+        throw new UnsupportedOperationException("No booleanFields defined");
+    }
     public int intField(Object bean, int property) {
         throw new UnsupportedOperationException("No intFields defined");
     }

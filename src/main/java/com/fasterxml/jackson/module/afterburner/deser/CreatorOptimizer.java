@@ -112,7 +112,7 @@ public class CreatorOptimizer
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
@@ -121,7 +121,7 @@ public class CreatorOptimizer
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "("+stdValueInstDesc+")V");
+        mv.visitMethodInsn(INVOKESPECIAL, superClass, "<init>", "("+stdValueInstDesc+")V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
@@ -134,7 +134,7 @@ public class CreatorOptimizer
         mv.visitTypeInsn(NEW, generatedClass);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", "("+stdValueInstDesc+")V");
+        mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", "("+stdValueInstDesc+")V", false);
         mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
@@ -159,16 +159,20 @@ public class CreatorOptimizer
 
     protected void addCreator(MethodVisitor mv, Constructor<?> ctor)
     {
-        String valueClassInternal = Type.getInternalName(ctor.getDeclaringClass());
+        Class<?> owner = ctor.getDeclaringClass();
+        String valueClassInternal = Type.getInternalName(owner);
         mv.visitTypeInsn(NEW, valueClassInternal);
         mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, valueClassInternal, "<init>", "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, valueClassInternal, "<init>", "()V",
+                owner.isInterface());
     }
 
     protected void addCreator(MethodVisitor mv, Method factory)
     {
+        Class<?> owner = factory.getDeclaringClass();
         Class<?> valueClass = factory.getReturnType();
-        mv.visitMethodInsn(INVOKESTATIC, Type.getInternalName(factory.getDeclaringClass()),
-                factory.getName(), "()"+Type.getDescriptor(valueClass));
+        mv.visitMethodInsn(INVOKESTATIC, Type.getInternalName(owner),
+                factory.getName(), "()"+Type.getDescriptor(valueClass),
+                owner.isInterface());
     }
 }

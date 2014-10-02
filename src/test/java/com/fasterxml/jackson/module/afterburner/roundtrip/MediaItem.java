@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"content", "images"})
+@JsonPropertyOrder({"content", "images", "bogus"})
 public class MediaItem
 {
     public enum Player { JAVA, FLASH;  }
@@ -13,6 +13,9 @@ public class MediaItem
     private List<Photo> _photos;
     private Content _content;
 
+    // just to exercise boolean access
+    public boolean bogus = true;
+    
     public MediaItem() { }
 
     public MediaItem(Content c)
