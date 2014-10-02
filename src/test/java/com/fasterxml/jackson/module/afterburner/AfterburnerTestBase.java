@@ -188,4 +188,8 @@ public abstract class AfterburnerTestBase extends junit.framework.TestCase
     public String quote(String str) {
         return '"'+str+'"';
     }
+
+    protected static String aposToQuotes(String json) {
+        return json.replace("'", "\"");
+    }
 }

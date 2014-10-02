@@ -1,6 +1,7 @@
 Project: jackson-module-afterburner
 Version: 2.4.3 (xx-xxx-2014)
 
+#42: Problems trying to deserialize final fields
 #43: Problem deserializing type with one polymorphic property that
   uses inclusion of `As.EXTERNAL_PROPERTY`
  (reported by steveme@github)

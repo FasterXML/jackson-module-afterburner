@@ -2,19 +2,12 @@ package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestSimpleSerialize extends AfterburnerTestBase
 {
-    /*
-    /**********************************************************************
-    /* Helper types
-    /**********************************************************************
-     */
-
     public enum MyEnum {
         A, B, C;
     }
@@ -109,6 +102,12 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         public String a = null;
     }
 
+    @JsonPropertyOrder({ "a", "b" })
+    public static class BooleansBean {
+        public boolean a = true;
+        public boolean getB() { return false; }
+    }
+    
     /*
     /**********************************************************************
     /* Test methods, method access
@@ -190,6 +189,12 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         assertEquals("{\"a\":null}", mapper.writeValueAsString(new StringsBean()));
     }
 
+    public void testBooleans() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        assertEquals(aposToQuotes("{'a':true,'b':false}"),
+                mapper.writeValueAsString(new BooleansBean()));
+    }
+    
     /*
     /**********************************************************************
     /* Test methods, other
