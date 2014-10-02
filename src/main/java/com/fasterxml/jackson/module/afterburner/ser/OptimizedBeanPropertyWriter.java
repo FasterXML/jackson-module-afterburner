@@ -48,6 +48,10 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     @Override
     public abstract void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception;
 
+    // since 2.4.3
+    @Override
+    public abstract void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception;
+    
     protected void _reportProblem(Object bean, Throwable e)
     {
         broken = true;

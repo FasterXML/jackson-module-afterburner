@@ -57,12 +57,33 @@ public final class IntMethodPropertyWriter
                 jgen.writeFieldName(_name);
                 jgen.writeNumber(value);
             }
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
         } catch (SecurityException e) {
             _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
+        fallbackWriter.serializeAsField(bean, jgen, prov);
+    }
+
+    @Override
+    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    {
+        if (!broken) {
+            try {
+                int value = _propertyAccessor.intGetter(bean, _propertyIndex);
+                if (!_suppressableIntSet || _suppressableInt != value) {
+                    jgen.writeNumber(value);
+                } else { // important: MUST output a placeholder
+                    serializeAsPlaceholder(bean, jgen, prov);
+                }
+                return;
+            } catch (IllegalAccessError e) {
+                _reportProblem(bean, e);
+            } catch (SecurityException e) {
+                _reportProblem(bean, e);
+            }
+        }
+        fallbackWriter.serializeAsElement(bean, jgen, prov);
     }
 }

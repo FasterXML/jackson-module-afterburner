@@ -86,4 +86,58 @@ public class ObjectFieldPropertyWriter
             fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
+
+    @Override
+    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    {
+        if (!broken) {
+            try {
+                Object value = _propertyAccessor.objectField(bean, _propertyIndex);
+                if (value == null) {
+                    if (_nullSerializer != null) {
+                        _nullSerializer.serialize(null, jgen, prov);
+                    } else if (_suppressNulls) {
+                        serializeAsPlaceholder(bean, jgen, prov);
+                    } else {
+                        prov.defaultSerializeNull(jgen);
+                    }
+                    return;
+                }
+                JsonSerializer<Object> ser = _serializer;
+                if (ser == null) {
+                    Class<?> cls = value.getClass();
+                    PropertySerializerMap map = _dynamicSerializers;
+                    ser = map.serializerFor(cls);
+                    if (ser == null) {
+                        ser = _findAndAddDynamic(map, cls, prov);
+                    }
+                }
+                if (_suppressableValue != null) {
+                    if (MARKER_FOR_EMPTY == _suppressableValue) {
+                        if (ser.isEmpty(value)) {
+                            serializeAsPlaceholder(bean, jgen, prov);
+                            return;
+                        }
+                    } else if (_suppressableValue.equals(value)) {
+                        serializeAsPlaceholder(bean, jgen, prov);
+                        return;
+                    }
+                }
+                if (value == bean) {
+                    _handleSelfReference(bean, jgen, prov, ser);
+                }
+                if (_typeSerializer == null) {
+                    ser.serialize(value, jgen, prov);
+                } else {
+                    ser.serializeWithType(value, jgen, prov, _typeSerializer);
+                }
+                return;
+            } catch (IllegalAccessError e) {
+                _reportProblem(bean, e);
+            } catch (SecurityException e) {
+                _reportProblem(bean, e);
+            }
+        }
+        fallbackWriter.serializeAsElement(bean, jgen, prov);
+    }
 }

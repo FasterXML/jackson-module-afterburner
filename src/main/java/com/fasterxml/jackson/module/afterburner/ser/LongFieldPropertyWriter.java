@@ -65,4 +65,25 @@ public final class LongFieldPropertyWriter
             fallbackWriter.serializeAsField(bean, jgen, prov);
         }
     }
+
+    @Override
+    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    {
+        if (!broken) {
+            try {
+                long value = _propertyAccessor.longField(bean, _propertyIndex);
+                if (!_suppressableLongSet || _suppressableLong != value) {
+                    jgen.writeNumber(value);
+                } else { // important: MUST output a placeholder
+                    serializeAsPlaceholder(bean, jgen, prov);
+                }
+                return;
+            } catch (IllegalAccessError e) {
+                _reportProblem(bean, e);
+            } catch (SecurityException e) {
+                _reportProblem(bean, e);
+            }
+        }
+        fallbackWriter.serializeAsElement(bean, jgen, prov);
+    }
 }

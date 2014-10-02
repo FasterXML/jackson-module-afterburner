@@ -52,7 +52,7 @@ public final class LongMethodPropertyWriter
             return;
         }
         try {
-        	long value = _propertyAccessor.longGetter(bean, _propertyIndex);
+            long value = _propertyAccessor.longGetter(bean, _propertyIndex);
             if (!_suppressableLongSet || _suppressableLong != value) {
                 jgen.writeFieldName(_name);
                 jgen.writeNumber(value);
@@ -64,5 +64,26 @@ public final class LongMethodPropertyWriter
             _reportProblem(bean, e);
             fallbackWriter.serializeAsField(bean, jgen, prov);
         }
+    }
+
+    @Override
+    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    {
+        if (!broken) {
+            try {
+                long value = _propertyAccessor.longGetter(bean, _propertyIndex);
+                if (!_suppressableLongSet || _suppressableLong != value) {
+                    jgen.writeNumber(value);
+                } else { // important: MUST output a placeholder
+                    serializeAsPlaceholder(bean, jgen, prov);
+                }
+                return;
+            } catch (IllegalAccessError e) {
+                _reportProblem(bean, e);
+            } catch (SecurityException e) {
+                _reportProblem(bean, e);
+            }
+        }
+        fallbackWriter.serializeAsElement(bean, jgen, prov);
     }
 }
