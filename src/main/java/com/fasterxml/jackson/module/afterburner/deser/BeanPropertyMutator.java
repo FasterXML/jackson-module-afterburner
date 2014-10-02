@@ -17,7 +17,7 @@ public abstract class BeanPropertyMutator
     private boolean broken = false;
 
     public void intSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, int value)
-            throws IOException
+        throws IOException
     {
         if (broken) {
             originalMutator.set(bean, value);
@@ -35,7 +35,7 @@ public abstract class BeanPropertyMutator
     }
     
     public void longSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, long value)
-            throws IOException
+        throws IOException
     {
         if (broken) {
             originalMutator.set(bean, value);
@@ -51,6 +51,25 @@ public abstract class BeanPropertyMutator
             originalMutator.set(bean, value);
         }
     }
+
+    public void booleanSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, boolean value)
+            throws IOException
+    {
+        if (broken) {
+            originalMutator.set(bean, value);
+            return;
+        }
+        try {
+            booleanSetter(bean, propertyIndex, value);
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, propertyIndex, e);
+            originalMutator.set(bean, value);
+        } catch (SecurityException e) {
+            _reportProblem(bean, propertyIndex, e);
+            originalMutator.set(bean, value);
+        }
+    }
+    
     public void stringSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, String value)
     throws IOException {
         if (broken) {
@@ -83,8 +102,10 @@ public abstract class BeanPropertyMutator
             originalMutator.set(bean, value);
         }
     }
+
     public void intField(SettableBeanProperty originalMutator, Object bean, int propertyIndex, int value)
-    throws IOException {
+            throws IOException
+    {
         if (broken) {
             originalMutator.set(bean, value);
             return;
@@ -99,8 +120,9 @@ public abstract class BeanPropertyMutator
             originalMutator.set(bean, value);
         }
     }
+
     public void longField(SettableBeanProperty originalMutator, Object bean, int propertyIndex, long value)
-    throws IOException {
+            throws IOException {
         if (broken) {
             originalMutator.set(bean, value);
             return;
@@ -115,8 +137,26 @@ public abstract class BeanPropertyMutator
             originalMutator.set(bean, value);
         }
     }
+
+    public void booleanField(SettableBeanProperty originalMutator, Object bean, int propertyIndex, boolean value)
+            throws IOException {
+        if (broken) {
+            originalMutator.set(bean, value);
+            return;
+        }
+        try {
+            booleanField(bean, propertyIndex, value);
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, propertyIndex, e);
+            originalMutator.set(bean, value);
+        } catch (SecurityException e) {
+            _reportProblem(bean, propertyIndex, e);
+            originalMutator.set(bean, value);
+        }
+    }
+    
     public void stringField(SettableBeanProperty originalMutator, Object bean, int propertyIndex, String value)
-    throws IOException {
+            throws IOException {
         if (broken) {
             originalMutator.set(bean, value);
             return;
@@ -154,6 +194,9 @@ public abstract class BeanPropertyMutator
     protected void longSetter(Object bean, int propertyIndex, long value) {
         throw new UnsupportedOperationException("No longSetters defined");
     }
+    protected void booleanSetter(Object bean, int propertyIndex, boolean value) {
+        throw new UnsupportedOperationException("No booleanSetters defined");
+    }
     protected void stringSetter(Object bean, int propertyIndex, String value) {
         throw new UnsupportedOperationException("No stringSetters defined");
     }
@@ -165,6 +208,9 @@ public abstract class BeanPropertyMutator
     }
     protected void longField(Object bean, int propertyIndex, long value) {
         throw new UnsupportedOperationException("No longFields defined");
+    }
+    protected void booleanField(Object bean, int propertyIndex, boolean value) {
+        throw new UnsupportedOperationException("No booleanFields defined");
     }
     protected void stringField(Object bean, int propertyIndex, String value) {
         throw new UnsupportedOperationException("No stringFields defined");

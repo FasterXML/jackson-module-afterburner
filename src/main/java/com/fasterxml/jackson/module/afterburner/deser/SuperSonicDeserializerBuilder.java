@@ -7,8 +7,7 @@ import com.fasterxml.jackson.databind.deser.*;
 
 public class SuperSonicDeserializerBuilder extends BeanDeserializerBuilder
 {
-    public SuperSonicDeserializerBuilder(BeanDeserializerBuilder base)
-    {
+    public SuperSonicDeserializerBuilder(BeanDeserializerBuilder base) {
         super(base);
     }
 

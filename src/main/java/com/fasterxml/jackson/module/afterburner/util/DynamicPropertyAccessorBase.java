@@ -13,6 +13,15 @@ public class DynamicPropertyAccessorBase
         ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4
     };
 
+    protected int _accessorCount = 0;
+
+    protected DynamicPropertyAccessorBase() {
+    }
+
+    public final boolean isEmpty() {
+        return (_accessorCount == 0);
+    }
+
     /*
     /**********************************************************
     /* Helper methods, generating common pieces
@@ -46,6 +55,7 @@ public class DynamicPropertyAccessorBase
     
     protected <T> T _add(List<T> list, T value) {
         list.add(value);
+        ++_accessorCount;
         return value;
     }
 

@@ -67,6 +67,16 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     static class StringAsObject {
         public Object value;
     }
+
+    static class BooleansBean {
+        public boolean a;
+
+        protected Boolean _b;
+
+        public void setB(boolean b) {
+            _b = b;
+        }
+    }
     
     @JsonPropertyOrder
     ({"stringField", "string", "intField", "int", "longField", "long", "enumField", "enum"})
@@ -289,5 +299,15 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         ObjectMapper abMapper = mapperWithModule();
         StringBuilder sb = abMapper.readValue(quote("foobar"), StringBuilder.class);
         assertEquals("foobar", sb.toString());
+    }
+
+    public void testBooleans() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        BooleansBean bean = mapper.readValue(aposToQuotes("{'a':true, 'b':true}"),
+                BooleansBean.class);
+        assertNotNull(bean);
+        assertTrue(bean.a);
+        assertEquals(Boolean.TRUE, bean._b);
     }
 }

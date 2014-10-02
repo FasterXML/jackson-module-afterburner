@@ -1,6 +1,7 @@
 Project: jackson-module-afterburner
 Version: 2.5.0 (xx-xxx-2014)
 
+#44: Optimize `boolean` property access (read/write)
 - Upgrade to ASM 5.0
 
 ------------------------------------------------------------------------

@@ -128,7 +128,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     /* Helper methods
     /********************************************************************** 
      */
-    
+
     protected final int _deserializeInt(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
@@ -147,7 +147,6 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         return jp.getValueAsLong();
     }
 
-    /*
     protected final boolean _deserializeBoolean(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
@@ -159,8 +158,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         }
         return jp.getValueAsBoolean();
     }
-    */
-    
+
     protected final String _deserializeString(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {

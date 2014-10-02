@@ -1,15 +1,14 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.objectweb.asm.*;
+
 import static org.objectweb.asm.Opcodes.*;
 
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
-
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -23,15 +22,17 @@ public class PropertyMutatorCollector
     private static final Type STRING_TYPE = Type.getType(String.class);
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
-    private final ArrayList<SettableIntMethodProperty> _intSetters = new ArrayList<SettableIntMethodProperty>();
-    private final ArrayList<SettableLongMethodProperty> _longSetters = new ArrayList<SettableLongMethodProperty>();
-    private final ArrayList<SettableStringMethodProperty> _stringSetters = new ArrayList<SettableStringMethodProperty>();
-    private final ArrayList<SettableObjectMethodProperty> _objectSetters = new ArrayList<SettableObjectMethodProperty>();
+    private final List<SettableIntMethodProperty> _intSetters = new LinkedList<SettableIntMethodProperty>();
+    private final List<SettableLongMethodProperty> _longSetters = new LinkedList<SettableLongMethodProperty>();
+    private final List<SettableBooleanMethodProperty> _booleanSetters = new LinkedList<SettableBooleanMethodProperty>();
+    private final List<SettableStringMethodProperty> _stringSetters = new LinkedList<SettableStringMethodProperty>();
+    private final List<SettableObjectMethodProperty> _objectSetters = new LinkedList<SettableObjectMethodProperty>();
 
-    private final ArrayList<SettableIntFieldProperty> _intFields = new ArrayList<SettableIntFieldProperty>();
-    private final ArrayList<SettableLongFieldProperty> _longFields = new ArrayList<SettableLongFieldProperty>();
-    private final ArrayList<SettableStringFieldProperty> _stringFields = new ArrayList<SettableStringFieldProperty>();
-    private final ArrayList<SettableObjectFieldProperty> _objectFields = new ArrayList<SettableObjectFieldProperty>();
+    private final List<SettableIntFieldProperty> _intFields = new LinkedList<SettableIntFieldProperty>();
+    private final List<SettableLongFieldProperty> _longFields = new LinkedList<SettableLongFieldProperty>();
+    private final List<SettableBooleanFieldProperty> _booleanFields = new LinkedList<SettableBooleanFieldProperty>();
+    private final List<SettableStringFieldProperty> _stringFields = new LinkedList<SettableStringFieldProperty>();
+    private final List<SettableObjectFieldProperty> _objectFields = new LinkedList<SettableObjectFieldProperty>();
 
     private final Class<?> beanClass;
     private final String beanClassName;
@@ -53,6 +54,9 @@ public class PropertyMutatorCollector
     public SettableLongMethodProperty addLongSetter(SettableBeanProperty prop) {
         return _add(_longSetters, new SettableLongMethodProperty(prop, null, _longSetters.size()));
     }
+    public SettableBooleanMethodProperty addBooleanSetter(SettableBeanProperty prop) {
+        return _add(_booleanSetters, new SettableBooleanMethodProperty(prop, null, _booleanSetters.size()));
+    }
     public SettableStringMethodProperty addStringSetter(SettableBeanProperty prop) {
         return _add(_stringSetters, new SettableStringMethodProperty(prop, null, _stringSetters.size()));
     }
@@ -66,6 +70,9 @@ public class PropertyMutatorCollector
     public SettableLongFieldProperty addLongField(SettableBeanProperty prop) {
         return _add(_longFields, new SettableLongFieldProperty(prop, null, _longFields.size()));
     }
+    public SettableBooleanFieldProperty addBooleanField(SettableBeanProperty prop) {
+        return _add(_booleanFields, new SettableBooleanFieldProperty(prop, null, _booleanFields.size()));
+    }
     public SettableStringFieldProperty addStringField(SettableBeanProperty prop) {
         return _add(_stringFields, new SettableStringFieldProperty(prop, null, _stringFields.size()));
     }
@@ -73,18 +80,6 @@ public class PropertyMutatorCollector
         return _add(_objectFields, new SettableObjectFieldProperty(prop, null, _objectFields.size()));
     }
 
-    public boolean isEmpty() {
-        return _intSetters.isEmpty()
-            && _longSetters.isEmpty()
-            && _stringSetters.isEmpty()
-            && _objectSetters.isEmpty()
-            && _intFields.isEmpty()
-            && _longFields.isEmpty()
-            && _stringFields.isEmpty()
-            && _objectFields.isEmpty()
-        ;
-    }
-    
     /*
     /**********************************************************
     /* Code generation; high level
@@ -144,6 +139,10 @@ public class PropertyMutatorCollector
         if (!_longFields.isEmpty()) {
             _addFields(cw, _longFields, "longField", Type.LONG_TYPE, LLOAD);
         }
+        if (!_booleanFields.isEmpty()) {
+            // booleans are simply ints 0 and 1
+            _addFields(cw, _booleanFields, "booleanField", Type.BOOLEAN_TYPE, ILOAD);
+        }
         if (!_stringFields.isEmpty()) {
             _addFields(cw, _stringFields, "stringField", STRING_TYPE, ALOAD);
         }
@@ -157,6 +156,10 @@ public class PropertyMutatorCollector
         }
         if (!_longSetters.isEmpty()) {
             _addSetters(cw, _longSetters, "longSetter", Type.LONG_TYPE, LLOAD);
+        }
+        if (!_booleanSetters.isEmpty()) {
+            // booleans are simply ints 0 and 1
+            _addSetters(cw, _booleanSetters, "booleanSetter", Type.BOOLEAN_TYPE, ILOAD);
         }
         if (!_stringSetters.isEmpty()) {
             _addSetters(cw, _stringSetters, "stringSetter", STRING_TYPE, ALOAD);

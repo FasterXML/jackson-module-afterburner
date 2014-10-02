@@ -79,21 +79,7 @@ public class PropertyAccessorCollector
     public ObjectFieldPropertyWriter addObjectField(BeanPropertyWriter bpw) {
         return _add(_objectFields, new ObjectFieldPropertyWriter(bpw, null, _objectFields.size(), null));
     }
-    
-    public boolean isEmpty() {
-        return _intGetters.isEmpty()
-            && _longGetters.isEmpty()
-            && _stringGetters.isEmpty()
-            && _objectGetters.isEmpty()
-            && _booleanGetters.isEmpty()
-            && _intFields.isEmpty()
-            && _longFields.isEmpty()
-            && _stringFields.isEmpty()
-            && _objectFields.isEmpty()
-            && _booleanFields.isEmpty()
-        ;
-    }
-    
+
     /*
     /**********************************************************
     /* Code generation; high level

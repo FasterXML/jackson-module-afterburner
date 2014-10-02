@@ -123,6 +123,8 @@ public class DeserializerModifier extends BeanDeserializerModifier
                         newProps.add(collector.addIntSetter(prop));
                     } else if (type == Long.TYPE) {
                         newProps.add(collector.addLongSetter(prop));
+                    } else if (type == Boolean.TYPE) {
+                        newProps.add(collector.addBooleanSetter(prop));
                     }
                 } else {
                     if (type == String.class) {
@@ -144,6 +146,8 @@ public class DeserializerModifier extends BeanDeserializerModifier
                         newProps.add(collector.addIntField(prop));
                     } else if (type == Long.TYPE) {
                         newProps.add(collector.addLongField(prop));
+                    } else if (type == Boolean.TYPE) {
+                        newProps.add(collector.addBooleanField(prop));
                     }
                 } else {
                     if (type == String.class) {
