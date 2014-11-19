@@ -1,11 +1,12 @@
 package com.fasterxml.jackson.module.afterburner;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
-
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.module.afterburner.ser.SerializerModifier;
 import com.fasterxml.jackson.module.afterburner.deser.DeserializerModifier;
 
-public class AfterburnerModule extends SimpleModule
+public class AfterburnerModule extends Module
+    implements java.io.Serializable // is this necessary?
 {
     private static final long serialVersionUID = 1L;
 
@@ -43,19 +44,25 @@ public class AfterburnerModule extends SimpleModule
     /********************************************************************** 
      */
     
-    public AfterburnerModule()
-    {
-        super(PackageVersion.VERSION);
-    }
-    
+    public AfterburnerModule() { }
+
     @Override
     public void setupModule(SetupContext context)
     {
-        super.setupModule(context);
         ClassLoader cl = _cfgUseValueClassLoader ? null : getClass().getClassLoader();
         context.addBeanDeserializerModifier(new DeserializerModifier(cl,
                 _cfgUseOptimizedBeanDeserializer));
         context.addBeanSerializerModifier(new SerializerModifier(cl));
+    }
+
+    @Override
+    public String getModuleName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public Version version() {
+        return PackageVersion.VERSION;
     }
 
     /*
