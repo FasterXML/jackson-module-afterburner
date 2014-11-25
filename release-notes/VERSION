@@ -1,21 +1,24 @@
 Project: jackson-module-afterburner
-Version: 2.5.0 (xx-xxx-2014)
-
-#44: Optimize `boolean` property access (read/write)
-- Upgrade to ASM 5.0
-- Change AfterburnerModule to directly extend Module, not SimpleModule
 
 ------------------------------------------------------------------------
-=== History: ===
+=== Releases ===
 ------------------------------------------------------------------------
 
-2.4.3 (xx-xxx-2014)
+2.5.0 (not yet released)
+
+2.4.4 (24-Nov-2014)
+
+No changes since 2.4.3.
+
+2.4.3 (03-Oct-2014)
 
 #42: Problems trying to deserialize final fields
 #43: Problem deserializing type with one polymorphic property that
   uses inclusion of `As.EXTERNAL_PROPERTY`
  (reported by steveme@github)
-#44: Optimize writes done via `BeanPropertyWriter.serializeAsElement()`
+#44: Optimize `boolean` property access (read/write)
+- Upgrade to ASM 5.0
+- Change AfterburnerModule to directly extend Module, not SimpleModule
 
 2.4.2 (14-Aug-2014)
 
