@@ -32,112 +32,110 @@ public class ObjectFieldPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
         if (broken) {
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+            fallbackWriter.serializeAsField(bean, gen, prov);
             return;
         }
+        Object value;
         try {
-            Object value = _propertyAccessor.objectField(bean, _propertyIndex);
-            // Null (etc) handling; copied from super-class impl
-            if (value == null) {
-                if (_nullSerializer != null) {
-                    jgen.writeFieldName(_fastName);
-                    _nullSerializer.serialize(null, jgen, prov);
-                } else if (!_suppressNulls) {
-                    jgen.writeFieldName(_fastName);
-                    prov.defaultSerializeNull(jgen);
-                }
-                return;
+            value = _propertyAccessor.objectField(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, false);
+            return;
+        }
+        // Null (etc) handling; copied from super-class impl
+        if (value == null) {
+            if (_nullSerializer != null) {
+                gen.writeFieldName(_fastName);
+                _nullSerializer.serialize(null, gen, prov);
+            } else if (!_suppressNulls) {
+                gen.writeFieldName(_fastName);
+                prov.defaultSerializeNull(gen);
             }
-            JsonSerializer<Object> ser = _serializer;
+            return;
+        }
+        JsonSerializer<Object> ser = _serializer;
+        if (ser == null) {
+            Class<?> cls = value.getClass();
+            PropertySerializerMap map = _dynamicSerializers;
+            ser = map.serializerFor(cls);
             if (ser == null) {
-                Class<?> cls = value.getClass();
-                PropertySerializerMap map = _dynamicSerializers;
-                ser = map.serializerFor(cls);
-                if (ser == null) {
-                    ser = _findAndAddDynamic(map, cls, prov);
-                }
+                ser = _findAndAddDynamic(map, cls, prov);
             }
-            if (_suppressableValue != null) {
-                if (MARKER_FOR_EMPTY == _suppressableValue) {
-                    if (ser.isEmpty(value)) {
-                        return;
-                    }
-                } else if (_suppressableValue.equals(value)) {
+        }
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (ser.isEmpty(value)) {
                     return;
                 }
+            } else if (_suppressableValue.equals(value)) {
+                return;
             }
-            if (value == bean) {
-                _handleSelfReference(bean, jgen, prov, ser);
-            }
-            jgen.writeFieldName(_fastName);
-            if (_typeSerializer == null) {
-                ser.serialize(value, jgen, prov);
-            } else {
-                ser.serializeWithType(value, jgen, prov, _typeSerializer);
-            }
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+        }
+        if (value == bean) {
+            _handleSelfReference(bean, gen, prov, ser);
+        }
+        gen.writeFieldName(_fastName);
+        if (_typeSerializer == null) {
+            ser.serialize(value, gen, prov);
+        } else {
+            ser.serializeWithType(value, gen, prov, _typeSerializer);
         }
     }
 
     @Override
-    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsElement(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
-        if (!broken) {
-            try {
-                Object value = _propertyAccessor.objectField(bean, _propertyIndex);
-                if (value == null) {
-                    if (_nullSerializer != null) {
-                        _nullSerializer.serialize(null, jgen, prov);
-                    } else if (_suppressNulls) {
-                        serializeAsPlaceholder(bean, jgen, prov);
-                    } else {
-                        prov.defaultSerializeNull(jgen);
-                    }
-                    return;
-                }
-                JsonSerializer<Object> ser = _serializer;
-                if (ser == null) {
-                    Class<?> cls = value.getClass();
-                    PropertySerializerMap map = _dynamicSerializers;
-                    ser = map.serializerFor(cls);
-                    if (ser == null) {
-                        ser = _findAndAddDynamic(map, cls, prov);
-                    }
-                }
-                if (_suppressableValue != null) {
-                    if (MARKER_FOR_EMPTY == _suppressableValue) {
-                        if (ser.isEmpty(value)) {
-                            serializeAsPlaceholder(bean, jgen, prov);
-                            return;
-                        }
-                    } else if (_suppressableValue.equals(value)) {
-                        serializeAsPlaceholder(bean, jgen, prov);
-                        return;
-                    }
-                }
-                if (value == bean) {
-                    _handleSelfReference(bean, jgen, prov, ser);
-                }
-                if (_typeSerializer == null) {
-                    ser.serialize(value, jgen, prov);
-                } else {
-                    ser.serializeWithType(value, jgen, prov, _typeSerializer);
-                }
-                return;
-            } catch (IllegalAccessError e) {
-                _reportProblem(bean, e);
-            } catch (SecurityException e) {
-                _reportProblem(bean, e);
+        if (broken) {
+            fallbackWriter.serializeAsElement(bean, gen, prov);
+            return;
+        }
+        Object value;
+        try {
+            value = _propertyAccessor.objectField(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, true);
+            return;
+        }
+        if (value == null) {
+            if (_nullSerializer != null) {
+                _nullSerializer.serialize(null, gen, prov);
+            } else if (_suppressNulls) {
+                serializeAsPlaceholder(bean, gen, prov);
+            } else {
+                prov.defaultSerializeNull(gen);
+            }
+            return;
+        }
+        JsonSerializer<Object> ser = _serializer;
+        if (ser == null) {
+            Class<?> cls = value.getClass();
+            PropertySerializerMap map = _dynamicSerializers;
+            ser = map.serializerFor(cls);
+            if (ser == null) {
+                ser = _findAndAddDynamic(map, cls, prov);
             }
         }
-        fallbackWriter.serializeAsElement(bean, jgen, prov);
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (ser.isEmpty(value)) {
+                    serializeAsPlaceholder(bean, gen, prov);
+                    return;
+                }
+            } else if (_suppressableValue.equals(value)) {
+                serializeAsPlaceholder(bean, gen, prov);
+                return;
+            }
+        }
+        if (value == bean) {
+            _handleSelfReference(bean, gen, prov, ser);
+        }
+        if (_typeSerializer == null) {
+            ser.serialize(value, gen, prov);
+        } else {
+            ser.serializeWithType(value, gen, prov, _typeSerializer);
+        }
     }
 }

@@ -62,6 +62,27 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     // since 2.4.3
     @Override
     public abstract void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception;
+
+    // note: synchronized used to try to minimize race conditions; also, should NOT
+    // be a performance problem
+    protected synchronized void _handleProblem(Object bean, JsonGenerator gen, SerializerProvider prov,
+            Throwable t, boolean element) throws Exception
+    {
+        if ((t instanceof IllegalAccessError)
+                || (t instanceof SecurityException)) {
+            _reportProblem(bean, t);
+            if (element) {
+                fallbackWriter.serializeAsElement(bean, gen, prov);
+            } else {
+                fallbackWriter.serializeAsField(bean, gen, prov);
+            }
+            return;
+        }
+        if (t instanceof Error) {
+            throw (Error) t;
+        }
+        throw (Exception) t;
+    }    
     
     protected void _reportProblem(Object bean, Throwable e)
     {

@@ -22,6 +22,6 @@ public class TestInterfaceSerialize extends AfterburnerTestBase
         };
 
         // Causes IncompatibleClassChangeError
-        assertEquals("{\"foo\":\"bar\"}", mapper.writerWithType(Wat.class).writeValueAsString(wat));
+        assertEquals("{\"foo\":\"bar\"}", mapper.writerFor(Wat.class).writeValueAsString(wat));
     }
 }

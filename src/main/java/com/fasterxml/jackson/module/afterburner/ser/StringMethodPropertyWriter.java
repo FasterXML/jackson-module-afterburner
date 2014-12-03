@@ -31,76 +31,75 @@ public class StringMethodPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
         if (broken) {
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+            fallbackWriter.serializeAsField(bean, gen, prov);
             return;
         }
+        String value;
         try {
-            String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
-            // Null (etc) handling; copied from super-class impl
-            if (value == null) {
-                if (!_suppressNulls) {
-                    jgen.writeFieldName(_fastName);
-                    prov.defaultSerializeNull(jgen);
-                }
-                return;
+            value = _propertyAccessor.stringGetter(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, false);
+            return;
+        }
+        // Null (etc) handling; copied from super-class impl
+        if (value == null) {
+            if (!_suppressNulls) {
+                gen.writeFieldName(_fastName);
+                prov.defaultSerializeNull(gen);
             }
-            if (_suppressableValue != null) {
-                if (MARKER_FOR_EMPTY == _suppressableValue) {
-                    if (value.length() == 0) {
-                        return;
-                    }
-                } else if (_suppressableValue.equals(value)) {
+            return;
+        }
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (value.length() == 0) {
                     return;
                 }
+            } else if (_suppressableValue.equals(value)) {
+                return;
             }
-            jgen.writeFieldName(_fastName);
-            jgen.writeString(value);
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
         }
+        gen.writeFieldName(_fastName);
+        gen.writeString(value);
     }
 
     @Override
-    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsElement(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
-        if (!broken) {
-            try {
-                String value = _propertyAccessor.stringGetter(bean, _propertyIndex);
-                // Null (etc) handling; copied from super-class impl
-                if (value == null) {
-                    if (_suppressNulls) {
-                        serializeAsPlaceholder(bean, jgen, prov);
-                    } else {
-                        prov.defaultSerializeNull(jgen);
-                    }
+        if (broken) {
+            fallbackWriter.serializeAsElement(bean, gen, prov);
+            return;
+        }
+
+        String value;
+        try {
+            value = _propertyAccessor.stringGetter(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, true);
+            return;
+        }
+        // Null (etc) handling; copied from super-class impl
+        if (value == null) {
+            if (_suppressNulls) {
+                serializeAsPlaceholder(bean, gen, prov);
+            } else {
+                prov.defaultSerializeNull(gen);
+            }
+            return;
+        }
+        if (_suppressableValue != null) {
+            if (MARKER_FOR_EMPTY == _suppressableValue) {
+                if (value.length() == 0) {
+                    serializeAsPlaceholder(bean, gen, prov);
                     return;
                 }
-                if (_suppressableValue != null) {
-                    if (MARKER_FOR_EMPTY == _suppressableValue) {
-                        if (value.length() == 0) {
-                            serializeAsPlaceholder(bean, jgen, prov);
-                            return;
-                        }
-                    } else if (_suppressableValue.equals(value)) {
-                        serializeAsPlaceholder(bean, jgen, prov);
-                        return;
-                    }
-                }
-                jgen.writeString(value);
+            } else if (_suppressableValue.equals(value)) {
+                serializeAsPlaceholder(bean, gen, prov);
                 return;
-            } catch (IllegalAccessError e) {
-                _reportProblem(bean, e);
-            } catch (SecurityException e) {
-                _reportProblem(bean, e);
             }
         }
-        fallbackWriter.serializeAsElement(bean, jgen, prov);
+        gen.writeString(value);
     }
 }

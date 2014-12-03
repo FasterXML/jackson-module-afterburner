@@ -45,47 +45,43 @@ public final class IntFieldPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
         if (broken) {
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+            fallbackWriter.serializeAsField(bean, gen, prov);
             return;
         }
+        int value;
         try {
-            int value = _propertyAccessor.intField(bean, _propertyIndex);
-            if (!_suppressableIntSet || _suppressableInt != value) {
-                jgen.writeFieldName(_fastName);
-                jgen.writeNumber(value);
-            }
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+            value = _propertyAccessor.intField(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, false);
+            return;
+        }
+        if (!_suppressableIntSet || _suppressableInt != value) {
+            gen.writeFieldName(_fastName);
+            gen.writeNumber(value);
         }
     }
 
     @Override
-    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsElement(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
         if (broken) {
-            fallbackWriter.serializeAsElement(bean, jgen, prov);
+            fallbackWriter.serializeAsElement(bean, gen, prov);
             return;
         }
+        int value;
         try {
-            int value = _propertyAccessor.intField(bean, _propertyIndex);
-            if (!_suppressableIntSet || _suppressableInt != value) {
-                jgen.writeNumber(value);
-            } else { // important: MUST output a placeholder
-                serializeAsPlaceholder(bean, jgen, prov);
-            }
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsElement(bean, jgen, prov);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            fallbackWriter.serializeAsElement(bean, jgen, prov);
+            value = _propertyAccessor.intField(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, true);
+            return;
+        }
+        if (!_suppressableIntSet || _suppressableInt != value) {
+            gen.writeNumber(value);
+        } else { // important: MUST output a placeholder
+            serializeAsPlaceholder(bean, gen, prov);
         }
     }
 }

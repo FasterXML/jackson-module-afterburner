@@ -45,45 +45,43 @@ public final class BooleanMethodPropertyWriter
      */
 
     @Override
-    public final void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsField(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
         if (broken) {
-            fallbackWriter.serializeAsField(bean, jgen, prov);
+            fallbackWriter.serializeAsField(bean, gen, prov);
             return;
         }
+        boolean value;
         try {
-            boolean value = _propertyAccessor.booleanGetter(bean, _propertyIndex);
-            if (!_suppressableSet || _suppressableBoolean != value) {
-                jgen.writeFieldName(_fastName);
-                jgen.writeBoolean(value);
-            }
+            value = _propertyAccessor.booleanGetter(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, false);
             return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-        } catch (SecurityException e) {
-            _reportProblem(bean, e);
         }
-        fallbackWriter.serializeAsField(bean, jgen, prov);
+        if (!_suppressableSet || _suppressableBoolean != value) {
+            gen.writeFieldName(_fastName);
+            gen.writeBoolean(value);
+        }
     }
 
     @Override
-    public final void serializeAsElement(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    public final void serializeAsElement(Object bean, JsonGenerator gen, SerializerProvider prov) throws Exception
     {
-        if (!broken) {
-            try {
-                boolean value = _propertyAccessor.booleanGetter(bean, _propertyIndex);
-                if (!_suppressableSet || _suppressableBoolean != value) {
-                    jgen.writeBoolean(value);
-                } else { // important: MUST output a placeholder
-                    serializeAsPlaceholder(bean, jgen, prov);
-                }
-                return;
-            } catch (IllegalAccessError e) {
-                _reportProblem(bean, e);
-            } catch (SecurityException e) {
-                _reportProblem(bean, e);
-            }
+        if (broken) {
+            fallbackWriter.serializeAsElement(bean, gen, prov);
+            return;
+        }            
+        boolean value;
+        try {
+            value = _propertyAccessor.booleanGetter(bean, _propertyIndex);
+        } catch (Throwable t) {
+            _handleProblem(bean, gen, prov, t, true);
+            return;
         }
-        fallbackWriter.serializeAsElement(bean, jgen, prov);
+        if (!_suppressableSet || _suppressableBoolean != value) {
+            gen.writeBoolean(value);
+        } else { // important: MUST output a placeholder
+            serializeAsPlaceholder(bean, gen, prov);
+        }
     }
 }
