@@ -54,7 +54,7 @@ public final class BooleanMethodPropertyWriter
         try {
             boolean value = _propertyAccessor.booleanGetter(bean, _propertyIndex);
             if (!_suppressableSet || _suppressableBoolean != value) {
-                jgen.writeFieldName(_name);
+                jgen.writeFieldName(_fastName);
                 jgen.writeBoolean(value);
             }
             return;

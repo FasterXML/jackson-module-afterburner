@@ -43,10 +43,10 @@ public class ObjectMethodPropertyWriter
             // Null (etc) handling; copied from super-class impl
             if (value == null) {
                 if (_nullSerializer != null) {
-                    jgen.writeFieldName(_name);
+                    jgen.writeFieldName(_fastName);
                     _nullSerializer.serialize(null, jgen, prov);
                 } else if (!_suppressNulls) {
-                    jgen.writeFieldName(_name);
+                    jgen.writeFieldName(_fastName);
                     prov.defaultSerializeNull(jgen);
                 }
                 return;
@@ -72,7 +72,7 @@ public class ObjectMethodPropertyWriter
             if (value == bean) {
                 _handleSelfReference(bean, jgen, prov, ser);
             }
-            jgen.writeFieldName(_name);
+            jgen.writeFieldName(_fastName);
             if (_typeSerializer == null) {
                 ser.serialize(value, jgen, prov);
             } else {

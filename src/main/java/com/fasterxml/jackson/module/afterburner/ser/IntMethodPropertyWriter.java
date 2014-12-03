@@ -54,7 +54,7 @@ public final class IntMethodPropertyWriter
         try {
             int value = _propertyAccessor.intGetter(bean, _propertyIndex);
             if (!_suppressableIntSet || _suppressableInt != value) {
-                jgen.writeFieldName(_name);
+                jgen.writeFieldName(_fastName);
                 jgen.writeNumber(value);
             }
             return;

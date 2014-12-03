@@ -54,7 +54,7 @@ public final class LongFieldPropertyWriter
         try {
         	long value = _propertyAccessor.longField(bean, _propertyIndex);
             if (!_suppressableLongSet || _suppressableLong != value) {
-                jgen.writeFieldName(_name);
+                jgen.writeFieldName(_fastName);
                 jgen.writeNumber(value);
             }
         } catch (IllegalAccessError e) {

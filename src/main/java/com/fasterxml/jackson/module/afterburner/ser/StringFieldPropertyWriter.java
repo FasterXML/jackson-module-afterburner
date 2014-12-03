@@ -42,7 +42,7 @@ public final class StringFieldPropertyWriter
             // Null (etc) handling; copied from super-class impl
             if (value == null) {
                 if (!_suppressNulls) {
-                    jgen.writeFieldName(_name);
+                    jgen.writeFieldName(_fastName);
                     prov.defaultSerializeNull(jgen);
                 }
                 return;
@@ -56,7 +56,7 @@ public final class StringFieldPropertyWriter
                     return;
                 }
             }
-            jgen.writeFieldName(_name);
+            jgen.writeFieldName(_fastName);
             jgen.writeString(value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);

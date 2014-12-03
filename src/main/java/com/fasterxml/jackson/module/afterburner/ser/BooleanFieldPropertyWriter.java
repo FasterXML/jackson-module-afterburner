@@ -54,7 +54,7 @@ public final class BooleanFieldPropertyWriter
         try {
             boolean value = _propertyAccessor.booleanField(bean, _propertyIndex);
             if (!_suppressableSet || _suppressableBoolean != value) {
-                jgen.writeFieldName(_name);
+                jgen.writeFieldName(_fastName);
                 jgen.writeBoolean(value);
             }
         } catch (IllegalAccessError e) {

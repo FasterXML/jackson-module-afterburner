@@ -6,6 +6,8 @@ Project: jackson-module-afterburner
 
 2.5.0 (not yet released)
 
+- Remove coupling of `_name` field of `BeanPropertyWriter`
+
 2.4.4 (24-Nov-2014)
 
 No changes since 2.4.3.

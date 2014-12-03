@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
@@ -16,6 +17,15 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     extends BeanPropertyWriter
 {
     protected final BeanPropertyAccessor _propertyAccessor;
+
+    /**
+     * Locally stored version of efficiently serializable name.
+     * Used to work around earlier problems with typing between
+     * interface, implementation
+     * 
+     * @since 2.5
+     */
+    protected final SerializableString _fastName;
     protected final int _propertyIndex;
 
     protected final BeanPropertyWriter fallbackWriter;
@@ -31,6 +41,7 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         _serializer = ser; // from base class
         _propertyAccessor = propertyAccessor;
         _propertyIndex = propertyIndex;
+        _fastName = src.getSerializedName();
     }
 
     private BeanPropertyWriter unwrapFallbackWriter(BeanPropertyWriter srcIn)
