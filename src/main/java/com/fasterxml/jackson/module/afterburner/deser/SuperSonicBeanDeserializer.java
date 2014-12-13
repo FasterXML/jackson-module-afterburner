@@ -25,7 +25,7 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
      * assigned after resolution when property instances are finalized.
      */
     protected SettableBeanProperty[] _orderedProperties;
-    
+
     /*
     /**********************************************************
     /* Life-cycle, construction, initialization

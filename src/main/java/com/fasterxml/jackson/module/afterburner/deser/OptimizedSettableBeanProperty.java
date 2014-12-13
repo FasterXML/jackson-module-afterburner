@@ -118,8 +118,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
 
     @Override
-    public Object setAndReturn(Object instance, Object value) throws IOException
-    {
+    public Object setAndReturn(Object instance, Object value) throws IOException {
         return _originalSettable.setAndReturn(instance, value);
     }
 
@@ -129,62 +128,57 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     /********************************************************************** 
      */
 
-    protected final int _deserializeInt(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException
+    protected final int _deserializeInt(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-            return jp.getIntValue();
+        if (p.hasTokenId(JsonTokenId.ID_NUMBER_INT)) {
+            return p.getIntValue();
         }
-        return jp.getValueAsInt();
+        return p.getValueAsInt();
     }
 
-    protected final long _deserializeLong(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException
+    protected final long _deserializeLong(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_INT) {
-            return jp.getLongValue();
+        if (p.hasTokenId(JsonTokenId.ID_NUMBER_INT)) {
+            return p.getLongValue();
         }
-        return jp.getValueAsLong();
+        return p.getValueAsLong();
     }
 
-    protected final boolean _deserializeBoolean(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException
+    protected final boolean _deserializeBoolean(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (jp.getCurrentToken() == JsonToken.VALUE_TRUE) {
+        int id = p.getCurrentTokenId();
+        if (id == JsonTokenId.ID_TRUE) {
             return true;
         }
-        if (jp.getCurrentToken() == JsonToken.VALUE_FALSE) {
+        if (id == JsonTokenId.ID_FALSE) {
             return false;
         }
-        return jp.getValueAsBoolean();
+        return p.getValueAsBoolean();
     }
 
-    protected final String _deserializeString(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException
+    protected final String _deserializeString(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (jp.getCurrentToken() == JsonToken.VALUE_NULL) {
+        if (p.hasTokenId(JsonTokenId.ID_NULL)) {
             if (_nullProvider == null) {
                 return null;
             }
             return (String) _nullProvider.nullValue(ctxt);
         }
-        String text = jp.getValueAsString();
+        String text = p.getValueAsString();
         if (text != null) {
             return text;
         }
-        return _convertToString(jp, ctxt);
+        return _convertToString(p, ctxt);
     }
 
     /**
      * Helper method for coercing JSON values other than Strings into
      * Java String value.
      */
-    protected final String _convertToString(JsonParser jp, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException
+    protected final String _convertToString(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        JsonToken curr = jp.getCurrentToken();
-        if (curr == JsonToken.VALUE_EMBEDDED_OBJECT) {
-            Object ob = jp.getEmbeddedObject();
+        if (p.hasTokenId(JsonTokenId.ID_EMBEDDED_OBJECT)) {
+            Object ob = p.getEmbeddedObject();
             if (ob == null) {
                 return null;
             }
@@ -193,9 +187,10 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
             }
             return ob.toString();
         }
+        JsonToken curr = p.getCurrentToken();
         // Can deserialize any scalar value
         if (curr.isScalarValue()) { // should have been handled earlier, but just in case...
-            return jp.getText();
+            return p.getText();
         }
         if (curr == JsonToken.VALUE_NULL) { // should this ever happen?
             return null;
