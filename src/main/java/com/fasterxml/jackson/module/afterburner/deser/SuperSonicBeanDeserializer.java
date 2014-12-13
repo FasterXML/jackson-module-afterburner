@@ -110,113 +110,107 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
     }
 
     @Override
-    public Object deserialize(JsonParser jp, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException
+    public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {
         if (!_vanillaProcessing || _objectIdReader != null) {
             // should we ever get here? Just in case
-            return super.deserialize(jp, ctxt);
+            return super.deserialize(p, ctxt);
         }
-        JsonToken t = jp.getCurrentToken();
         // common case first:
-        if (t != JsonToken.START_OBJECT) {
-            return _deserializeOther(jp, ctxt, t);
+        if (p.isExpectedStartObjectToken()) {
+            p.nextToken();
+            return deserializeFromObject(p, ctxt);
         }
-        t = jp.nextToken();
-        // Inlined version of:
-        return deserializeFromObject(jp, ctxt);
+        return _deserializeOther(p, ctxt, p.getCurrentToken());
     }
     
     // much of below is cut'n pasted from BeanSerializer
     @Override
-    public final Object deserialize(JsonParser jp, DeserializationContext ctxt, Object bean)
-        throws IOException, JsonProcessingException
+    public final Object deserialize(JsonParser p, DeserializationContext ctxt, Object bean)
+        throws IOException
     {
         if (_injectables != null) {
             injectValues(ctxt, bean);
         }
         if (_unwrappedPropertyHandler != null) {
-            return deserializeWithUnwrapped(jp, ctxt, bean);
+            return deserializeWithUnwrapped(p, ctxt, bean);
         }
         if (_externalTypeIdHandler != null) {
-            return deserializeWithExternalTypeId(jp, ctxt, bean);
+            return deserializeWithExternalTypeId(p, ctxt, bean);
         }
-        JsonToken t = jp.getCurrentToken();
         SettableBeanProperty prop = _orderedProperties[0];
         // First: verify that first name is expected
-        if (t == JsonToken.START_OBJECT) {
-            if (!jp.nextFieldName(_orderedPropertyNames[0])) {
-                return super.deserialize(jp,  ctxt, bean);
+        if (p.isExpectedStartObjectToken()) {
+            if (!p.nextFieldName(_orderedPropertyNames[0])) {
+                return super.deserialize(p,  ctxt, bean);
             }
-            t = jp.nextToken();
-        } else if (t == JsonToken.FIELD_NAME && prop.getName().equals(jp.getCurrentName())) {
-            // expected field, skip to value token
-            jp.nextToken();
-        } else { // no, something funky, use base impl for special cases
-            return super.deserialize(jp,  ctxt, bean);
+        } else if (!p.hasTokenId(JsonTokenId.ID_FIELD_NAME)
+                || !prop.getName().equals(p.getCurrentName())) {
+            // no, something funky, use base impl for special cases
+            return super.deserialize(p,  ctxt, bean);
         }
+        p.nextToken();
         try {
-            prop.deserializeAndSet(jp, ctxt, bean);
+            prop.deserializeAndSet(p, ctxt, bean);
         } catch (Exception e) {
             wrapAndThrow(e, bean, prop.getName(), ctxt);
         }
         // then rest of properties
         for (int i = 1, len = _orderedProperties.length; i < len; ++i) {
-            prop = _orderedProperties[i];
-            if (!jp.nextFieldName(_orderedPropertyNames[i])) { // miss...
-                if (jp.getCurrentToken() == JsonToken.END_OBJECT) {
+            if (!p.nextFieldName(_orderedPropertyNames[i])) { // miss...
+                if (p.hasTokenId(JsonTokenId.ID_END_OBJECT)) {
                     return bean;
                 }
                 // we likely point to FIELD_NAME, so can just call parent impl
-                return super.deserialize(jp, ctxt, bean);
+                return super.deserialize(p, ctxt, bean);
             }
-            jp.nextToken(); // skip field, returns value token
+            prop = _orderedProperties[i];
+            p.nextToken(); // skip field, returns value token
             try {
-                prop.deserializeAndSet(jp, ctxt, bean);
+                prop.deserializeAndSet(p, ctxt, bean);
             } catch (Exception e) {
                 wrapAndThrow(e, bean, prop.getName(), ctxt);
             }
         }
         // also, need to ensure we get closing END_OBJECT...
-        if (jp.nextToken() != JsonToken.END_OBJECT) {
-            return super.deserialize(jp, ctxt, bean);
+        if (p.nextToken() != JsonToken.END_OBJECT) {
+            return super.deserialize(p, ctxt, bean);
         }
         return bean;
     }
 
     // much of below is cut'n pasted from BeanSerializer
     @Override
-    public final Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException
+    public final Object deserializeFromObject(JsonParser p, DeserializationContext ctxt)
+        throws IOException
     {
         if (_nonStandardCreation) {
             if (_unwrappedPropertyHandler != null) {
-                return deserializeWithUnwrapped(jp, ctxt);
+                return deserializeWithUnwrapped(p, ctxt);
             }
             if (_externalTypeIdHandler != null) {
-                return deserializeWithExternalTypeId(jp, ctxt);
+                return deserializeWithExternalTypeId(p, ctxt);
             }
-            return deserializeFromObjectUsingNonDefault(jp, ctxt);
+            return deserializeFromObjectUsingNonDefault(p, ctxt);
         }
         final Object bean = _valueInstantiator.createUsingDefault(ctxt);
         if (_injectables != null) {
             injectValues(ctxt, bean);
         }
-        JsonToken t = jp.getCurrentToken();
         SettableBeanProperty prop = _orderedProperties[0];
         // First: verify that first name is expected
-        if (t == JsonToken.START_OBJECT) {
-            if (!jp.nextFieldName(_orderedPropertyNames[0])) {
-                return super.deserialize(jp,  ctxt, bean);
+        if (p.isExpectedStartObjectToken()) {
+            if (!p.nextFieldName(_orderedPropertyNames[0])) {
+                return super.deserialize(p,  ctxt, bean);
             }
-            t = jp.nextToken();
-        } else if (t != JsonToken.FIELD_NAME || !prop.getName().equals(jp.getCurrentName())) {
-            return super.deserialize(jp,  ctxt, bean);
+        } else if (!p.hasTokenId(JsonTokenId.ID_FIELD_NAME)
+                || !prop.getName().equals(p.getCurrentName())) {
+            return super.deserialize(p,  ctxt, bean);
         }
         // and deserialize
-        jp.nextToken();
+        p.nextToken();
         try {
-            prop.deserializeAndSet(jp, ctxt, bean);
+            prop.deserializeAndSet(p, ctxt, bean);
         } catch (Exception e) {
             wrapAndThrow(e, bean, prop.getName(), ctxt);
         }
@@ -224,23 +218,23 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
         // then rest of properties
         for (int i = 1, len = _orderedProperties.length; i < len; ++i) {
             prop = _orderedProperties[i];
-            if (!jp.nextFieldName(_orderedPropertyNames[i])) { // miss...
-                if (jp.getCurrentToken() == JsonToken.END_OBJECT) {
+            if (!p.nextFieldName(_orderedPropertyNames[i])) { // miss...
+                if (p.hasTokenId(JsonTokenId.ID_END_OBJECT)) {
                     return bean;
                 }
                 // we likely point to FIELD_NAME, so can just call parent impl
-                return super.deserialize(jp, ctxt, bean);
+                return super.deserialize(p, ctxt, bean);
             }
-            jp.nextToken(); // skip field, returns value token
+            p.nextToken(); // skip field, returns value token
             try {
-                prop.deserializeAndSet(jp, ctxt, bean);
+                prop.deserializeAndSet(p, ctxt, bean);
             } catch (Exception e) {
                 wrapAndThrow(e, bean, prop.getName(), ctxt);
             }
         }
         // also, need to ensure we get closing END_OBJECT...
-        if (jp.nextToken() != JsonToken.END_OBJECT) {
-            return super.deserialize(jp, ctxt, bean);
+        if (p.nextToken() != JsonToken.END_OBJECT) {
+            return super.deserialize(p, ctxt, bean);
         }
         return bean;
     }
