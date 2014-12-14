@@ -87,7 +87,7 @@ public abstract class BeanPropertyMutator
         }
     }
     public void objectSetter(SettableBeanProperty originalMutator, Object bean, int propertyIndex, Object value)
-    throws IOException {
+            throws IOException {
         if (broken) {
             originalMutator.set(bean, value);
             return;

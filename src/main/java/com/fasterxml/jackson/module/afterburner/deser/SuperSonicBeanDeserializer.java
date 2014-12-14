@@ -129,6 +129,8 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
     public final Object deserialize(JsonParser p, DeserializationContext ctxt, Object bean)
         throws IOException
     {
+        // [databind#631]: Assign current value, to be accessible by custom serializers
+        p.setCurrentValue(bean);
         if (_injectables != null) {
             injectValues(ctxt, bean);
         }
@@ -194,6 +196,14 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
             return deserializeFromObjectUsingNonDefault(p, ctxt);
         }
         final Object bean = _valueInstantiator.createUsingDefault(ctxt);
+        // [databind#631]: Assign current value, to be accessible by custom serializers
+        p.setCurrentValue(bean);
+        if (p.canReadObjectId()) {
+            Object id = p.getObjectId();
+            if (id != null) {
+                _handleTypedObjectId(p, ctxt, bean, id);
+            }
+        }
         if (_injectables != null) {
             injectValues(ctxt, bean);
         }
