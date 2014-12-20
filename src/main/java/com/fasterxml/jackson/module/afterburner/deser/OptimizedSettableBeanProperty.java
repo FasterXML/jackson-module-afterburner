@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProperty<T>>
     extends SettableBeanProperty
 {
-    private static final long serialVersionUID = -4221811783114701986L;
+    private static final long serialVersionUID = 1L; // since 2.5
 
     /**
      * We will need to keep the original instance handy as
@@ -113,8 +113,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
     @Override
     public abstract Object deserializeSetAndReturn(JsonParser jp,
-            DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException;
+            DeserializationContext ctxt, Object instance) throws IOException;
 
 
     @Override
