@@ -23,3 +23,7 @@ Nándor István Krácser (bonifaido@github)
 * Contributed #27/#23: ability to deserialize interface types
  (2.2.3)
 
+Jörn Huxhorn (huxi@github)
+
+* Reported #47: java.lang.VerifyError (Illegal type in constant pool ...)
+ (2.5.1)

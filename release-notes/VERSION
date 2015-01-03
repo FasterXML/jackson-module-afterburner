@@ -4,6 +4,11 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.1 (not yet released)
+
+#47: java.lang.VerifyError (Illegal type in constant pool ...)
+ (reported by huxi@github)
+
 2.5.0 (01-Jan-2015)
 
 - Remove coupling of `_name` field of `BeanPropertyWriter`

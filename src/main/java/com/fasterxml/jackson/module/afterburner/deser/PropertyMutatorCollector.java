@@ -257,8 +257,9 @@ public class PropertyMutatorCollector
         // to fix [Issue-5] (don't assume return type is 'void'), we need to:
         Type returnType = Type.getType(method.getReturnType());
 
-        mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
-                "("+type+")"+returnType,  method.getDeclaringClass().isInterface());
+        boolean isInterface = method.getDeclaringClass().isInterface();
+        mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
+                beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
         mv.visitInsn(RETURN);
 
         // And from this point on, loop a bit
@@ -278,8 +279,9 @@ public class PropertyMutatorCollector
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
-                    "("+type+")"+returnType, method.getDeclaringClass().isInterface());
+            isInterface = method.getDeclaringClass().isInterface();
+            mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
+                    beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(next);
@@ -308,8 +310,9 @@ public class PropertyMutatorCollector
             if (mustCast) {
                 mv.visitTypeInsn(CHECKCAST, type.getInternalName());
             }
-            mv.visitMethodInsn(INVOKEVIRTUAL, beanClassName, method.getName(),
-                    "("+type+")"+returnType, method.getDeclaringClass().isInterface());
+            boolean isInterface = method.getDeclaringClass().isInterface();
+            mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
+                    beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
             mv.visitInsn(RETURN);
         }
         mv.visitLabel(defaultLabel);
