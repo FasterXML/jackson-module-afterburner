@@ -1,10 +1,7 @@
 package com.fasterxml.jackson.module.afterburner.failing;
 
-import java.util.*;
-
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestIssue47 extends AfterburnerTestBase
@@ -20,12 +17,6 @@ public class TestIssue47 extends AfterburnerTestBase
     {
         String getId();
         void setId(String id);
-    
-        String getRevision();
-        void setRevision(String revision);
-    
-        String getCategory();
-        void setCategory(String category);
 
         FooBase clone() throws CloneNotSupportedException;
     }
@@ -38,18 +29,6 @@ public class TestIssue47 extends AfterburnerTestBase
 
         @Override
         public void setId(String id) { this.id = id; }
-
-        @Override
-        public String getRevision() { return revision; }
-
-        @Override
-        public void setRevision(String revision) { this.revision = revision; }
-
-        @Override
-        public String getCategory() { return category; }
-
-        @Override
-        public void setCategory(String category) { this.category = category; }
 
         @Override
         public FooBase clone() throws CloneNotSupportedException {

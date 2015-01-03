@@ -48,8 +48,7 @@ public final class SettableObjectMethodProperty
     
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object bean) throws IOException, JsonProcessingException
-    {
+            Object bean) throws IOException {
         set(bean, deserialize(jp, ctxt));
     }
 
@@ -60,9 +59,7 @@ public final class SettableObjectMethodProperty
 
     @Override
     public Object deserializeSetAndReturn(JsonParser jp,
-            DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException
-    {
+            DeserializationContext ctxt, Object instance) throws IOException {
         return setAndReturn(instance, deserialize(jp, ctxt));
     }    
 }
