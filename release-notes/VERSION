@@ -13,6 +13,11 @@ Project: jackson-module-afterburner
 
 - Remove coupling of `_name` field of `BeanPropertyWriter`
 
+2.4.5 (not yet released)
+
+#48: Problem passing custom `JsonSerializer`, causing an NPE
+ (reported, fix contributed by Joost v-d-W)
+
 2.4.4 (24-Nov-2014)
 
 No changes since 2.4.3.
