@@ -38,7 +38,8 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     {
         super(src);
         this.fallbackWriter = unwrapFallbackWriter(src);
-        _serializer = ser; // from base class
+        // either use the passed on serializer or the original one
+        _serializer = (ser != null) ? ser : src.getSerializer();
         _propertyAccessor = propertyAccessor;
         _propertyIndex = propertyIndex;
         _fastName = src.getSerializedName();
