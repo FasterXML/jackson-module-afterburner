@@ -1,11 +1,12 @@
 Project: jackson-module-afterburner
-Version: 2.3.5 (xx-xxx-2014)
-
-#42: Fails when trying to modify values of final fields
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.5 (14-Jan-2014)
+
+#42: Fails when trying to modify values of final fields
 
 2.3.4 (17-Jul-2014)
 
