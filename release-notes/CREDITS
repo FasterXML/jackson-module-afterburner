@@ -23,3 +23,7 @@ Nándor István Krácser (bonifaido@github)
 * Contributed #27/#23: ability to deserialize interface types
  (2.2.3)
 
+Joost van de Wijgerd (jwijgerd@github)
+
+* Contributed fix to #48: Problem passing custom `JsonSerializer`, causing an NPE
+ (2.4.5)
