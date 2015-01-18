@@ -67,7 +67,7 @@ public class ObjectMethodPropertyWriter
         }
         if (_suppressableValue != null) {
             if (MARKER_FOR_EMPTY == _suppressableValue) {
-                if (ser.isEmpty(value)) {
+                if (ser.isEmpty(prov, value)) {
                     return;
                 }
             } else if (_suppressableValue.equals(value)) {
@@ -75,7 +75,10 @@ public class ObjectMethodPropertyWriter
             }
         }
         if (value == bean) {
-            _handleSelfReference(bean, gen, prov, ser);
+            // three choices: exception; handled by call; or pass-through
+            if (_handleSelfReference(bean, gen, prov, ser)) {
+                return;
+            }
         }
         gen.writeFieldName(_fastName);
         if (_typeSerializer == null) {
@@ -121,7 +124,7 @@ public class ObjectMethodPropertyWriter
         }
         if (_suppressableValue != null) {
             if (MARKER_FOR_EMPTY == _suppressableValue) {
-                if (ser.isEmpty(value)) {
+                if (ser.isEmpty(prov, value)) {
                     serializeAsPlaceholder(bean, gen, prov);
                     return;
                 }
@@ -131,7 +134,10 @@ public class ObjectMethodPropertyWriter
             }
         }
         if (value == bean) {
-            _handleSelfReference(bean, gen, prov, ser);
+            // three choices: exception; handled by call; or pass-through
+            if (_handleSelfReference(bean, gen, prov, ser)) {
+                return;
+            }
         }
         if (_typeSerializer == null) {
             ser.serialize(value, gen, prov);
