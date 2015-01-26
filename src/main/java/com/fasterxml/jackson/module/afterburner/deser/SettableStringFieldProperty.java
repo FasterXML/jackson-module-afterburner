@@ -47,10 +47,14 @@ public final class SettableStringFieldProperty
      */
 
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object bean) throws IOException, JsonProcessingException
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
+            Object bean) throws IOException
     {
-        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, _deserializeString(jp, ctxt));
+        String text = p.getValueAsString();
+        if (text == null) {
+            text = _convertToString(p, ctxt);
+        }
+        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, text);
     }
 
     @Override
@@ -59,10 +63,13 @@ public final class SettableStringFieldProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
-            DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException
+    public Object deserializeSetAndReturn(JsonParser p, DeserializationContext ctxt, Object instance)
+        throws IOException
     {
-        return setAndReturn(instance, _deserializeString(jp, ctxt));
+        String text = p.getValueAsString();
+        if (text == null) {
+            text = _convertToString(p, ctxt);
+        }
+        return setAndReturn(instance, text);
     }
 }

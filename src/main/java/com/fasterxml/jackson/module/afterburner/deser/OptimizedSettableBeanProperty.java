@@ -145,11 +145,11 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
     protected final boolean _deserializeBoolean(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        int id = p.getCurrentTokenId();
-        if (id == JsonTokenId.ID_TRUE) {
+        JsonToken t = p.getCurrentToken();
+        if (t == JsonToken.VALUE_TRUE) {
             return true;
         }
-        if (id == JsonTokenId.ID_FALSE) {
+        if (t == JsonToken.VALUE_FALSE) {
             return false;
         }
         return p.getValueAsBoolean();
@@ -157,12 +157,6 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
     protected final String _deserializeString(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (p.hasTokenId(JsonTokenId.ID_NULL)) {
-            if (_nullProvider == null) {
-                return null;
-            }
-            return (String) _nullProvider.nullValue(ctxt);
-        }
         String text = p.getValueAsString();
         if (text != null) {
             return text;
@@ -176,7 +170,14 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
      */
     protected final String _convertToString(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        if (p.hasTokenId(JsonTokenId.ID_EMBEDDED_OBJECT)) {
+        JsonToken curr = p.getCurrentToken();
+        if (curr == JsonToken.VALUE_NULL) { // should this ever happen?
+            if (_nullProvider == null) {
+                return null;
+            }
+            return (String) _nullProvider.nullValue(ctxt);
+        }
+        if (curr == JsonToken.VALUE_EMBEDDED_OBJECT) {
             Object ob = p.getEmbeddedObject();
             if (ob == null) {
                 return null;
@@ -186,13 +187,9 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
             }
             return ob.toString();
         }
-        JsonToken curr = p.getCurrentToken();
         // Can deserialize any scalar value
         if (curr.isScalarValue()) { // should have been handled earlier, but just in case...
             return p.getText();
-        }
-        if (curr == JsonToken.VALUE_NULL) { // should this ever happen?
-            return null;
         }
         // but not markers:
         throw ctxt.mappingException(String.class);
