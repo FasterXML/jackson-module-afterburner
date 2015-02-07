@@ -4,7 +4,7 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
-2.5.1 (not yet released)
+2.5.1 (06-Feb-2015)
 
 #47: java.lang.VerifyError (Illegal type in constant pool ...)
  (reported by huxi@github)
