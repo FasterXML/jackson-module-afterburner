@@ -261,7 +261,7 @@ public class PropertyMutatorCollector
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
-    
+
     /*
     /**********************************************************
     /* Helper methods, method accessor creation
@@ -346,6 +346,12 @@ public class PropertyMutatorCollector
         }
         mv.visitLabel(defaultLabel);
     }
+
+    /*
+    /**********************************************************
+    /* Helper methods, field accessor creation
+    /**********************************************************
+     */
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
