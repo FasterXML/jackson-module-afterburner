@@ -10,7 +10,7 @@ Module is stable and has been used in production environments. Its adoption is n
 core Jackson components, so rough edges may still exist. However, versions from 2.2 up are considered
 production ready.
 
-[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-module-afterburner-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-module-afterburner-master/)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-module-afterburner.svg)](https://travis-ci.org/FasterXML/jackson-module-afterburner)
 
 ## Usage
 
