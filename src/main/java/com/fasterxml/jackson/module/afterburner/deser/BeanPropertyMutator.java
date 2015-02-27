@@ -61,7 +61,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _intSetter(bean, index, value);
+            _intSetter(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -78,7 +78,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _longSetter(bean, index, value);
+            _longSetter(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -95,7 +95,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _booleanSetter(bean, index, value);
+            _booleanSetter(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -112,7 +112,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _stringSetter(bean, index, value);
+            _stringSetter(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -128,7 +128,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _objectSetter(bean, index, value);
+            _objectSetter(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -229,19 +229,19 @@ public abstract class BeanPropertyMutator
         }
     }
 
-    protected void _intSetter(Object bean, int propertyIndex, int value) {
+    protected void _intSetter(Object bean, int value) {
         throw new UnsupportedOperationException("No intSetters defined");
     }
-    protected void _longSetter(Object bean, int propertyIndex, long value) {
+    protected void _longSetter(Object bean, long value) {
         throw new UnsupportedOperationException("No longSetters defined");
     }
-    protected void _booleanSetter(Object bean, int propertyIndex, boolean value) {
+    protected void _booleanSetter(Object bean, boolean value) {
         throw new UnsupportedOperationException("No booleanSetters defined");
     }
-    protected void _stringSetter(Object bean, int propertyIndex, String value) {
+    protected void _stringSetter(Object bean, String value) {
         throw new UnsupportedOperationException("No stringSetters defined");
     }
-    protected void _objectSetter(Object bean, int propertyIndex, Object value) {
+    protected void _objectSetter(Object bean, Object value) {
         throw new UnsupportedOperationException("No objectSetters defined");
     }
 

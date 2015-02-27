@@ -213,12 +213,12 @@ public class PropertyMutatorCollector
     private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw,
             List<T> props, String methodName, Type parameterType, int loadValueCode)
     {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
         mv.visitVarInsn(ALOAD, 1);
         mv.visitTypeInsn(CHECKCAST, beanClassName);
-        int localVarIndex = 4 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
+        int localVarIndex = 3 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
         mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
 
         boolean mustCast = parameterType.equals(OBJECT_TYPE);
@@ -229,7 +229,7 @@ public class PropertyMutatorCollector
             _addSettersUsingSwitch(mv, props, loadValueCode, localVarIndex, mustCast);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClassName, props.size(), 2, null);
+        generateException(mv, beanClassName, props.size(), -1, "index");
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -273,13 +273,15 @@ public class PropertyMutatorCollector
     private <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
+
         Label next = new Label();
         // first: check if 'index == 0'
         mv.visitJumpInsn(IFNE, next); // "if not zero, goto L (skip stuff)"
         // call first getter:
         mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
-        mv.visitVarInsn(loadValueCode, 3);
+        mv.visitVarInsn(loadValueCode, 2);
         Method method = (Method) (props.get(0).getMember().getMember());
         Type type = Type.getType(method.getParameterTypes()[0]);
         if (mustCast) {
@@ -297,11 +299,12 @@ public class PropertyMutatorCollector
         for (int i = 1, len = props.size(); i < len; ++i) {
             mv.visitLabel(next);
             next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+            mv.visitVarInsn(ALOAD, 0); // this
+            mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
             mv.visitInsn(ALL_INT_CONSTS[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
-            mv.visitVarInsn(loadValueCode, 3);
+            mv.visitVarInsn(loadValueCode, 2);
             method = (Method) (props.get(i).getMember().getMember());
             type = Type.getType(method.getParameterTypes()[0]);
 
@@ -321,7 +324,8 @@ public class PropertyMutatorCollector
     private <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingSwitch(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
 
         Label[] labels = new Label[props.size()];
         for (int i = 0, len = labels.length; i < len; ++i) {
@@ -332,7 +336,7 @@ public class PropertyMutatorCollector
         for (int i = 0, len = labels.length; i < len; ++i) {
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
-            mv.visitVarInsn(loadValueCode, 3);
+            mv.visitVarInsn(loadValueCode, 2);
             Method method = (Method) (props.get(i).getMember().getMember());
             Type type = Type.getType(method.getParameterTypes()[0]);
 
