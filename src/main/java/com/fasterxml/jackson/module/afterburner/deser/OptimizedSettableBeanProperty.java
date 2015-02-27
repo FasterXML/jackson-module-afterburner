@@ -32,7 +32,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     /* Life-cycle
     /********************************************************************** 
      */
-    
+
     public OptimizedSettableBeanProperty(SettableBeanProperty src,
             BeanPropertyMutator mutator, int index)
     {
@@ -119,6 +119,20 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     @Override
     public Object setAndReturn(Object instance, Object value) throws IOException {
         return _originalSettable.setAndReturn(instance, value);
+    }
+
+    /*
+    /********************************************************************** 
+    /* Extended API
+    /********************************************************************** 
+     */
+
+    public SettableBeanProperty getOriginalProperty() {
+        return _originalSettable;
+    }
+
+    public int getOptimizedIndex() {
+        return _optimizedIndex;
     }
 
     /*

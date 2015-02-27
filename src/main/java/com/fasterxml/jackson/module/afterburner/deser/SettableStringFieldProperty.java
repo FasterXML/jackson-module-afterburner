@@ -54,12 +54,12 @@ public final class SettableStringFieldProperty
         if (text == null) {
             text = _convertToString(p, ctxt);
         }
-        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, text);
+        _propertyMutator.stringField(bean, text);
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.stringField(_originalSettable, bean, _optimizedIndex, (String) value);
+        _propertyMutator.stringField(bean, (String) value);
     }
 
     @Override

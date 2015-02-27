@@ -50,21 +50,20 @@ public final class SettableIntFieldProperty
 
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object bean) throws IOException, JsonProcessingException
+            Object bean) throws IOException
     {
-        _propertyMutator.intField(_originalSettable, bean, _optimizedIndex, _deserializeInt(jp, ctxt));
+        _propertyMutator.intField(bean, _deserializeInt(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.intField(_originalSettable, bean, _optimizedIndex, ((Number) value).intValue());
+        _propertyMutator.intField(bean, ((Number) value).intValue());
     }
 
     @Override
     public Object deserializeSetAndReturn(JsonParser jp,
-            DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException
+            DeserializationContext ctxt, Object instance) throws IOException
     {
         return setAndReturn(instance, _deserializeInt(jp, ctxt));
     }    

@@ -55,7 +55,7 @@ public final class SettableObjectFieldProperty
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.objectField(_originalSettable, bean, _optimizedIndex, value);
+        _propertyMutator.objectField(bean, value);
     }
 
     @Override

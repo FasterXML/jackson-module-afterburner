@@ -48,21 +48,21 @@ public final class SettableLongMethodProperty
     
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object bean) throws IOException, JsonProcessingException
+            Object bean) throws IOException
     {
-        _propertyMutator.longSetter(_originalSettable, bean, _optimizedIndex, _deserializeLong(jp, ctxt));
+        _propertyMutator.longSetter(bean, _deserializeLong(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.longSetter(_originalSettable, bean, _optimizedIndex, ((Number) value).longValue());
+        _propertyMutator.longSetter(bean, ((Number) value).longValue());
     }
 
     @Override
     public Object deserializeSetAndReturn(JsonParser jp,
             DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         return setAndReturn(instance, _deserializeLong(jp, ctxt));
     }    

@@ -54,12 +54,12 @@ public final class SettableStringMethodProperty
         if (text == null) {
             text = _convertToString(p, ctxt);
         }
-        _propertyMutator.stringSetter(_originalSettable, bean, _optimizedIndex, text);
+        _propertyMutator.stringSetter(bean, text);
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
-        _propertyMutator.stringSetter(_originalSettable, bean, _optimizedIndex, (String) value);
+        _propertyMutator.stringSetter(bean, (String) value);
     }
 
     @Override

@@ -50,13 +50,13 @@ public final class SettableBooleanFieldProperty
 
     @Override
     public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt, Object bean) throws IOException {
-        _propertyMutator.booleanField(_originalSettable, bean, _optimizedIndex, _deserializeBoolean(jp, ctxt));
+        _propertyMutator.booleanField(bean, _deserializeBoolean(jp, ctxt));
     }
 
     @Override
     public void set(Object bean, Object value) throws IOException {
         // not optimal (due to boxing), but better than using reflection:
-        _propertyMutator.booleanField(_originalSettable, bean, _optimizedIndex, ((Boolean) value).booleanValue());
+        _propertyMutator.booleanField(bean, ((Boolean) value).booleanValue());
     }
 
     @Override
