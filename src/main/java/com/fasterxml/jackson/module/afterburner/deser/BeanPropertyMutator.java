@@ -151,7 +151,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _intField(bean, index, value);
+            _intField(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -168,7 +168,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _longField(bean, index, value);
+            _longField(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -185,7 +185,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _booleanField(bean, index, value);
+            _booleanField(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -202,7 +202,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _stringField(bean, index, value);
+            _stringField(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -219,7 +219,7 @@ public abstract class BeanPropertyMutator
             return;
         }
         try {
-            _objectField(bean, index, value);
+            _objectField(bean, value);
         } catch (IllegalAccessError e) {
             _reportProblem(bean, e);
             originalMutator.set(bean, value);
@@ -244,19 +244,20 @@ public abstract class BeanPropertyMutator
     protected void _objectSetter(Object bean, int propertyIndex, Object value) {
         throw new UnsupportedOperationException("No objectSetters defined");
     }
-    protected void _intField(Object bean, int propertyIndex, int value) {
+
+    protected void _intField(Object bean, int value) {
         throw new UnsupportedOperationException("No intFields defined");
     }
-    protected void _longField(Object bean, int propertyIndex, long value) {
+    protected void _longField(Object bean, long value) {
         throw new UnsupportedOperationException("No longFields defined");
     }
-    protected void _booleanField(Object bean, int propertyIndex, boolean value) {
+    protected void _booleanField(Object bean, boolean value) {
         throw new UnsupportedOperationException("No booleanFields defined");
     }
-    protected void _stringField(Object bean, int propertyIndex, String value) {
+    protected void _stringField(Object bean, String value) {
         throw new UnsupportedOperationException("No stringFields defined");
     }
-    protected void _objectField(Object bean, int propertyIndex, Object value) {
+    protected void _objectField(Object bean, Object value) {
         throw new UnsupportedOperationException("No objectFields defined");
     }
 

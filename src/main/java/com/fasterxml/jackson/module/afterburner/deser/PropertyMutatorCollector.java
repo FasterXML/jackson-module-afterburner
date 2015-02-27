@@ -22,6 +22,8 @@ public class PropertyMutatorCollector
     private static final Type STRING_TYPE = Type.getType(String.class);
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
+    private final static String MUTATOR_CLASS = internalClassName(BeanPropertyMutator.class);
+    
     private final List<SettableIntMethodProperty> _intSetters = new LinkedList<SettableIntMethodProperty>();
     private final List<SettableLongMethodProperty> _longSetters = new LinkedList<SettableLongMethodProperty>();
     private final List<SettableBooleanMethodProperty> _booleanSetters = new LinkedList<SettableBooleanMethodProperty>();
@@ -204,12 +206,12 @@ public class PropertyMutatorCollector
     
     /*
     /**********************************************************
-    /* Code generation; method-based getters
+    /* Code generation; method-based setters
     /**********************************************************
      */
 
-    private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw, List<T> props,
-            String methodName, Type parameterType, int loadValueCode)
+    private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw,
+            List<T> props, String methodName, Type parameterType, int loadValueCode)
     {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
         mv.visitCode();
@@ -227,7 +229,7 @@ public class PropertyMutatorCollector
             _addSettersUsingSwitch(mv, props, loadValueCode, localVarIndex, mustCast);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClassName, props.size());
+        generateException(mv, beanClassName, props.size(), 2, null);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -238,16 +240,16 @@ public class PropertyMutatorCollector
     /**********************************************************
      */
 
-    private <T extends OptimizedSettableBeanProperty<T>> void _addFields(ClassWriter cw, List<T> props,
-            String methodName, Type parameterType, int loadValueCode)
+    private <T extends OptimizedSettableBeanProperty<T>> void _addFields(ClassWriter cw,
+            List<T> props, String methodName, Type parameterType, int loadValueCode)
     {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
         mv.visitVarInsn(ALOAD, 1);
         mv.visitTypeInsn(CHECKCAST, beanClassName);
-        int localVarIndex = 4 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
-        mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
+        int localVarIndex = 3 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
+        mv.visitVarInsn(ASTORE, localVarIndex); // 2 args (0 == this), so 3 is the first local var slot, 4 for long
 
         boolean mustCast = parameterType.equals(OBJECT_TYPE);
         // Ok; minor optimization, less than 4 accessors, just do IFs; over that, use switch
@@ -257,7 +259,7 @@ public class PropertyMutatorCollector
             _addFieldsUsingSwitch(mv, props, loadValueCode, localVarIndex, mustCast);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClassName, props.size());
+        generateException(mv, beanClassName, props.size(), -1, "index");
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -352,18 +354,20 @@ public class PropertyMutatorCollector
     /* Helper methods, field accessor creation
     /**********************************************************
      */
-
+    
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
+
         Label next = new Label();
         // first: check if 'index == 0'
         mv.visitJumpInsn(IFNE, next); // "if not zero, goto L (skip stuff)"
 
         // first field accessor
         mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
-        mv.visitVarInsn(loadValueCode, 3);
+        mv.visitVarInsn(loadValueCode, 2);
         AnnotatedField field = (AnnotatedField) props.get(0).getMember();
         Type type = Type.getType(field.getRawType());
         if (mustCast) {
@@ -371,16 +375,17 @@ public class PropertyMutatorCollector
         }
         mv.visitFieldInsn(PUTFIELD, beanClassName, field.getName(), type.getDescriptor());
         mv.visitInsn(RETURN);
-
+        
         // And from this point on, loop a bit
         for (int i = 1, len = props.size(); i < len; ++i) {
             mv.visitLabel(next);
             next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+            mv.visitVarInsn(ALOAD, 0); // this
+            mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
             mv.visitInsn(ALL_INT_CONSTS[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
-            mv.visitVarInsn(loadValueCode, 3);
+            mv.visitVarInsn(loadValueCode, 2);
             field = (AnnotatedField) props.get(i).getMember();
             type = Type.getType(field.getRawType());
             if (mustCast) {
@@ -395,7 +400,8 @@ public class PropertyMutatorCollector
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
 
         Label[] labels = new Label[props.size()];
         for (int i = 0, len = labels.length; i < len; ++i) {
@@ -406,7 +412,7 @@ public class PropertyMutatorCollector
         for (int i = 0, len = labels.length; i < len; ++i) {
             mv.visitLabel(labels[i]);
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
-            mv.visitVarInsn(loadValueCode, 3); // put 'value' to stack
+            mv.visitVarInsn(loadValueCode, 2); // put 'value' to stack
             AnnotatedField field = (AnnotatedField) props.get(i).getMember();
             Type type = Type.getType(field.getRawType());
             if (mustCast) {
