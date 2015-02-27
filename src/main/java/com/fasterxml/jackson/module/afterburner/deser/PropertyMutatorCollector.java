@@ -163,38 +163,38 @@ public class PropertyMutatorCollector
         
         // and then add various accessors; first field accessors:
         if (!_intFields.isEmpty()) {
-            _addFields(cw, _intFields, "intField", Type.INT_TYPE, ILOAD);
+            _addFields(cw, _intFields, "_intField", Type.INT_TYPE, ILOAD);
         }
         if (!_longFields.isEmpty()) {
-            _addFields(cw, _longFields, "longField", Type.LONG_TYPE, LLOAD);
+            _addFields(cw, _longFields, "_longField", Type.LONG_TYPE, LLOAD);
         }
         if (!_booleanFields.isEmpty()) {
             // booleans are simply ints 0 and 1
-            _addFields(cw, _booleanFields, "booleanField", Type.BOOLEAN_TYPE, ILOAD);
+            _addFields(cw, _booleanFields, "_booleanField", Type.BOOLEAN_TYPE, ILOAD);
         }
         if (!_stringFields.isEmpty()) {
-            _addFields(cw, _stringFields, "stringField", STRING_TYPE, ALOAD);
+            _addFields(cw, _stringFields, "_stringField", STRING_TYPE, ALOAD);
         }
         if (!_objectFields.isEmpty()) {
-            _addFields(cw, _objectFields, "objectField", OBJECT_TYPE, ALOAD);
+            _addFields(cw, _objectFields, "_objectField", OBJECT_TYPE, ALOAD);
         }
 
         // and then method accessors:
         if (!_intSetters.isEmpty()) {
-            _addSetters(cw, _intSetters, "intSetter", Type.INT_TYPE, ILOAD);
+            _addSetters(cw, _intSetters, "_intSetter", Type.INT_TYPE, ILOAD);
         }
         if (!_longSetters.isEmpty()) {
-            _addSetters(cw, _longSetters, "longSetter", Type.LONG_TYPE, LLOAD);
+            _addSetters(cw, _longSetters, "_longSetter", Type.LONG_TYPE, LLOAD);
         }
         if (!_booleanSetters.isEmpty()) {
             // booleans are simply ints 0 and 1
-            _addSetters(cw, _booleanSetters, "booleanSetter", Type.BOOLEAN_TYPE, ILOAD);
+            _addSetters(cw, _booleanSetters, "_booleanSetter", Type.BOOLEAN_TYPE, ILOAD);
         }
         if (!_stringSetters.isEmpty()) {
-            _addSetters(cw, _stringSetters, "stringSetter", STRING_TYPE, ALOAD);
+            _addSetters(cw, _stringSetters, "_stringSetter", STRING_TYPE, ALOAD);
         }
         if (!_objectSetters.isEmpty()) {
-            _addSetters(cw, _objectSetters, "objectSetter", OBJECT_TYPE, ALOAD);
+            _addSetters(cw, _objectSetters, "_objectSetter", OBJECT_TYPE, ALOAD);
         }
 
         cw.visitEnd();
