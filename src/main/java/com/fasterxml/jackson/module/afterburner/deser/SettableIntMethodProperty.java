@@ -47,10 +47,10 @@ public final class SettableIntMethodProperty
      */
     
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
-            Object bean) throws IOException, JsonProcessingException
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
+            Object bean) throws IOException
     {
-        _propertyMutator.intSetter(bean, _deserializeInt(jp, ctxt));
+        _propertyMutator.intSetter(bean, p.getValueAsInt());
     }
 
     @Override
@@ -60,10 +60,10 @@ public final class SettableIntMethodProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
+    public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
-        return setAndReturn(instance, _deserializeInt(jp, ctxt));
+        return setAndReturn(instance, p.getValueAsInt());
     }    
 }

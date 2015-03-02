@@ -20,7 +20,8 @@ public abstract class BeanPropertyMutator
     protected final SettableBeanProperty originalMutator;
 
     /**
-     * Index of the property setter or field.
+     * Index of the property setter or field. Only used for error reporting
+     * at this point.
      */
     protected final int index;
 
@@ -46,7 +47,11 @@ public abstract class BeanPropertyMutator
         index = ix;
     }
 
-    public abstract BeanPropertyMutator with(SettableBeanProperty origM, int index);
+    /**
+     * Mutant factory method called to create variant with proper fallback property
+     * to call, index to use for error reporting.
+     */
+    public abstract BeanPropertyMutator with(SettableBeanProperty origM, int newIndex);
 
     /*
     /********************************************************************** 

@@ -141,22 +141,6 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     /********************************************************************** 
      */
 
-    protected final int _deserializeInt(JsonParser p, DeserializationContext ctxt) throws IOException
-    {
-        if (p.hasTokenId(JsonTokenId.ID_NUMBER_INT)) {
-            return p.getIntValue();
-        }
-        return p.getValueAsInt();
-    }
-
-    protected final long _deserializeLong(JsonParser p, DeserializationContext ctxt) throws IOException
-    {
-        if (p.hasTokenId(JsonTokenId.ID_NUMBER_INT)) {
-            return p.getLongValue();
-        }
-        return p.getValueAsLong();
-    }
-
     protected final boolean _deserializeBoolean(JsonParser p, DeserializationContext ctxt) throws IOException
     {
         JsonToken t = p.getCurrentToken();

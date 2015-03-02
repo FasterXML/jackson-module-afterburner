@@ -49,10 +49,10 @@ public final class SettableIntFieldProperty
      */
 
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
             Object bean) throws IOException
     {
-        _propertyMutator.intField(bean, _deserializeInt(jp, ctxt));
+        _propertyMutator.intField(bean, p.getValueAsInt());
     }
 
     @Override
@@ -62,9 +62,9 @@ public final class SettableIntFieldProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
+    public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, _deserializeInt(jp, ctxt));
+        return setAndReturn(instance, p.getValueAsInt());
     }    
 }

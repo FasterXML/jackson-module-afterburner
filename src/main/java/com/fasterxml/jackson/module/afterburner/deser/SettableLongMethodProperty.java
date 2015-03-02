@@ -47,10 +47,10 @@ public final class SettableLongMethodProperty
      */
     
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
             Object bean) throws IOException
     {
-        _propertyMutator.longSetter(bean, _deserializeLong(jp, ctxt));
+        _propertyMutator.longSetter(bean, p.getValueAsLong());
     }
 
     @Override
@@ -60,10 +60,9 @@ public final class SettableLongMethodProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
-            DeserializationContext ctxt, Object instance)
-        throws IOException
+    public Object deserializeSetAndReturn(JsonParser p,
+            DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, _deserializeLong(jp, ctxt));
+        return setAndReturn(instance, p.getValueAsLong());
     }    
 }
