@@ -117,11 +117,52 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
             return super.deserialize(p, ctxt);
         }
         // common case first:
-        if (p.isExpectedStartObjectToken()) {
-            p.nextToken();
-            return deserializeFromObject(p, ctxt);
+        if (!p.isExpectedStartObjectToken()) {
+            return _deserializeOther(p, ctxt, p.getCurrentToken());
         }
-        return _deserializeOther(p, ctxt, p.getCurrentToken());
+        if (_nonStandardCreation) {
+            p.nextToken();
+            if (_unwrappedPropertyHandler != null) {
+                return deserializeWithUnwrapped(p, ctxt);
+            }
+            if (_externalTypeIdHandler != null) {
+                return deserializeWithExternalTypeId(p, ctxt);
+            }
+            return deserializeFromObjectUsingNonDefault(p, ctxt);
+        }
+        final Object bean = _valueInstantiator.createUsingDefault(ctxt);
+        // [databind#631]: Assign current value, to be accessible by custom serializers
+        p.setCurrentValue(bean);
+        if (p.canReadObjectId()) {
+            Object id = p.getObjectId();
+            if (id != null) {
+                _handleTypedObjectId(p, ctxt, bean, id);
+            }
+        }
+        if (_injectables != null) {
+            injectValues(ctxt, bean);
+        }
+        for (int i = 0, len = _orderedProperties.length; i < len; ++i) {
+            SettableBeanProperty prop = _orderedProperties[i];
+            if (!p.nextFieldName(_orderedPropertyNames[i])) { // miss...
+                if (p.getCurrentToken() == JsonToken.END_OBJECT) {
+                    return bean;
+                }
+                // we likely point to FIELD_NAME, so can just call parent impl
+                return super.deserialize(p, ctxt, bean);
+            }
+            p.nextToken(); // skip field, returns value token
+            try {
+                prop.deserializeAndSet(p, ctxt, bean);
+            } catch (Exception e) {
+                wrapAndThrow(e, bean, prop.getName(), ctxt);
+            }
+        }
+        // also, need to ensure we get closing END_OBJECT...
+        if (p.nextToken() != JsonToken.END_OBJECT) {
+            return super.deserialize(p, ctxt, bean);
+        }
+        return bean;
     }
     
     // much of below is cut'n pasted from BeanSerializer
@@ -183,8 +224,7 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
 
     // much of below is cut'n pasted from BeanSerializer
     @Override
-    public final Object deserializeFromObject(JsonParser p, DeserializationContext ctxt)
-        throws IOException
+    public final Object deserializeFromObject(JsonParser p, DeserializationContext ctxt) throws IOException
     {
         if (_nonStandardCreation) {
             if (_unwrappedPropertyHandler != null) {
