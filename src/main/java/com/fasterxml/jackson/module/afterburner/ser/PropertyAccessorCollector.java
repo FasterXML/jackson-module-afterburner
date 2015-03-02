@@ -193,7 +193,7 @@ public class PropertyAccessorCollector
             _addGettersUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClassName, props.size(), 2, null);
+        generateException(mv, beanClassName, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }
@@ -221,7 +221,7 @@ public class PropertyAccessorCollector
             _addFieldsUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
-        generateException(mv, beanClassName, props.size(), 2, null);
+        generateException(mv, beanClassName, props.size());
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
     }

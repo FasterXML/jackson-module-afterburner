@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.objectweb.asm.MethodVisitor;
 
-import com.fasterxml.jackson.module.afterburner.deser.BeanPropertyMutator;
-
 import static org.objectweb.asm.Opcodes.*;
 
 public class DynamicPropertyAccessorBase
@@ -30,8 +28,7 @@ public class DynamicPropertyAccessorBase
     /**********************************************************
      */
     
-    protected static void generateException(MethodVisitor mv, String beanClass, int propertyCount,
-            int indexIndex, String indexName)
+    protected static void generateException(MethodVisitor mv, String beanClass, int propertyCount)
     {
         mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
         mv.visitInsn(DUP);
@@ -39,15 +36,7 @@ public class DynamicPropertyAccessorBase
         mv.visitInsn(DUP);
         mv.visitLdcInsn("Invalid field index (valid; 0 <= n < "+propertyCount+"): ");
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V", false);
-
-        // should this be abstracted out somehow?
-        if (indexName != null) {
-            mv.visitVarInsn(ALOAD, 0); // this
-            mv.visitFieldInsn(GETFIELD, internalClassName(BeanPropertyMutator.class), "index", "I");
-        } else {
-            mv.visitVarInsn(ILOAD, indexIndex); // this
-        }
-
+        mv.visitVarInsn(ILOAD, 2);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>", "(Ljava/lang/String;)V", false);
@@ -60,10 +49,6 @@ public class DynamicPropertyAccessorBase
     /**********************************************************
      */
 
-    protected static String internalClassName(Class<?> cls) {
-        return internalClassName(cls.getName());
-    }
-    
     protected static String internalClassName(String className) {
         return className.replace(".", "/");
     }
