@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 // NOTE: copied almost verbatim from jackson-databind tests
-public class TestPOJOAsArray extends AfterburnerTestBase
+public class POJOAsArrayTest extends AfterburnerTestBase
 {
     static class Pojo
     {

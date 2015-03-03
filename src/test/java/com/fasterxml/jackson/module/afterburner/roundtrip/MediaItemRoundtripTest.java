@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
  * Let's use a non-trivial POJO from "jvm-serializers" benchmark as
  * sort of sanity check.
  */
-public class TestMediaItemRoundtrip extends AfterburnerTestBase
+public class MediaItemRoundtripTest extends AfterburnerTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 

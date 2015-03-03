@@ -11,7 +11,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
  * Simple tests to try to see that handling of semi-standard types
  * from javax.* work.
  */
-public class TestJavaxTypes extends AfterburnerTestBase
+public class JavaxTypesTest extends AfterburnerTestBase
 {
     final ObjectMapper MAPPER = mapperWithModule();
 

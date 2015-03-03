@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
  * using more sizable (500k of JSON, 200k of encoded data) dataset.
  * Should tease out at least some of boundary conditions.
  */
-public class TestBiggerData extends AfterburnerTestBase
+public class BiggerDataTest extends AfterburnerTestBase
 {
 	static class Citm
 	{

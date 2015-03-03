@@ -1,10 +1,11 @@
-package com.fasterxml.jackson.module.afterburner.failing;
+package com.fasterxml.jackson.module.afterburner.roundtrip;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
-public class TestIssue47 extends AfterburnerTestBase
+// for [issue#47]
+public class AbstractSettersTest extends AfterburnerTestBase
 {
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
