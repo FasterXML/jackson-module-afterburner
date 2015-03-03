@@ -68,11 +68,9 @@ public abstract class BeanPropertyMutator
         try {
             intSetter(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
     
@@ -85,11 +83,9 @@ public abstract class BeanPropertyMutator
         try {
             longSetter(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
 
@@ -102,11 +98,9 @@ public abstract class BeanPropertyMutator
         try {
             booleanSetter(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
     
@@ -119,11 +113,9 @@ public abstract class BeanPropertyMutator
         try {
             stringSetter(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
     public void objectSetter(Object bean, Object value) throws IOException
@@ -135,11 +127,9 @@ public abstract class BeanPropertyMutator
         try {
             objectSetter(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
 
@@ -158,11 +148,10 @@ public abstract class BeanPropertyMutator
         try {
             intField(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
+            _reportProblem(bean, value, e);
             originalMutator.set(bean, value);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
 
@@ -175,11 +164,9 @@ public abstract class BeanPropertyMutator
         try {
             longField(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
 
@@ -192,11 +179,9 @@ public abstract class BeanPropertyMutator
         try {
             booleanField(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
     
@@ -209,11 +194,9 @@ public abstract class BeanPropertyMutator
         try {
             stringField(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
     public void objectField(Object bean, Object value) throws IOException
@@ -225,11 +208,9 @@ public abstract class BeanPropertyMutator
         try {
             objectField(bean, index, value);
         } catch (IllegalAccessError e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         } catch (SecurityException e) {
-            _reportProblem(bean, e);
-            originalMutator.set(bean, value);
+            _reportProblem(bean, value, e);
         }
     }
 
@@ -270,12 +251,17 @@ public abstract class BeanPropertyMutator
     /********************************************************************** 
      */
 
-    private void _reportProblem(Object bean, Throwable e)
+    private synchronized void _reportProblem(Object bean, Object value, Throwable e) throws IOException
     {
-        broken = true;
-        String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
-                bean.getClass(), index,
-                e.getClass().getName(), e.getMessage());
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
+        // yes, double-locking, so not guaranteed; but all we want here is to reduce likelihood
+        // of multiple logging of same underlying problem. Not guaranteed, just improved.
+        if (!broken) {
+            broken = true;
+            String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+                    bean.getClass(), index,
+                    e.getClass().getName(), e.getMessage());
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
+        }
+        originalMutator.set(bean, value);
     }
 }
