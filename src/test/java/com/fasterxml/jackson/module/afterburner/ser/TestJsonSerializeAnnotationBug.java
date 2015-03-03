@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.afterburner.bug48;
+package com.fasterxml.jackson.module.afterburner.ser;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
