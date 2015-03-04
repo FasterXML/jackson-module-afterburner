@@ -8,6 +8,8 @@ Project: jackson-module-afterburner
 
 #47: java.lang.VerifyError (Illegal type in constant pool ...)
  (reported by huxi@github)
+#52: Invalidating SerializationInclusion.NON_NULL of other modules
+ (reported by natnan@github)
 
 2.5.0 (01-Jan-2015)
 

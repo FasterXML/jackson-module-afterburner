@@ -32,3 +32,8 @@ Jörn Huxhorn (huxi@github)
 
 * Reported #47: java.lang.VerifyError (Illegal type in constant pool ...)
  (2.5.1)
+
+natnan@github
+
+* Reported #52: Invalidating SerializationInclusion.NON_NULL of other modules
+ (2.5.2)
