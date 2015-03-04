@@ -222,10 +222,16 @@ public class PropertyMutatorCollector
         mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
 
         boolean mustCast = parameterType.equals(OBJECT_TYPE);
-        // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
-        if (props.size() <= 4) {
+        // Ok; minor optimization, 3 or fewer accessors, just do IFs; over that, use switch
+        switch (props.size()) {
+        case 1:
+            _addSingleSetter(mv, props.get(0), loadValueCode, localVarIndex, mustCast);
+            break;
+        case 2:
+        case 3:
             _addSettersUsingIf(mv, props, loadValueCode, localVarIndex, mustCast);
-        } else {
+            break;
+        default:
             _addSettersUsingSwitch(mv, props, loadValueCode, localVarIndex, mustCast);
         }
         // and if no match, generate exception:
@@ -252,10 +258,16 @@ public class PropertyMutatorCollector
         mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
 
         boolean mustCast = parameterType.equals(OBJECT_TYPE);
-        // Ok; minor optimization, less than 4 accessors, just do IFs; over that, use switch
-        if (props.size() < 4) {
+        // Ok; minor optimization, 3 or fewer fields, just do IFs; over that, use switch
+        switch (props.size()) {
+        case 1:
+            _addSingleField(mv, props.get(0), loadValueCode, localVarIndex, mustCast);
+            break;
+        case 2:
+        case 3:
             _addFieldsUsingIf(mv, props, loadValueCode, localVarIndex, mustCast);
-        } else {
+            break;
+        default:
             _addFieldsUsingSwitch(mv, props, loadValueCode, localVarIndex, mustCast);
         }
         // and if no match, generate exception:
@@ -270,6 +282,26 @@ public class PropertyMutatorCollector
     /**********************************************************
      */
 
+    private void _addSingleSetter(MethodVisitor mv,
+            OptimizedSettableBeanProperty<?> prop, int loadValueCode, int beanIndex, boolean mustCast)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
+        mv.visitVarInsn(loadValueCode, 3);
+        Method method = (Method) (prop.getMember().getMember());
+        Type type = Type.getType(method.getParameterTypes()[0]);
+        if (mustCast) {
+            mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+        }
+        // to fix [Issue-5] (don't assume return type is 'void'), we need to:
+        Type returnType = Type.getType(method.getReturnType());
+
+        boolean isInterface = method.getDeclaringClass().isInterface();
+        mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
+                beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
+        mv.visitInsn(RETURN);
+    }
+    
     private <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
@@ -349,6 +381,27 @@ public class PropertyMutatorCollector
         mv.visitLabel(defaultLabel);
     }
 
+    /*
+    /**********************************************************
+    /* Helper methods, field accessor creation
+    /**********************************************************
+     */
+
+    private void _addSingleField(MethodVisitor mv,
+            OptimizedSettableBeanProperty<?> prop, int loadValueCode, int beanIndex, boolean mustCast)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
+        mv.visitVarInsn(loadValueCode, 3);
+        AnnotatedField field = (AnnotatedField) prop.getMember();
+        Type type = Type.getType(field.getRawType());
+        if (mustCast) {
+            mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+        }
+        mv.visitFieldInsn(PUTFIELD, beanClassName, field.getName(), type.getDescriptor());
+        mv.visitInsn(RETURN);
+    }
+    
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
