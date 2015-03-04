@@ -9,6 +9,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
+import com.fasterxml.jackson.module.afterburner.util.ClassName;
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -97,31 +98,26 @@ public class PropertyMutatorCollector
             classLoader = new MyClassLoader(beanClass.getClassLoader(), true);
         }
 
-        String srcName = beanClass.getName() + "$Access4JacksonDeserializer";
-
-        String generatedClass = internalClassName(srcName);
-        Class<?> accessorClass = null;
-        try {
-            accessorClass = classLoader.loadClass(srcName);
-        } catch (ClassNotFoundException e) { }
-        if (accessorClass == null) {
-            accessorClass = generateMutatorClass(classLoader, srcName, generatedClass);
-        }
+        final ClassName baseName = ClassName.constructFor(beanClass, "$Access4JacksonDeserializer");
+        Class<?> accessorClass = generateMutatorClass(classLoader, baseName);
         try {
             return (BeanPropertyMutator) accessorClass.newInstance();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
+            throw new IllegalStateException("Failed to generate accessor class '"+accessorClass.getName()+"': "+e.getMessage(), e);
         }
     }
 
-    public Class<?> generateMutatorClass(MyClassLoader classLoader, String srcName, String generatedClass)
+    public Class<?> generateMutatorClass(MyClassLoader classLoader, ClassName baseName)
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String superClass = internalClassName(BeanPropertyMutator.class.getName());
 
+        final String tmpClassName = baseName.getSlashedTemplate();
+
         // muchos important: level at least 1.5 to get generics!!!
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
-        cw.visitSource(srcName + ".java", null);
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, tmpClassName,
+                null, superClass, null);
+        cw.visitSource(baseName.getSourceFilename(), null);
 
         // add default (no-arg) constructor first
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
@@ -151,11 +147,11 @@ public class PropertyMutatorCollector
                 internalClassName(SettableBeanProperty.class.getName()), superClass);
         mv = cw.visitMethod(ACC_PUBLIC, "with", withSig, null, null);
         mv.visitCode();
-        mv.visitTypeInsn(NEW, generatedClass);
+        mv.visitTypeInsn(NEW, tmpClassName);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitVarInsn(ILOAD, 2);
-        mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", ctorSig, false);
+        mv.visitMethodInsn(INVOKESPECIAL, tmpClassName, "<init>", ctorSig, false);
         mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
@@ -198,10 +194,16 @@ public class PropertyMutatorCollector
         }
 
         cw.visitEnd();
-        byte[] byteCode = cw.toByteArray();
-        return classLoader.loadAndResolve(srcName, byteCode);
+        byte[] bytecode = cw.toByteArray();
+        baseName.assignChecksum(bytecode);
+        // already defined exactly as-is?
+        try {
+            return classLoader.loadClass(baseName.getDottedName());
+        } catch (ClassNotFoundException e) { }
+        // if not, load, resolve etc:
+        return classLoader.loadAndResolve(baseName, bytecode);
     }
-    
+
     /*
     /**********************************************************
     /* Code generation; method-based getters

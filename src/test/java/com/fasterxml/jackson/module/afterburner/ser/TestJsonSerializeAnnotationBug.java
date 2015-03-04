@@ -16,7 +16,6 @@ public class TestJsonSerializeAnnotationBug extends AfterburnerTestBase {
         objectMapper.registerModule(new AfterburnerModule());
 
         String value = objectMapper.writeValueAsString(new TestObjectWithJsonSerialize(new BigDecimal("870.04")));
-
-
+        assertNotNull(value);
     }
 }

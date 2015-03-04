@@ -52,12 +52,16 @@ public class SerializerModifier extends BeanSerializerModifier
         }
         
         // if we had a match, need to materialize
-        BeanPropertyAccessor acc = collector.findAccessor(_classLoader);
+        BeanPropertyAccessor acc = null;
+
         // and then link accessors to bean property writers:
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
             BeanPropertyWriter bpw = it.next();
             if (bpw instanceof OptimizedBeanPropertyWriter<?>) {
+                if (acc == null) {
+                    acc = collector.findAccessor(_classLoader);
+                }
                 it.set(((OptimizedBeanPropertyWriter<?>) bpw).withAccessor(acc));
             }
         }

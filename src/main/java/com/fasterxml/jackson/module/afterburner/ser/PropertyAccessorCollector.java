@@ -9,6 +9,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.module.afterburner.util.ClassName;
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -92,34 +93,27 @@ public class PropertyAccessorCollector
         if (classLoader == null) {
             classLoader = new MyClassLoader(beanClass.getClassLoader(), true);
         }
-        
-        String srcName = beanClass.getName() + "$Access4JacksonSerializer";
-        
-        String generatedClass = internalClassName(srcName);
-        Class<?> accessorClass = null;
-        try {
-            accessorClass = classLoader.loadClass(srcName);
-        } catch (ClassNotFoundException e) { }
-        if (accessorClass == null) {
-            accessorClass = generateAccessorClass(classLoader, srcName, generatedClass);
-        }
+        final ClassName baseName = ClassName.constructFor(beanClass, "$Access4JacksonDeserializer");
+        Class<?> accessorClass = generateAccessorClass(classLoader, baseName);
         try {
             return (BeanPropertyAccessor) accessorClass.newInstance();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
+            throw new IllegalStateException("Failed to generate accessor class '"+accessorClass.getName()+"': "+e.getMessage(), e);
         }
     }
 
-    public Class<?> generateAccessorClass(MyClassLoader classLoader,
-                                          String srcName, String generatedClass)
+    public Class<?> generateAccessorClass(MyClassLoader classLoader, ClassName baseName)
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String superClass = internalClassName(BeanPropertyAccessor.class.getName());
-
+        final String tmpClassName = baseName.getSlashedTemplate();
+        
         // muchos important: level at least 1.5 to get generics!!!
         // also: since we require JDK 1.6 anyway, use that starting with Jackson 2.5
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
-        cw.visitSource(srcName + ".java", null);
+
+        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, tmpClassName,
+                null, superClass, null);
+        cw.visitSource(baseName.getSourceFilename(), null);
 
         // add default (no-arg) constructor:
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
@@ -166,8 +160,15 @@ public class PropertyAccessorCollector
         }
 
         cw.visitEnd();
-        byte[] byteCode = cw.toByteArray();
-        return classLoader.loadAndResolve(srcName, byteCode);
+        byte[] bytecode = cw.toByteArray();
+        baseName.assignChecksum(bytecode);
+
+        // Did we already generate this?
+        try {
+            return classLoader.loadClass(baseName.getDottedName());
+        } catch (ClassNotFoundException e) { }
+        // if not, load and resolve:
+        return classLoader.loadAndResolve(baseName, bytecode);
     }
 
     /*

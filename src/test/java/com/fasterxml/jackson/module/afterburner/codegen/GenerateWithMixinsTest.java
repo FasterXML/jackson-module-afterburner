@@ -1,11 +1,13 @@
-package com.fasterxml.jackson.module.afterburner.failing;
+package com.fasterxml.jackson.module.afterburner.codegen;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
-public class Issue51Test extends AfterburnerTestBase
+// for [afterburner#51], where re-generation of classes does not work
+// as expected
+public class GenerateWithMixinsTest extends AfterburnerTestBase
 {
     static class SampleObject {
         private String field1;

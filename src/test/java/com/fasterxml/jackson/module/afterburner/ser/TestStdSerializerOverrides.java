@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestStdSerializerOverrides extends AfterburnerTestBase
@@ -21,6 +20,7 @@ public class TestStdSerializerOverrides extends AfterburnerTestBase
         public String b = "b";
     }
 
+    @SuppressWarnings("serial")
     static class MyStringSerializer extends StdSerializer<String>
     {
         public MyStringSerializer() { super(String.class); }

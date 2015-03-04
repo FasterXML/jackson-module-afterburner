@@ -16,6 +16,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
+import com.fasterxml.jackson.module.afterburner.util.ClassName;
 import com.fasterxml.jackson.module.afterburner.util.DynamicPropertyAccessorBase;
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
@@ -77,30 +78,34 @@ public class CreatorOptimizer
     {
         MyClassLoader loader = (_classLoader == null) ?
             new MyClassLoader(_valueClass.getClassLoader(), true) : _classLoader;
-        String srcName = _valueClass.getName() + "$Creator4JacksonDeserializer";
+        final ClassName baseName = ClassName.constructFor(_valueClass, "$Creator4JacksonDeserializer");
+
+        // We need to know checksum even for lookups, so generate it first
+        final byte[] bytecode = generateOptimized(baseName, ctor, factory);
+        baseName.assignChecksum(bytecode);
+
         Class<?> impl = null;
         try {
-            impl = loader.loadClass(srcName);
+            impl = loader.loadClass(baseName.getDottedName());
         } catch (ClassNotFoundException e) { }
         if (impl == null) {
-            byte[] bytecode = generateOptimized(srcName, ctor, factory);
-            impl = loader.loadAndResolve(srcName, bytecode);
+            impl = loader.loadAndResolve(baseName, bytecode);
         }
         try {
             return (OptimizedValueInstantiator) impl.newInstance();
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to generate accessor class '"+srcName+"': "+e.getMessage(), e);
+            throw new IllegalStateException("Failed to generate accessor class '"+baseName+"': "+e.getMessage(), e);
         }
     }
 
-    protected byte[] generateOptimized(String srcName, Constructor<?> ctor, Method factory)
+    protected byte[] generateOptimized(ClassName baseName, Constructor<?> ctor, Method factory)
     {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         String superClass = internalClassName(OptimizedValueInstantiator.class.getName());
-        String generatedClass = internalClassName(srcName);
+        final String tmpClassName = baseName.getSlashedTemplate();
 
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, generatedClass, null, superClass, null);
-        cw.visitSource(srcName + ".java", null);
+        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER + ACC_FINAL, tmpClassName, null, superClass, null);
+        cw.visitSource(baseName.getSourceFilename(), null);
 
         // First: must define 2 constructors:
         // (a) default constructor, for creating bogus instance (just calls default instance)
@@ -131,10 +136,10 @@ public class CreatorOptimizer
         mv = cw.visitMethod(ACC_PUBLIC, "with", "("
                 +stdValueInstDesc+")"+optimizedValueInstDesc, null, null);
         mv.visitCode();
-        mv.visitTypeInsn(NEW, generatedClass);
+        mv.visitTypeInsn(NEW, tmpClassName);
         mv.visitInsn(DUP);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESPECIAL, generatedClass, "<init>", "("+stdValueInstDesc+")V", false);
+        mv.visitMethodInsn(INVOKESPECIAL, tmpClassName, "<init>", "("+stdValueInstDesc+")V", false);
         mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
