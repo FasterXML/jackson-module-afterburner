@@ -187,10 +187,16 @@ public class PropertyAccessorCollector
         mv.visitTypeInsn(CHECKCAST, beanClassName);
         mv.visitVarInsn(ASTORE, 3);
 
-        // Ok; minor optimization, 4 or less accessors, just do IFs; over that, use switch
-        if (props.size() <= 4) {
-            _addGettersUsingIf(mv, props, returnOpcode, ALL_INT_CONSTS);
-        } else {
+        // Ok; minor optimization, 3 or fewer accessors, just do IFs; over that, use switch
+        switch (props.size()) {
+        case 1:
+            _addSingleGetter(mv, props.get(0), returnOpcode);
+            break;
+        case 2:
+        case 3:
+            _addGettersUsingIf(mv, props, returnOpcode);
+            break;
+        default:
             _addGettersUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
@@ -215,10 +221,16 @@ public class PropertyAccessorCollector
         mv.visitTypeInsn(CHECKCAST, beanClassName);
         mv.visitVarInsn(ASTORE, 3);
 
-        // Ok; minor optimization, less than 4 accessors, just do IFs; over that, use switch
-        if (props.size() < 4) {
-            _addFieldsUsingIf(mv, props, returnOpcode, ALL_INT_CONSTS);
-        } else {
+        // Ok; minor optimization, 3 or fewer fields, just do IFs; over that, use switch
+        switch (props.size()) {
+        case 1:
+            _addSingleField(mv, props.get(0), returnOpcode);
+            break;
+        case 2:
+        case 3:
+            _addFieldsUsingIf(mv, props, returnOpcode);
+            break;
+        default:
             _addFieldsUsingSwitch(mv, props, returnOpcode);
         }
         // and if no match, generate exception:
@@ -233,8 +245,20 @@ public class PropertyAccessorCollector
     /**********************************************************
      */
 
+    private void _addSingleGetter(MethodVisitor mv,
+            OptimizedBeanPropertyWriter<?> prop, int returnOpcode)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 3); // load local for cast bean
+        int invokeInsn = beanClass.isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
+        Method method = (Method) (prop.getMember().getMember());
+        mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(),
+                Type.getMethodDescriptor(method), beanClass.isInterface());
+        mv.visitInsn(returnOpcode);
+    }
+    
     private <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingIf(MethodVisitor mv,
-            List<T> props, int returnOpcode, int[] constantOpcodes)
+            List<T> props, int returnOpcode)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
         Label next = new Label();
@@ -254,7 +278,7 @@ public class PropertyAccessorCollector
             mv.visitLabel(next);
             next = new Label();
             mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(constantOpcodes[i]);
+            mv.visitInsn(ALL_INT_CONSTS[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
             method = (Method) (props.get(i).getMember().getMember());
@@ -288,9 +312,17 @@ public class PropertyAccessorCollector
         mv.visitLabel(defaultLabel);
     }
 
+    private void _addSingleField(MethodVisitor mv, OptimizedBeanPropertyWriter<?> prop, int returnOpcode)
+    {
+        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+        mv.visitVarInsn(ALOAD, 3); // load local for cast bean
+        AnnotatedField field = (AnnotatedField) prop.getMember();
+        mv.visitFieldInsn(GETFIELD, beanClassName, field.getName(), Type.getDescriptor(field.getRawType()));
+        mv.visitInsn(returnOpcode);
+    }
+    
     private <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingIf(MethodVisitor mv,
-            List<T> props, int returnOpcode,
-            int[] constantOpcodes)
+            List<T> props, int returnOpcode)
     {
         mv.visitVarInsn(ILOAD, 2); // load second arg (index)
         Label next = new Label();
@@ -308,7 +340,7 @@ public class PropertyAccessorCollector
             mv.visitLabel(next);
             next = new Label();
             mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(constantOpcodes[i]);
+            mv.visitInsn(ALL_INT_CONSTS[i]);
             mv.visitJumpInsn(IF_ICMPNE, next);
             mv.visitVarInsn(ALOAD, 3); // load bean
             field = (AnnotatedField) props.get(i).getMember();
