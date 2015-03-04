@@ -83,21 +83,30 @@ public class SerializerModifier extends BeanSerializerModifier
                 continue;
             }
             // (although, interestingly enough, can seem to access private classes...)
-
+            
             // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom serializers, if any.
             if (bpw.hasSerializer()) {
                 if (!isDefaultSerializer(config, bpw.getSerializer())) {
                     continue;
                 }
             }
-            // [Issue#9]: also skip unwrapping stuff...
+            // [#9]: also skip unwrapping stuff...
             if (bpw.isUnwrapping()) {
+                continue;
+            }
+            // [#51]: and any sub-classes as well
+            /* 04-Mar-2015, tatu: This might be too restrictive, as core databind has some 
+             *   other sub-classes; if this becomes problematic may start using annotation
+             *   to indicate "standard" implementations. But for now this solves the issue.
+             */
+            if (bpw.getClass() != BeanPropertyWriter.class) {
                 continue;
             }
             
             boolean isMethod = (member instanceof AnnotatedMethod);
             if (type.isPrimitive()) {
                 if (type == Integer.TYPE) {
+
                     if (isMethod) {
                         it.set(collector.addIntGetter(bpw));
                     } else {

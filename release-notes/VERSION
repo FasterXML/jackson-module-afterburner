@@ -8,10 +8,12 @@ Project: jackson-module-afterburner
 
 #53: Include checksum in generated class names (to resolve #52)
 
-2.5.1 (not yet released)
+2.5.1 (06-Feb-2015)
 
 #47: java.lang.VerifyError (Illegal type in constant pool ...)
  (reported by huxi@github)
+#52: Invalidating SerializationInclusion.NON_NULL of other modules
+ (reported by natnan@github)
 
 2.5.0 (01-Jan-2015)
 
