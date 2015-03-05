@@ -67,10 +67,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             intSetter(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
     
@@ -82,10 +85,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             longSetter(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
 
@@ -97,10 +103,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             booleanSetter(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
     
@@ -112,10 +121,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             stringSetter(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
     public void objectSetter(Object bean, Object value) throws IOException
@@ -126,10 +138,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             objectSetter(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
 
@@ -147,11 +162,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             intField(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
-            originalMutator.set(bean, value);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
 
@@ -163,10 +180,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             longField(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
 
@@ -178,10 +198,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             booleanField(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
     
@@ -193,10 +216,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             stringField(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
     public void objectField(Object bean, Object value) throws IOException
@@ -207,10 +233,13 @@ public abstract class BeanPropertyMutator
         }
         try {
             objectField(bean, index, value);
+            return;
         } catch (IllegalAccessError e) {
             _reportProblem(bean, value, e);
+            return;
         } catch (SecurityException e) {
             _reportProblem(bean, value, e);
+            return;
         }
     }
 
