@@ -326,12 +326,15 @@ public class PropertyMutatorCollector
         mv.visitInsn(RETURN);
 
         // And from this point on, loop a bit
-        for (int i = 1, len = props.size(); i < len; ++i) {
+        for (int i = 1, end = props.size()-1; i <= end; ++i) {
             mv.visitLabel(next);
-            next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ALL_INT_CONSTS[i]);
-            mv.visitJumpInsn(IF_ICMPNE, next);
+            // No comparison needed for the last entry; assumed to match
+            if (i < end) {
+                next = new Label();
+                mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+                mv.visitInsn(ALL_INT_CONSTS[i]);
+                mv.visitJumpInsn(IF_ICMPNE, next);
+            }
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
             mv.visitVarInsn(loadValueCode, 3);
             method = (Method) (props.get(i).getMember().getMember());
@@ -347,7 +350,6 @@ public class PropertyMutatorCollector
                     beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
             mv.visitInsn(RETURN);
         }
-        mv.visitLabel(next);
     }
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingSwitch(MethodVisitor mv,
@@ -422,12 +424,15 @@ public class PropertyMutatorCollector
         mv.visitInsn(RETURN);
 
         // And from this point on, loop a bit
-        for (int i = 1, len = props.size(); i < len; ++i) {
+        for (int i = 1, end = props.size()-1; i <= end; ++i) {
             mv.visitLabel(next);
-            next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ALL_INT_CONSTS[i]);
-            mv.visitJumpInsn(IF_ICMPNE, next);
+            // No comparison needed for the last entry; assumed to match
+            if (i < end) {
+                next = new Label();
+                mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+                mv.visitInsn(ALL_INT_CONSTS[i]);
+                mv.visitJumpInsn(IF_ICMPNE, next);
+            }
             mv.visitVarInsn(ALOAD, beanIndex); // load bean
             mv.visitVarInsn(loadValueCode, 3);
             field = (AnnotatedField) props.get(i).getMember();
@@ -438,7 +443,6 @@ public class PropertyMutatorCollector
             mv.visitFieldInsn(PUTFIELD, beanClassName, field.getName(), type.getDescriptor());
             mv.visitInsn(RETURN);
         }
-        mv.visitLabel(next);
     }
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
