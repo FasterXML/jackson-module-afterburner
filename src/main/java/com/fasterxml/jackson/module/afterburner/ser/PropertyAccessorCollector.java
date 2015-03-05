@@ -274,19 +274,21 @@ public class PropertyAccessorCollector
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
-        for (int i = 1, len = props.size(); i < len; ++i) {
+        for (int i = 1, end = props.size()-1; i <= end; ++i) {
             mv.visitLabel(next);
-            next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ALL_INT_CONSTS[i]);
-            mv.visitJumpInsn(IF_ICMPNE, next);
+            // No need to check index for the last one
+            if (i < end) {
+                next = new Label();
+                mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+                mv.visitInsn(ALL_INT_CONSTS[i]);
+                mv.visitJumpInsn(IF_ICMPNE, next);
+            }
             mv.visitVarInsn(ALOAD, 3); // load bean
             method = (Method) (props.get(i).getMember().getMember());
             mv.visitMethodInsn(invokeInsn, beanClassName, method.getName(),
                     Type.getMethodDescriptor(method), beanClass.isInterface());
             mv.visitInsn(returnOpcode);
         }
-        mv.visitLabel(next);
     }
 
     private <T extends OptimizedBeanPropertyWriter<T>> void _addGettersUsingSwitch(MethodVisitor mv,
@@ -336,18 +338,20 @@ public class PropertyAccessorCollector
         mv.visitInsn(returnOpcode);
 
         // And from this point on, loop a bit
-        for (int i = 1, len = props.size(); i < len; ++i) {
+        for (int i = 1, end = props.size()-1; i <= end; ++i) {
             mv.visitLabel(next);
-            next = new Label();
-            mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-            mv.visitInsn(ALL_INT_CONSTS[i]);
-            mv.visitJumpInsn(IF_ICMPNE, next);
+            // No need to check index for the last one
+            if (i < end) {
+                next = new Label();
+                mv.visitVarInsn(ILOAD, 2); // load second arg (index)
+                mv.visitInsn(ALL_INT_CONSTS[i]);
+                mv.visitJumpInsn(IF_ICMPNE, next);
+            }
             mv.visitVarInsn(ALOAD, 3); // load bean
             field = (AnnotatedField) props.get(i).getMember();
             mv.visitFieldInsn(GETFIELD, beanClassName, field.getName(), Type.getDescriptor(field.getRawType()));
             mv.visitInsn(returnOpcode);
         }
-        mv.visitLabel(next);
     }
 
     private <T extends OptimizedBeanPropertyWriter<T>> void _addFieldsUsingSwitch(MethodVisitor mv,
