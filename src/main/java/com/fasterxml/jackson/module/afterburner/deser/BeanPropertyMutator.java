@@ -55,235 +55,94 @@ public abstract class BeanPropertyMutator
 
     /*
     /********************************************************************** 
-    /* Setter calls
+    /* Methods to generate for field mutators, setters
     /********************************************************************** 
      */
 
-    public void intSetter(Object bean, int value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            intSetter(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
+    public abstract void intSetter(Object bean, int value) throws IOException;
+    public abstract void longSetter(Object bean, long value) throws IOException;
+    public abstract void booleanSetter(Object bean, boolean value) throws IOException;
+    public abstract void stringSetter(Object bean, String value) throws IOException;
+    public abstract void objectSetter(Object bean, Object value) throws IOException;
     
-    public void longSetter(Object bean, long value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            longSetter(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
+    public abstract void intField(Object bean, int value) throws IOException;
+    public abstract void longField(Object bean, long value) throws IOException;
+    public abstract void booleanField(Object bean, boolean value) throws IOException;
+    public abstract void stringField(Object bean, String value) throws IOException;
+    public abstract void objectField(Object bean, Object value) throws IOException;
 
-    public void booleanSetter(Object bean, boolean value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            booleanSetter(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-    
-    public void stringSetter(Object bean, String value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            stringSetter(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-    public void objectSetter(Object bean, Object value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            objectSetter(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-
-    /*
-    /********************************************************************** 
-    /* Field assignments
-    /********************************************************************** 
-     */
-    
-    public void intField(Object bean, int value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            intField(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-
-    public void longField(Object bean, long value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            longField(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-
-    public void booleanField(Object bean, boolean value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            booleanField(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-    
-    public void stringField(Object bean, String value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            stringField(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-    public void objectField(Object bean, Object value) throws IOException
-    {
-        if (broken) {
-            originalMutator.set(bean, value);
-            return;
-        }
-        try {
-            objectField(bean, index, value);
-            return;
-        } catch (IllegalAccessError e) {
-            _reportProblem(bean, value, e);
-            return;
-        } catch (SecurityException e) {
-            _reportProblem(bean, value, e);
-            return;
-        }
-    }
-
-    protected void intSetter(Object bean, int propertyIndex, int value) {
+    public void intSetter(Object bean, int propertyIndex, int value) {
         throw new UnsupportedOperationException("No intSetters defined");
     }
-    protected void longSetter(Object bean, int propertyIndex, long value) {
+    public void longSetter(Object bean, int propertyIndex, long value) {
         throw new UnsupportedOperationException("No longSetters defined");
     }
-    protected void booleanSetter(Object bean, int propertyIndex, boolean value) {
+    public void booleanSetter(Object bean, int propertyIndex, boolean value) {
         throw new UnsupportedOperationException("No booleanSetters defined");
     }
-    protected void stringSetter(Object bean, int propertyIndex, String value) {
+    public void stringSetter(Object bean, int propertyIndex, String value) {
         throw new UnsupportedOperationException("No stringSetters defined");
     }
-    protected void objectSetter(Object bean, int propertyIndex, Object value) {
+    public void objectSetter(Object bean, int propertyIndex, Object value) {
         throw new UnsupportedOperationException("No objectSetters defined");
     }
-    protected void intField(Object bean, int propertyIndex, int value) {
+    public void intField(Object bean, int propertyIndex, int value) {
         throw new UnsupportedOperationException("No intFields defined");
     }
-    protected void longField(Object bean, int propertyIndex, long value) {
+    public void longField(Object bean, int propertyIndex, long value) {
         throw new UnsupportedOperationException("No longFields defined");
     }
-    protected void booleanField(Object bean, int propertyIndex, boolean value) {
+    public void booleanField(Object bean, int propertyIndex, boolean value) {
         throw new UnsupportedOperationException("No booleanFields defined");
     }
-    protected void stringField(Object bean, int propertyIndex, String value) {
+    public void stringField(Object bean, int propertyIndex, String value) {
         throw new UnsupportedOperationException("No stringFields defined");
     }
     protected void objectField(Object bean, int propertyIndex, Object value) {
         throw new UnsupportedOperationException("No objectFields defined");
     }
 
+    // // // Generated like:
+
+    /*
+    public void intSetter(Object bean, int value) throws IOException
+    {
+        if (broken) {
+            originalMutator.set(bean, value);
+        }
+        try {
+            intSetter(bean, index, value);
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, value, e);
+        } catch (SecurityException e) {
+            _reportProblem(bean, value, e);
+        }
+    }
+
+    public void intField(Object bean, int value) throws IOException
+    {
+        if (broken) {
+            originalMutator.set(bean, value);
+        }
+        try {
+            intField(bean, index, value);
+        } catch (IllegalAccessError e) {
+            _reportProblem(bean, value, e);
+        } catch (SecurityException e) {
+            _reportProblem(bean, value, e);
+        }
+    }
+    */
+    
     /*
     /********************************************************************** 
     /* Helper methods
     /********************************************************************** 
      */
 
-    private synchronized void _reportProblem(Object bean, Object value, Throwable e) throws IOException
+    protected synchronized void _reportProblem(Object bean, Object value, Throwable e)
+        throws IOException
     {
-        // yes, double-locking, so not guaranteed; but all we want here is to reduce likelihood
-        // of multiple logging of same underlying problem. Not guaranteed, just improved.
         if (!broken) {
             broken = true;
             String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",

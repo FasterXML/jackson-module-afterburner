@@ -49,6 +49,10 @@ public class DynamicPropertyAccessorBase
     /**********************************************************
      */
 
+    protected static String internalClassName(Class<?> cls) {
+        return internalClassName(cls.getClass());
+    }
+    
     protected static String internalClassName(String className) {
         return className.replace(".", "/");
     }
