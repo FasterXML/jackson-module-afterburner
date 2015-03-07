@@ -163,38 +163,38 @@ public class PropertyMutatorCollector
         
         // and then add various accessors; first field accessors:
         if (!_intFields.isEmpty()) {
-            _addFields(cw, _intFields, "intField", Type.INT_TYPE, ILOAD);
+            _addFields(cw, tmpClassName, _intFields, "intField", Type.INT_TYPE, ILOAD);
         }
         if (!_longFields.isEmpty()) {
-            _addFields(cw, _longFields, "longField", Type.LONG_TYPE, LLOAD);
+            _addFields(cw, tmpClassName, _longFields, "longField", Type.LONG_TYPE, LLOAD);
         }
         if (!_booleanFields.isEmpty()) {
             // booleans are simply ints 0 and 1
-            _addFields(cw, _booleanFields, "booleanField", Type.BOOLEAN_TYPE, ILOAD);
+            _addFields(cw, tmpClassName, _booleanFields, "booleanField", Type.BOOLEAN_TYPE, ILOAD);
         }
         if (!_stringFields.isEmpty()) {
-            _addFields(cw, _stringFields, "stringField", STRING_TYPE, ALOAD);
+            _addFields(cw, tmpClassName, _stringFields, "stringField", STRING_TYPE, ALOAD);
         }
         if (!_objectFields.isEmpty()) {
-            _addFields(cw, _objectFields, "objectField", OBJECT_TYPE, ALOAD);
+            _addFields(cw, tmpClassName, _objectFields, "objectField", OBJECT_TYPE, ALOAD);
         }
 
         // and then method accessors:
         if (!_intSetters.isEmpty()) {
-            _addSetters(cw, _intSetters, "intSetter", Type.INT_TYPE, ILOAD);
+            _addSetters(cw, tmpClassName, _intSetters, "intSetter", Type.INT_TYPE, ILOAD);
         }
         if (!_longSetters.isEmpty()) {
-            _addSetters(cw, _longSetters, "longSetter", Type.LONG_TYPE, LLOAD);
+            _addSetters(cw, tmpClassName, _longSetters, "longSetter", Type.LONG_TYPE, LLOAD);
         }
         if (!_booleanSetters.isEmpty()) {
             // booleans are simply ints 0 and 1
-            _addSetters(cw, _booleanSetters, "booleanSetter", Type.BOOLEAN_TYPE, ILOAD);
+            _addSetters(cw, tmpClassName, _booleanSetters, "booleanSetter", Type.BOOLEAN_TYPE, ILOAD);
         }
         if (!_stringSetters.isEmpty()) {
-            _addSetters(cw, _stringSetters, "stringSetter", STRING_TYPE, ALOAD);
+            _addSetters(cw, tmpClassName, _stringSetters, "stringSetter", STRING_TYPE, ALOAD);
         }
         if (!_objectSetters.isEmpty()) {
-            _addSetters(cw, _objectSetters, "objectSetter", OBJECT_TYPE, ALOAD);
+            _addSetters(cw, tmpClassName, _objectSetters, "objectSetter", OBJECT_TYPE, ALOAD);
         }
 
         cw.visitEnd();
@@ -214,7 +214,8 @@ public class PropertyMutatorCollector
     /**********************************************************
      */
 
-    private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw, List<T> props,
+    private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw,
+            String genClassName, List<T> props,
             String methodName, Type parameterType, int loadValueCode)
     {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
@@ -243,11 +244,18 @@ public class PropertyMutatorCollector
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
 
+        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode);
+    }
+    
+    private void _generateMutatorWrapper(ClassWriter cw, String genClassName, String methodName,
+            Type parameterType, int loadValueCode)
+    {
+        
         // And then generate the matching wrapper method like:
         /*
         public void intSetter(Object bean, int value) throws IOException {
             if (broken) {
-                originalMutator.set(bean, value);
+                _setOriginal(bean, value);
                 return;
             }
             try {
@@ -262,8 +270,8 @@ public class PropertyMutatorCollector
 
         // different offset as method only gets 2 params, not 3
         final int localVarIndex2 = 3 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
-        
-        mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
         mv.visitCode();
 
         // First: 'if (broken) ...'
@@ -271,13 +279,12 @@ public class PropertyMutatorCollector
         mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "broken", "Z");
         Label tryStart = new Label();
         mv.visitJumpInsn(IFEQ, tryStart);
-        // then: 'originalMutator.set(bean, value);'
-        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "originalMutator",
-                internalClassName(SettableBeanProperty.class));
+        // then: '_setOriginal(bean, value);'
+        mv.visitVarInsn(ALOAD, 0); // this
         mv.visitVarInsn(ALOAD, 1); // 'bean'
-        mv.visitVarInsn(ALOAD, 2); // 'value'
-        mv.visitMethodInsn(INVOKEVIRTUAL, SETTABLE_BEAN_PROP_CLASS, "set",
-                "(Ljava/lang/Object;Ljava/lang/Object;)V", false);
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_setOriginal",
+                "(Ljava/lang/Object;"+parameterType+")V", false);
         mv.visitInsn(RETURN);
 
         // otherwise try block
@@ -294,16 +301,32 @@ public class PropertyMutatorCollector
         mv.visitVarInsn(ALOAD, 1); // 'bean'
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
-        mv.visitVarInsn(ALOAD, 2); // 'value'
-        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, methodName,
-                "(Ljava/lang/Object;ILjava/lang/Object;)V", false);
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitMethodInsn(INVOKEVIRTUAL, genClassName, methodName,
+                "(Ljava/lang/Object;I"+parameterType+")V", false);
         mv.visitInsn(RETURN);
         mv.visitLabel(tryEnd);
 
+        // First catch block
         mv.visitLabel(catch1);
+        mv.visitVarInsn(ASTORE, localVarIndex2); // store exception in local var
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitVarInsn(ALOAD, 1); // 'bean'
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitVarInsn(ALOAD, localVarIndex2); // caught exception
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
+                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
         mv.visitInsn(RETURN);
-        
+
+        // Second catch block
         mv.visitLabel(catch2);
+        mv.visitVarInsn(ASTORE, localVarIndex2);
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitVarInsn(ALOAD, 1); // 'bean'
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitVarInsn(ALOAD, localVarIndex2); // caught exception
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
+                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
         mv.visitInsn(RETURN);
         
         mv.visitMaxs(0, 0);
@@ -316,7 +339,8 @@ public class PropertyMutatorCollector
     /**********************************************************
      */
 
-    private <T extends OptimizedSettableBeanProperty<T>> void _addFields(ClassWriter cw, List<T> props,
+    private <T extends OptimizedSettableBeanProperty<T>> void _addFields(ClassWriter cw,
+            String genClassName, List<T> props,
             String methodName, Type parameterType, int loadValueCode)
     {
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
@@ -345,19 +369,8 @@ public class PropertyMutatorCollector
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
 
-        // And then generate the matching wrapper method like:
-        /*
-            public void intField(Object bean, int value) throws IOException {
-                if (broken) { originalMutator.set(bean, value); }
-                try {
-                    intField(bean, index, value);
-                } catch (IllegalAccessError e) {
-                    _reportProblem(bean, value, e);
-                } catch (SecurityException e) {
-                    _reportProblem(bean, value, e);
-                }
-            }
-         */
+        // And then wrapper to call that method
+        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode);
     }
     
     /*

@@ -11,7 +11,7 @@ public class Test
     public void longField(Object bean, long value) throws IOException
     {
         if (broken) {
-            originalMutator.set(bean, value);
+            _setOriginal(bean, value);
             return;
         }
         try {
@@ -26,7 +26,9 @@ public class Test
         }
     }
 
-    protected void _reportProblem(Object bean, Object value, Throwable t) { }
+    protected void _setOriginal(Object bean, long value) { }
+
+    protected void _reportProblem(Object bean, long value, Throwable t) { }
     protected void localSet(Object bean, int index, long value) { }
 }
 

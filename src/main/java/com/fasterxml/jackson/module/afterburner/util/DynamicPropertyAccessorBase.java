@@ -50,7 +50,7 @@ public class DynamicPropertyAccessorBase
      */
 
     protected static String internalClassName(Class<?> cls) {
-        return internalClassName(cls.getClass());
+        return internalClassName(cls.getName());
     }
     
     protected static String internalClassName(String className) {

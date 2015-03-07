@@ -26,7 +26,7 @@ public abstract class BeanPropertyMutator
     protected final int index;
 
     // Intentionally not volatile for performance, worst case is we throw a few extra exceptions
-    private boolean broken = false;
+    protected boolean broken = false;
 
     /*
     /********************************************************************** 
@@ -133,23 +133,77 @@ public abstract class BeanPropertyMutator
         }
     }
     */
-    
+
     /*
     /********************************************************************** 
-    /* Helper methods
+    /* Fallback setters
     /********************************************************************** 
      */
 
-    protected synchronized void _reportProblem(Object bean, Object value, Throwable e)
-        throws IOException
-    {
+    protected void _setOriginal(Object bean, int value) throws IOException {
+        originalMutator.set(bean, value);
+    }
+
+    protected void _setOriginal(Object bean, long value) throws IOException {
+        originalMutator.set(bean, value);
+    }
+    protected void _setOriginal(Object bean, boolean value) throws IOException {
+        originalMutator.set(bean, value);
+    }
+    protected void _setOriginal(Object bean, String value) throws IOException {
+        originalMutator.set(bean, value);
+    }
+
+    protected void _setOriginal(Object bean, Object value) throws IOException {
+        originalMutator.set(bean, value);
+    }
+    
+    /*
+    /********************************************************************** 
+    /* Helper methods for error handling
+    /********************************************************************** 
+     */
+
+    protected synchronized void _reportProblem(Object bean, int value, Throwable e) throws IOException {
         if (!broken) {
-            broken = true;
-            String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
-                    bean.getClass(), index,
-                    e.getClass().getName(), e.getMessage());
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
+            _printProblem(bean, e);
         }
         originalMutator.set(bean, value);
+    }
+
+    protected synchronized void _reportProblem(Object bean, long value, Throwable e) throws IOException {
+        if (!broken) {
+            _printProblem(bean, e);
+        }
+        originalMutator.set(bean, value);
+    }
+
+    protected synchronized void _reportProblem(Object bean, boolean value, Throwable e) throws IOException {
+        if (!broken) {
+            _printProblem(bean, e);
+        }
+        originalMutator.set(bean, value);
+    }
+
+    protected synchronized void _reportProblem(Object bean, String value, Throwable e) throws IOException {
+        if (!broken) {
+            _printProblem(bean, e);
+        }
+        originalMutator.set(bean, value);
+    }
+    
+    protected synchronized void _reportProblem(Object bean, Object value, Throwable e) throws IOException {
+        if (!broken) {
+            _printProblem(bean, e);
+        }
+        originalMutator.set(bean, value);
+    }
+
+    private void _printProblem(Object bean, Throwable e) {
+        broken = true;
+        String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
+                bean.getClass(), index,
+                e.getClass().getName(), e.getMessage());
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
     }
 }
