@@ -24,8 +24,8 @@ public class PropertyMutatorCollector
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
     private final static String MUTATOR_CLASS = internalClassName(BeanPropertyMutator.class);
-    
-    private final static String SETTABLE_BEAN_PROP_CLASS = internalClassName(SettableBeanProperty.class);
+
+//    private final static String SETTABLE_BEAN_PROP_CLASS = internalClassName(SettableBeanProperty.class);
 
     private final List<SettableIntMethodProperty> _intSetters = new LinkedList<SettableIntMethodProperty>();
     private final List<SettableLongMethodProperty> _longSetters = new LinkedList<SettableLongMethodProperty>();
