@@ -20,6 +20,10 @@ import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 public class PropertyMutatorCollector
     extends DynamicPropertyAccessorBase
 {
+    abstract class MutatorGenerator {
+        public abstract void generate(MethodVisitor mv, int localVarIndex);
+    }
+
     private static final Type STRING_TYPE = Type.getType(String.class);
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
@@ -216,8 +220,38 @@ public class PropertyMutatorCollector
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addSetters(ClassWriter cw,
             String genClassName, List<T> props,
-            String methodName, Type parameterType, int loadValueCode)
+            final String methodName, final Type parameterType, final int loadValueCode)
     {
+        final boolean mustCast = parameterType.equals(OBJECT_TYPE);
+
+        // First, special case: single setter
+        if (props.size() == 1) {
+            final OptimizedSettableBeanProperty<?> prop = props.get(0);
+            _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode,
+                    new MutatorGenerator() {
+                @Override
+                public void generate(MethodVisitor mv, int localVarIndex) {
+                    // single setter, no need to access index
+                    // but will need to cast bean to proper type
+                    mv.visitVarInsn(ALOAD, 1);
+                    mv.visitTypeInsn(CHECKCAST, beanClassName);
+                    mv.visitVarInsn(loadValueCode, 2); // 'value'
+                    Method method = (Method) (prop.getMember().getMember());
+                    Type type = Type.getType(method.getParameterTypes()[0]);
+                    if (mustCast) {
+                        mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+                    }
+                    // to fix [Issue-5] (don't assume return type is 'void'), we need to:
+                    Type returnType = Type.getType(method.getReturnType());
+
+                    boolean isInterface = method.getDeclaringClass().isInterface();
+                    mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
+                            beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
+                }
+            });
+            return;
+        }
+        
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
         mv.visitCode();
         // first: cast bean to proper type
@@ -226,12 +260,8 @@ public class PropertyMutatorCollector
         final int localVarIndex = 4 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
         mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
 
-        boolean mustCast = parameterType.equals(OBJECT_TYPE);
         // Ok; minor optimization, 3 or fewer accessors, just do IFs; over that, use switch
         switch (props.size()) {
-        case 1:
-            _addSingleSetter(mv, props.get(0), loadValueCode, localVarIndex, mustCast);
-            break;
         case 2:
         case 3:
             _addSettersUsingIf(mv, props, loadValueCode, localVarIndex, mustCast);
@@ -244,93 +274,7 @@ public class PropertyMutatorCollector
         mv.visitMaxs(0, 0); // don't care (real values: 1,1)
         mv.visitEnd();
 
-        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode);
-    }
-    
-    private void _generateMutatorWrapper(ClassWriter cw, String genClassName, String methodName,
-            Type parameterType, int loadValueCode)
-    {
-        
-        // And then generate the matching wrapper method like:
-        /*
-        public void intSetter(Object bean, int value) throws IOException {
-            if (broken) {
-                _setOriginal(bean, value);
-                return;
-            }
-            try {
-                intSetter(bean, index, value);
-            } catch (IllegalAccessError e) {
-                _reportProblem(bean, value, e);
-            } catch (SecurityException e) {
-                _reportProblem(bean, value, e);
-            }
-        }
-         */
-
-        // different offset as method only gets 2 params, not 3
-        final int localVarIndex2 = 3 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
-
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
-        mv.visitCode();
-
-        // First: 'if (broken) ...'
-        mv.visitVarInsn(ALOAD, 0); // this
-        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "broken", "Z");
-        Label tryStart = new Label();
-        mv.visitJumpInsn(IFEQ, tryStart);
-        // then: '_setOriginal(bean, value);'
-        mv.visitVarInsn(ALOAD, 0); // this
-        mv.visitVarInsn(ALOAD, 1); // 'bean'
-        mv.visitVarInsn(loadValueCode, 2); // 'value'
-        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_setOriginal",
-                "(Ljava/lang/Object;"+parameterType+")V", false);
-        mv.visitInsn(RETURN);
-
-        // otherwise try block
-        Label tryEnd = new Label();
-        Label catch1 = new Label();
-        Label catch2 = new Label();
-        mv.visitTryCatchBlock(tryStart, tryEnd, catch1,
-                internalClassName(IllegalAccessError.class));
-        mv.visitTryCatchBlock(tryStart, tryEnd, catch2,
-                internalClassName(SecurityException.class));
-
-        mv.visitLabel(tryStart);
-        mv.visitVarInsn(ALOAD, 0); // this
-        mv.visitVarInsn(ALOAD, 1); // 'bean'
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
-        mv.visitVarInsn(loadValueCode, 2); // 'value'
-        mv.visitMethodInsn(INVOKEVIRTUAL, genClassName, methodName,
-                "(Ljava/lang/Object;I"+parameterType+")V", false);
-        mv.visitInsn(RETURN);
-        mv.visitLabel(tryEnd);
-
-        // First catch block
-        mv.visitLabel(catch1);
-        mv.visitVarInsn(ASTORE, localVarIndex2); // store exception in local var
-        mv.visitVarInsn(ALOAD, 0); // this
-        mv.visitVarInsn(ALOAD, 1); // 'bean'
-        mv.visitVarInsn(loadValueCode, 2); // 'value'
-        mv.visitVarInsn(ALOAD, localVarIndex2); // caught exception
-        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
-                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
-        mv.visitInsn(RETURN);
-
-        // Second catch block
-        mv.visitLabel(catch2);
-        mv.visitVarInsn(ASTORE, localVarIndex2);
-        mv.visitVarInsn(ALOAD, 0); // this
-        mv.visitVarInsn(ALOAD, 1); // 'bean'
-        mv.visitVarInsn(loadValueCode, 2); // 'value'
-        mv.visitVarInsn(ALOAD, localVarIndex2); // caught exception
-        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
-                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
-        mv.visitInsn(RETURN);
-        
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
+        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode, null);
     }
 
     /*
@@ -341,22 +285,43 @@ public class PropertyMutatorCollector
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addFields(ClassWriter cw,
             String genClassName, List<T> props,
-            String methodName, Type parameterType, int loadValueCode)
+            String methodName, Type parameterType, final int loadValueCode)
     {
+        final boolean mustCast = parameterType.equals(OBJECT_TYPE);
+
+        // First, special case: single setter
+        if (props.size() == 1) {
+            final OptimizedSettableBeanProperty<?> prop = props.get(0);
+            _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode,
+                    new MutatorGenerator() {
+                @Override
+                public void generate(MethodVisitor mv, int localVarIndex) {
+                    // single setter, no need to access index
+                    // but will need to cast bean to proper type
+                    mv.visitVarInsn(ALOAD, 1);
+                    mv.visitTypeInsn(CHECKCAST, beanClassName);
+                    mv.visitVarInsn(loadValueCode, 2); // 'value'
+                    AnnotatedField field = (AnnotatedField) prop.getMember();
+                    Type type = Type.getType(field.getRawType());
+                    if (mustCast) {
+                        mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+                    }
+                    mv.visitFieldInsn(PUTFIELD, beanClassName, field.getName(), type.getDescriptor());
+                }
+            });
+            return;
+        }
+
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;I"+parameterType+")V", /*generic sig*/null, null);
+        final int localVarIndex = 4 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
         mv.visitCode();
         // first: cast bean to proper type
         mv.visitVarInsn(ALOAD, 1);
         mv.visitTypeInsn(CHECKCAST, beanClassName);
-        int localVarIndex = 4 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
         mv.visitVarInsn(ASTORE, localVarIndex); // 3 args (0 == this), so 4 is the first local var slot, 5 for long
 
-        boolean mustCast = parameterType.equals(OBJECT_TYPE);
         // Ok; minor optimization, 3 or fewer fields, just do IFs; over that, use switch
         switch (props.size()) {
-        case 1:
-            _addSingleField(mv, props.get(0), loadValueCode, localVarIndex, mustCast);
-            break;
         case 2:
         case 3:
             _addFieldsUsingIf(mv, props, loadValueCode, localVarIndex, mustCast);
@@ -370,7 +335,7 @@ public class PropertyMutatorCollector
         mv.visitEnd();
 
         // And then wrapper to call that method
-        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode);
+        _generateMutatorWrapper(cw, genClassName, methodName, parameterType, loadValueCode, null);
     }
     
     /*
@@ -378,26 +343,6 @@ public class PropertyMutatorCollector
     /* Helper methods, method accessor creation
     /**********************************************************
      */
-
-    private void _addSingleSetter(MethodVisitor mv,
-            OptimizedSettableBeanProperty<?> prop, int loadValueCode, int beanIndex, boolean mustCast)
-    {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-        mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
-        mv.visitVarInsn(loadValueCode, 3);
-        Method method = (Method) (prop.getMember().getMember());
-        Type type = Type.getType(method.getParameterTypes()[0]);
-        if (mustCast) {
-            mv.visitTypeInsn(CHECKCAST, type.getInternalName());
-        }
-        // to fix [Issue-5] (don't assume return type is 'void'), we need to:
-        Type returnType = Type.getType(method.getReturnType());
-
-        boolean isInterface = method.getDeclaringClass().isInterface();
-        mv.visitMethodInsn(isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL,
-                beanClassName, method.getName(), "("+type+")"+returnType, isInterface);
-        mv.visitInsn(RETURN);
-    }
 
     private <T extends OptimizedSettableBeanProperty<T>> void _addSettersUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
@@ -486,21 +431,6 @@ public class PropertyMutatorCollector
     /**********************************************************
      */
 
-    private void _addSingleField(MethodVisitor mv,
-            OptimizedSettableBeanProperty<?> prop, int loadValueCode, int beanIndex, boolean mustCast)
-    {
-        mv.visitVarInsn(ILOAD, 2); // load second arg (index)
-        mv.visitVarInsn(ALOAD, beanIndex); // load local for cast bean
-        mv.visitVarInsn(loadValueCode, 3);
-        AnnotatedField field = (AnnotatedField) prop.getMember();
-        Type type = Type.getType(field.getRawType());
-        if (mustCast) {
-            mv.visitTypeInsn(CHECKCAST, type.getInternalName());
-        }
-        mv.visitFieldInsn(PUTFIELD, beanClassName, field.getName(), type.getDescriptor());
-        mv.visitInsn(RETURN);
-    }
-    
     private <T extends OptimizedSettableBeanProperty<T>> void _addFieldsUsingIf(MethodVisitor mv,
             List<T> props, int loadValueCode, int beanIndex, boolean mustCast)
     {
@@ -567,4 +497,96 @@ public class PropertyMutatorCollector
         }
         mv.visitLabel(defaultLabel);
     }
+
+    private void _generateMutatorWrapper(ClassWriter cw, String genClassName, String methodName,
+            Type parameterType, int loadValueCode,
+            MutatorGenerator generator)
+    {
+        
+        // And then generate the matching wrapper method like:
+        /*
+        public void intSetter(Object bean, int value) throws IOException {
+            if (broken) {
+                _setOriginal(bean, value);
+                return;
+            }
+            try {
+                intSetter(bean, index, value);
+            } catch (IllegalAccessError e) {
+                _reportProblem(bean, value, e);
+            } catch (SecurityException e) {
+                _reportProblem(bean, value, e);
+            }
+        }
+         */
+
+        // different offset as method only gets 2 params, not 3
+        final int localVarIndex = 3 + (parameterType.equals(Type.LONG_TYPE) ? 1 : 0);
+
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, methodName, "(Ljava/lang/Object;"+parameterType+")V", /*generic sig*/null, null);
+        mv.visitCode();
+
+        // First: 'if (broken) ...'
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "broken", "Z");
+        Label tryStart = new Label();
+        mv.visitJumpInsn(IFEQ, tryStart);
+        // then: '_setOriginal(bean, value);'
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitVarInsn(ALOAD, 1); // 'bean'
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_setOriginal",
+                "(Ljava/lang/Object;"+parameterType+")V", false);
+        mv.visitInsn(RETURN);
+
+        // otherwise try block
+        Label tryEnd = new Label();
+        Label catch1 = new Label();
+        Label catch2 = new Label();
+        mv.visitTryCatchBlock(tryStart, tryEnd, catch1,
+                internalClassName(IllegalAccessError.class));
+        mv.visitTryCatchBlock(tryStart, tryEnd, catch2,
+                internalClassName(SecurityException.class));
+        mv.visitLabel(tryStart);
+
+        if (generator != null) {
+            generator.generate(mv, localVarIndex);
+        } else {
+            mv.visitVarInsn(ALOAD, 0); // this
+            mv.visitVarInsn(ALOAD, 1); // 'bean'
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitFieldInsn(GETFIELD, MUTATOR_CLASS, "index", "I");
+            mv.visitVarInsn(loadValueCode, 2); // 'value'
+            mv.visitMethodInsn(INVOKEVIRTUAL, genClassName, methodName,
+                    "(Ljava/lang/Object;I"+parameterType+")V", false);
+        }
+        mv.visitInsn(RETURN);
+        mv.visitLabel(tryEnd);
+
+        // First catch block
+        mv.visitLabel(catch1);
+        mv.visitVarInsn(ASTORE, localVarIndex); // store exception in local var
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitVarInsn(ALOAD, 1); // 'bean'
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitVarInsn(ALOAD, localVarIndex); // caught exception
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
+                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
+        mv.visitInsn(RETURN);
+
+        // Second catch block
+        mv.visitLabel(catch2);
+        mv.visitVarInsn(ASTORE, localVarIndex);
+        mv.visitVarInsn(ALOAD, 0); // this
+        mv.visitVarInsn(ALOAD, 1); // 'bean'
+        mv.visitVarInsn(loadValueCode, 2); // 'value'
+        mv.visitVarInsn(ALOAD, localVarIndex); // caught exception
+        mv.visitMethodInsn(INVOKEVIRTUAL, MUTATOR_CLASS, "_reportProblem",
+                "(Ljava/lang/Object;"+parameterType+"Ljava/lang/Throwable;)V", false);
+        mv.visitInsn(RETURN);
+        
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+    }
+
 }
