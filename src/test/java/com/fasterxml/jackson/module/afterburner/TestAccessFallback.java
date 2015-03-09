@@ -24,10 +24,15 @@ public class TestAccessFallback extends AfterburnerTestBase
 
         public void setE(String e)
         {
-            for (StackTraceElement elem : new Throwable().getStackTrace()) {
-                if (elem.getClassName().contains("Access4Jackson")) {
-                    throw new BogusTestError("boom!");
-                }
+            /* 07-Mar-2015, tatu: This is bit tricky, as the exact stack trace varies
+             *   depending on how code is generated. So right now we must get the call
+             *   immediately from constructed class.
+             */
+            
+            StackTraceElement[] elems = new Throwable().getStackTrace();
+            StackTraceElement prev = elems[1];
+            if (prev.getClassName().contains("Access4JacksonDeserializer")) {
+                throw new BogusTestError("boom!");
             }
             this.e = e;
         }
@@ -35,7 +40,7 @@ public class TestAccessFallback extends AfterburnerTestBase
         public String getE()
         {
             for (StackTraceElement elem : new Throwable().getStackTrace()) {
-                if (elem.getClassName().contains("Access4Jackson")) {
+                if (elem.getClassName().contains("Access4JacksonSerializer")) {
                     throw new BogusTestError("boom!");
                 }
             }
