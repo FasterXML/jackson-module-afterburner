@@ -8,7 +8,7 @@ public class MyClassLoaderTest extends AfterburnerTestBase
     {
         byte[] input = "Something with FOO in it (but not just FO!): FOOFOO".getBytes("UTF-8");
         int count = MyClassLoader.replaceName(input, "FOO", "BAR");
-//        assertEquals(3, count);
+        assertEquals(3, count);
         assertEquals("Something with BAR in it (but not just FO!): BARBAR", new String(input, "UTF-8"));
     }
 }
