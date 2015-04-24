@@ -4,6 +4,10 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
+2.4.6 (23-Apr-2015)
+
+No changes since 2.4.5.
+
 2.4.5 (13-Jan-2015)
 
 #48: Problem passing custom `JsonSerializer`, causing an NPE
