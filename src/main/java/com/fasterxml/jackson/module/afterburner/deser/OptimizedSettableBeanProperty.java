@@ -170,10 +170,10 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
     {
         JsonToken curr = p.getCurrentToken();
         if (curr == JsonToken.VALUE_NULL) { // should this ever happen?
-            if (_nullProvider == null) {
+            if (_valueDeserializer == null) {
                 return null;
             }
-            return (String) _nullProvider.nullValue(ctxt);
+            return (String) _valueDeserializer.getNullValue(ctxt);
         }
         if (curr == JsonToken.VALUE_EMBEDDED_OBJECT) {
             Object ob = p.getEmbeddedObject();

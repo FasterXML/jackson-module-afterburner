@@ -40,8 +40,8 @@ public class ManualDatabindPerf
                     output.length, REPS);
         }
 
-        final ObjectReader reader1 = mapper1.reader(inputClass);
-        final ObjectReader reader2 = mapper2.reader(inputClass);
+        final ObjectReader reader1 = mapper1.readerFor(inputClass);
+        final ObjectReader reader2 = mapper2.readerFor(inputClass);
         
         final ObjectWriter writer1 = mapper1.writerFor(inputClass);
         final ObjectWriter writer2 = mapper2.writerFor(inputClass);

@@ -81,7 +81,7 @@ public class TestTreeConversions extends AfterburnerTestBase
                     "}" +
                 "}");
 
-        final Occupancy occupancy = MAPPER.reader(Occupancy.class).readValue(node);
+        final Occupancy occupancy = MAPPER.readerFor(Occupancy.class).readValue(node);
 
         assertNull(occupancy.getAdults().getMax());
         assertEquals(Integer.valueOf(2), occupancy.getChildren().getMax());
