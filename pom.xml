@@ -23,8 +23,8 @@ used to enhance access functionality using bytecode generation.
 
   <properties>
     <!-- annotations more stable, no patch versions -->
-    <jackson.annotation.version>2.6.0-rc1</jackson.annotation.version>
-    <jackson.core.version>2.6.0-rc1</jackson.core.version>
+    <jackson.annotation.version>2.6.0-rc2</jackson.annotation.version>
+    <jackson.core.version>2.6.0-rc2</jackson.core.version>
 
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
