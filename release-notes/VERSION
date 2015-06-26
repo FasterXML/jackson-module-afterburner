@@ -8,6 +8,7 @@ Project: jackson-module-afterburner
 
 #53: Include checksum in generated class names (to resolve #52)
 
+2.5.4 (09-Jun-2015)
 2.5.3 (24-Apr-2015)
 2.5.2 (29-Mar-2015)
 
