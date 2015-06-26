@@ -23,10 +23,22 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
         public int getValue() { return value; }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public static class NonEmptyIntWrapper2 {
+        public int value;
+        public NonEmptyIntWrapper2(int v) { value = v; }
+    }
+
     public class NonEmptyStringWrapper {
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public String value;
         public NonEmptyStringWrapper(String v) { value = v; }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public class NonEmptyStringWrapper2 {
+        public String value;
+        public NonEmptyStringWrapper2(String v) { value = v; }
     }
     
     public class AnyWrapper
@@ -77,5 +89,22 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
         assertEquals("{}", json);
         json = mapper.writeValueAsString(new NonEmptyStringWrapper(null));
         assertEquals("{}", json);
+    }
+
+    public void testEmptyExclusionViaClass() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+
+        assertEquals("{\"value\":3}",
+                mapper.writeValueAsString(new NonEmptyIntWrapper2(3)));
+        assertEquals("{}",
+                mapper.writeValueAsString(new NonEmptyIntWrapper2(0)));
+
+        assertEquals("{\"value\":\"x\"}",
+                mapper.writeValueAsString(new NonEmptyStringWrapper2("x")));
+        assertEquals("{}",
+                mapper.writeValueAsString(new NonEmptyStringWrapper2("")));
+        assertEquals("{}",
+                mapper.writeValueAsString(new NonEmptyStringWrapper2(null)));
     }
 }
