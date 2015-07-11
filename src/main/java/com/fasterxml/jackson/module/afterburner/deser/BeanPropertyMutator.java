@@ -286,10 +286,10 @@ public abstract class BeanPropertyMutator
         // of multiple logging of same underlying problem. Not guaranteed, just improved.
         if (!broken) {
             broken = true;
-            String msg = String.format("Disabling Afterburner deserialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
-                    bean.getClass(), index,
+            String msg = String.format("Disabling Afterburner deserialization for %s (field #%d; mutator %s), due to access error (type %s, message=%s)%n",
+                    bean.getClass(), index, getClass().getName(),
                     e.getClass().getName(), e.getMessage());
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
+            Logger.getLogger(BeanPropertyMutator.class.getName()).log(Level.WARNING, msg, e);
         }
         originalMutator.set(bean, value);
     }

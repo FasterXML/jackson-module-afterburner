@@ -6,6 +6,7 @@ Project: jackson-module-afterburner
 
 2.6.0 (not yet released)
 
+#46: Log-warning "Disabling Afterburner deserialization for type" using wrong logger-name
 #53: Include checksum in generated class names (to resolve #52)
 
 2.5.4 (09-Jun-2015)

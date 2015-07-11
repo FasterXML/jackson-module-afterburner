@@ -88,10 +88,10 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
     protected void _reportProblem(Object bean, Throwable e)
     {
         broken = true;
-        String msg = String.format("Disabling Afterburner serialization for type %s, field #%d, due to access error (type %s, message=%s)%n",
-                bean.getClass(), _propertyIndex,
+        String msg = String.format("Disabling Afterburner serialization for %s (field #%d; muator %s), due to access error (type %s, message=%s)%n",
+                bean.getClass(), _propertyIndex, getClass().getName(),
                 e.getClass().getName(), e.getMessage());
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, msg, e);
+        Logger.getLogger(OptimizedBeanPropertyWriter.class.getName()).log(Level.WARNING, msg, e);
     }
 
 }
