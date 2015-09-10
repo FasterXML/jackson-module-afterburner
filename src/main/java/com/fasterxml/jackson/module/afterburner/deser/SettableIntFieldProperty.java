@@ -52,7 +52,8 @@ public final class SettableIntFieldProperty
     public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
             Object bean) throws IOException
     {
-        _propertyMutator.intField(bean, p.getValueAsInt());
+        int v = p.hasToken(JsonToken.VALUE_NUMBER_INT) ? p.getIntValue() : _deserializeInt(p, ctxt);
+        _propertyMutator.intField(bean, v);
     }
 
     @Override
@@ -65,6 +66,7 @@ public final class SettableIntFieldProperty
     public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, p.getValueAsInt());
+        int v = p.hasToken(JsonToken.VALUE_NUMBER_INT) ? p.getIntValue() : _deserializeInt(p, ctxt);
+        return setAndReturn(instance, v);
     }    
 }

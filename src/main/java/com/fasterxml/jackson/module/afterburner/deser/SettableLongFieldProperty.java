@@ -50,7 +50,8 @@ public final class SettableLongFieldProperty
     public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
             Object bean) throws IOException
     {
-        _propertyMutator.longField(bean, p.getValueAsLong());
+        long l = p.hasToken(JsonToken.VALUE_NUMBER_INT) ? p.getLongValue() : _deserializeLong(p, ctxt);
+        _propertyMutator.longField(bean, l);
     }
 
     @Override
@@ -63,6 +64,7 @@ public final class SettableLongFieldProperty
     public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, p.getValueAsLong());
+        long l = p.hasToken(JsonToken.VALUE_NUMBER_INT) ? p.getLongValue() : _deserializeLong(p, ctxt);
+        return setAndReturn(instance, l);
     }    
 }

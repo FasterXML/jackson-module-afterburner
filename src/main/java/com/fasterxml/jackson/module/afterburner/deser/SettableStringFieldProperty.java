@@ -52,7 +52,7 @@ public final class SettableStringFieldProperty
     {
         String text = p.getValueAsString();
         if (text == null) {
-            text = _convertToString(p, ctxt);
+            text = _deserializeString(p, ctxt);
         }
         _propertyMutator.stringField(bean, text);
     }
@@ -68,7 +68,7 @@ public final class SettableStringFieldProperty
     {
         String text = p.getValueAsString();
         if (text == null) {
-            text = _convertToString(p, ctxt);
+            text = _deserializeString(p, ctxt);
         }
         return setAndReturn(instance, text);
     }

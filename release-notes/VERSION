@@ -4,6 +4,11 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.2 (not yet released)
+
+#56: Afterburner does not respect DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
+ (reported by shollander@github)
+
 2.6.1 (09-Aug-2015)
 
 No changes since 2.6.0

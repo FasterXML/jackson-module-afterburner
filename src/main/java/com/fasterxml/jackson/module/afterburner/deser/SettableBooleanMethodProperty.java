@@ -47,8 +47,17 @@ public final class SettableBooleanMethodProperty
      */
     
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt, Object bean) throws IOException {
-        _propertyMutator.booleanSetter(bean, _deserializeBoolean(jp, ctxt));
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt, Object bean) throws IOException {
+        boolean b;
+        JsonToken t = p.getCurrentToken();
+        if (t == JsonToken.VALUE_TRUE) {
+            b = true;
+        } else if (t == JsonToken.VALUE_FALSE) {
+            b = false;
+        } else {
+            b = _deserializeBoolean(p, ctxt);
+        }
+        _propertyMutator.booleanSetter(bean, b);
     }
 
     @Override
@@ -58,9 +67,18 @@ public final class SettableBooleanMethodProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
+    public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, _deserializeBoolean(jp, ctxt));
+        boolean b;
+        JsonToken t = p.getCurrentToken();
+        if (t == JsonToken.VALUE_TRUE) {
+            b = true;
+        } else if (t == JsonToken.VALUE_FALSE) {
+            b = false;
+        } else {
+            b = _deserializeBoolean(p, ctxt);
+        }
+        return setAndReturn(instance, b);
     }    
 }

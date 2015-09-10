@@ -52,7 +52,7 @@ public final class SettableStringMethodProperty
     {
         String text = p.getValueAsString();
         if (text == null) {
-            text = _convertToString(p, ctxt);
+            text = _deserializeString(p, ctxt);
         }
         _propertyMutator.stringSetter(bean, text);
     }
@@ -67,7 +67,7 @@ public final class SettableStringMethodProperty
     {
         String text = p.getValueAsString();
         if (text == null) {
-            text = _convertToString(p, ctxt);
+            text = _deserializeString(p, ctxt);
         }
         return setAndReturn(instance, text);
     }

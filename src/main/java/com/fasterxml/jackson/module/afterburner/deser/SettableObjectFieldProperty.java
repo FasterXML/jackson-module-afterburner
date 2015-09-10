@@ -47,10 +47,10 @@ public final class SettableObjectFieldProperty
      */
     
     @Override
-    public void deserializeAndSet(JsonParser jp, DeserializationContext ctxt,
+    public void deserializeAndSet(JsonParser p, DeserializationContext ctxt,
             Object bean) throws IOException
     {
-        set(bean, deserialize(jp, ctxt));
+        set(bean, deserialize(p, ctxt));
     }
 
     @Override
@@ -59,9 +59,9 @@ public final class SettableObjectFieldProperty
     }
 
     @Override
-    public Object deserializeSetAndReturn(JsonParser jp,
+    public Object deserializeSetAndReturn(JsonParser p,
             DeserializationContext ctxt, Object instance) throws IOException
     {
-        return setAndReturn(instance, deserialize(jp, ctxt));
+        return setAndReturn(instance, deserialize(p, ctxt));
     }    
 }
