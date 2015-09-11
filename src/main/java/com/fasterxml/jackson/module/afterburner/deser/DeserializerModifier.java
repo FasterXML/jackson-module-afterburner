@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -103,9 +104,14 @@ public class DeserializerModifier extends BeanDeserializerModifier
         while (propIterator.hasNext()) {
             SettableBeanProperty prop = propIterator.next();
             AnnotatedMember member = prop.getMember();
+            Member jdkMember = member.getMember();
 
+            // if we ever support virtual properties, this would be null, so check, skip
+            if (jdkMember == null) {
+                continue;
+            }
             // First: we can't access private fields or methods....
-            if (Modifier.isPrivate(member.getMember().getModifiers())) {
+            if (Modifier.isPrivate(jdkMember.getModifiers())) {
                 continue;
             }
             // (although, interestingly enough, can seem to access private classes...)
@@ -160,7 +166,6 @@ public class DeserializerModifier extends BeanDeserializerModifier
         }
         return newProps;
     }
-
 
     /**
      * Helper method used to check whether given deserializer is the default
