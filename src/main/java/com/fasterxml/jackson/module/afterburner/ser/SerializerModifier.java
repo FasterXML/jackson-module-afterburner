@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.module.afterburner.ser;
 
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -8,7 +9,6 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.ser.*;
 import com.fasterxml.jackson.databind.util.ClassUtil;
-
 import com.fasterxml.jackson.module.afterburner.util.MyClassLoader;
 
 public class SerializerModifier extends BeanSerializerModifier
@@ -78,8 +78,13 @@ public class SerializerModifier extends BeanSerializerModifier
             Class<?> type = bpw.getPropertyType();
             AnnotatedMember member = bpw.getMember();
 
-            // First: we can't access private fields or methods....
-            if (Modifier.isPrivate(member.getMember().getModifiers())) {
+            Member jdkMember = member.getMember();
+            // 11-Sep-2015, tatu: Let's skip virtual members (related to #57)
+            if (jdkMember == null) {
+                continue;
+            }
+            // We can't access private fields or methods, skip:
+            if (Modifier.isPrivate(jdkMember.getModifiers())) {
                 continue;
             }
             // (although, interestingly enough, can seem to access private classes...)

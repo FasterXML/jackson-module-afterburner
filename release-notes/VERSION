@@ -8,6 +8,8 @@ Project: jackson-module-afterburner
 
 #56: Afterburner does not respect DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
  (reported by shollander@github)
+#57: `@JsonAppend` causes `NullPointerException`
+ (reported by cleiner@github)
 
 2.6.1 (09-Aug-2015)
 
