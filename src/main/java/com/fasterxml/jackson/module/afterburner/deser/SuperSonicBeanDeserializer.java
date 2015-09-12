@@ -109,21 +109,6 @@ public final class SuperSonicBeanDeserializer extends BeanDeserializer
         _orderedProperties = props.toArray(new SettableBeanProperty[props.size()]);
     }
 
-    /*
-        // common case first
-        if (p.isExpectedStartObjectToken()) {
-            if (_vanillaProcessing) {
-                return vanillaDeserialize(p, ctxt, p.nextToken());
-            }
-            p.nextToken();
-            if (_objectIdReader != null) {
-                return deserializeWithObjectId(p, ctxt);
-            }
-            return deserializeFromObject(p, ctxt);
-        }
-        return _deserializeOther(p, ctxt, p.getCurrentToken());
-     */
-    
     @Override
     public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {

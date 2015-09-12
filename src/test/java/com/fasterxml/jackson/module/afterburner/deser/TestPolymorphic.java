@@ -45,4 +45,24 @@ public class TestPolymorphic extends AfterburnerTestBase
         assertNotNull(result.payload);
         assertEquals(Payload.class, result.payload.getClass());
     }
+
+    // for [module-afterburner#58]; although seems to be due to databind issue
+    public void testPolymorphicIssue58() throws Exception
+    {
+        final String CLASS = Payload.class.getName();
+
+        ObjectMapper mapper = mapperWithModule();
+
+        // First, case that has been working always
+        final String successCase = "{\"payload\":{\"something\":\"test\"},\"class\":\""+CLASS+"\"}";
+        Envelope envelope1 = mapper.readValue(successCase, Envelope.class);
+        assertNotNull(envelope1);
+        assertEquals(Payload.class, envelope1.payload.getClass());
+
+        // and then re-ordered case that was problematic
+        final String failCase = "{\"class\":\""+CLASS+"\",\"payload\":{\"something\":\"test\"}}";
+        Envelope envelope2 = mapper.readValue(failCase, Envelope.class);
+        assertNotNull(envelope2);
+        assertEquals(Payload.class, envelope2.payload.getClass());
+    }
 }

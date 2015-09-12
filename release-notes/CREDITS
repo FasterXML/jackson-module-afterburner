@@ -37,3 +37,7 @@ natnan@github
 
 * Reported #52: Invalidating SerializationInclusion.NON_NULL of other modules
  (2.5.2)
+
+Steve Metcalfe (steveme@github)
+* Reported #58: Specific ordering of type information for polymorphic deserialization
+ (2.6.2)

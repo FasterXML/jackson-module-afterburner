@@ -10,6 +10,8 @@ Project: jackson-module-afterburner
  (reported by shollander@github)
 #57: `@JsonAppend` causes `NullPointerException`
  (reported by cleiner@github)
+#58: Specific ordering of type information for polymorphic deserialization
+ (reported by Steve M)
 
 2.6.1 (09-Aug-2015)
 
