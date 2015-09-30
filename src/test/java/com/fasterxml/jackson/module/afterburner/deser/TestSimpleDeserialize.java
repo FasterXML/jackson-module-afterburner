@@ -1,10 +1,10 @@
 package com.fasterxml.jackson.module.afterburner.deser;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestSimpleDeserialize extends AfterburnerTestBase
@@ -138,21 +138,26 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         public String getBogus5() { return ""; }
     }
 
+    // for [module-afterburner#60]
+    static class Issue60Pojo {
+        public List<Object> foos;
+    }    
+
     /*
     /**********************************************************************
     /* Test methods, method access
     /**********************************************************************
      */
 
+    private final ObjectMapper MAPPER = mapperWithModule();
+    
     public void testIntMethod() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        IntBean bean = mapper.readValue("{\"x\":13}", IntBean.class);
+        IntBean bean = MAPPER.readValue("{\"x\":13}", IntBean.class);
         assertEquals(13, bean._x);
     }
 
     public void testMultiIntMethod() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        IntsBean bean = mapper.readValue("{\"c\":3,\"a\":9,\"b\":111,\"e\":-9999,\"d\":1}", IntsBean.class);
+        IntsBean bean = MAPPER.readValue("{\"c\":3,\"a\":9,\"b\":111,\"e\":-9999,\"d\":1}", IntsBean.class);
         assertEquals(9, bean._a);
         assertEquals(111, bean._b);
         assertEquals(3, bean._c);
@@ -161,20 +166,17 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     }
     
     public void testLongMethod() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        LongBean bean = mapper.readValue("{\"x\":-1}", LongBean.class);
+        LongBean bean = MAPPER.readValue("{\"x\":-1}", LongBean.class);
         assertEquals(-1, bean._x);
     }
 
     public void testStringMethod() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        StringBean bean = mapper.readValue("{\"x\":\"zoobar\"}", StringBean.class);
+        StringBean bean = MAPPER.readValue("{\"x\":\"zoobar\"}", StringBean.class);
         assertEquals("zoobar", bean._x);
     }
 
     public void testObjectMethod() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        EnumBean bean = mapper.readValue("{\"x\":\"A\"}", EnumBean.class);
+        EnumBean bean = MAPPER.readValue("{\"x\":\"A\"}", EnumBean.class);
         assertEquals(MyEnum.A, bean._x);
     }
     
@@ -185,37 +187,32 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
      */
 
     public void testIntField() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        IntFieldBean bean = mapper.readValue("{\"value\":-92}", IntFieldBean.class);
+        IntFieldBean bean = MAPPER.readValue("{\"value\":-92}", IntFieldBean.class);
         assertEquals(-92, bean.x);
     }
 
     public void testLongField() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        LongFieldBean bean = mapper.readValue("{\"value\":-92}", LongFieldBean.class);
+        LongFieldBean bean = MAPPER.readValue("{\"value\":-92}", LongFieldBean.class);
         assertEquals(-92, bean.value);
     }
 
     public void testStringField() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        StringFieldBean bean = mapper.readValue("{\"x\":\"\"}", StringFieldBean.class);
+        StringFieldBean bean = MAPPER.readValue("{\"x\":\"\"}", StringFieldBean.class);
         assertEquals("", bean.x);
 
         // also, null handling:
-        bean = mapper.readValue("{\"x\":null}", StringFieldBean.class);
+        bean = MAPPER.readValue("{\"x\":null}", StringFieldBean.class);
         assertNull(bean.x);
     }
 
     public void testEnumField() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        EnumFieldBean bean = mapper.readValue("{\"x\":\"C\"}", EnumFieldBean.class);
+        EnumFieldBean bean = MAPPER.readValue("{\"x\":\"C\"}", EnumFieldBean.class);
         assertEquals(MyEnum.C, bean.x);
     }
 
     // Verify [Issue#10], so that nulls do not get coerced to String "null"
     public void testStringAsObjectField() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        StringAsObject bean = mapper.readValue("{\"value\":null}", StringAsObject.class);
+        StringAsObject bean = MAPPER.readValue("{\"value\":null}", StringAsObject.class);
         assertNotNull(bean);
         assertNull(bean.value);
     }
@@ -228,12 +225,11 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
 
     public void testFiveMinuteDoc() throws Exception
     {
-        ObjectMapper abMapper = mapperWithModule();
         FiveMinuteUser input = new FiveMinuteUser("First", "Name", true,
                 FiveMinuteUser.Gender.FEMALE, new byte[] { 1 } );
-        String jsonAb = abMapper.writeValueAsString(input);
+        String jsonAb = MAPPER.writeValueAsString(input);
 
-        FiveMinuteUser output = abMapper.readValue(jsonAb, FiveMinuteUser.class);
+        FiveMinuteUser output = MAPPER.readValue(jsonAb, FiveMinuteUser.class);
         if (!output.equals(input)) {
             fail("Round-trip test failed: intermediate JSON = "+jsonAb);
         }
@@ -241,8 +237,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     
     public void testMixed() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        MixedBean bean = mapper.readValue("{"
+        MixedBean bean = MAPPER.readValue("{"
                 +"\"stringField\":\"a\","
                 +"\"string\":\"b\","
                 +"\"intField\":3,"
@@ -268,8 +263,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     {
         final String json = "{ \"stringField\" : \"zoobar\", \"stringField2\" : \"barzoo\" }";
 
-        ObjectMapper mapper = new ObjectMapper();
-        BeanWithNonVoidPropertySetter bean = mapper.readValue(json, BeanWithNonVoidPropertySetter.class);
+        BeanWithNonVoidPropertySetter bean = MAPPER.readValue(json, BeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
 
         ObjectMapper abMapper = mapperWithModule(); // if I don't do this, the module won't be picked up
@@ -284,8 +278,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     {
         final String json = "{ \"stringField\" : \"zoobar\" }";
 
-        ObjectMapper mapper = new ObjectMapper();
-        BigBeanWithNonVoidPropertySetter bean = mapper.readValue(json, BigBeanWithNonVoidPropertySetter.class);
+        BigBeanWithNonVoidPropertySetter bean = MAPPER.readValue(json, BigBeanWithNonVoidPropertySetter.class);
         assertEquals("zoobar", bean.getStringField());
 
         ObjectMapper abMapper = mapperWithModule(); // if I don't do this, the module won't be picked up
@@ -297,18 +290,38 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
     // NOTE: failed with databind-2.5.0; fixed for 2.5.1
     public void testStringBuilder() throws Exception
     {
-        ObjectMapper abMapper = mapperWithModule();
-        StringBuilder sb = abMapper.readValue(quote("foobar"), StringBuilder.class);
+        StringBuilder sb = MAPPER.readValue(quote("foobar"), StringBuilder.class);
         assertEquals("foobar", sb.toString());
     }
 
     public void testBooleans() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        BooleansBean bean = mapper.readValue(aposToQuotes("{'a':true, 'b':true}"),
+        BooleansBean bean = MAPPER.readValue(aposToQuotes("{'a':true, 'b':true}"),
                 BooleansBean.class);
         assertNotNull(bean);
         assertTrue(bean.a);
         assertEquals(Boolean.TRUE, bean._b);
+    }
+
+    // for [module-afterburner#60]
+    public void testProblemWithIndentation() throws Exception {
+        final String JSON = "{\n"
++"            \"foos\" :\n"
++"            [\n"
++"            ]\n"
++"}";
+
+        // First: read from String directly
+        
+        Issue60Pojo pojo = MAPPER.readValue(JSON, Issue60Pojo.class);
+        assertNotNull(pojo);
+        assertNotNull(pojo.foos);
+        assertEquals(0, pojo.foos.size());
+
+        // and then as bytes via InputStream
+        pojo = MAPPER.readValue(JSON.getBytes("UTF-8"), Issue60Pojo.class);
+        assertNotNull(pojo);
+        assertNotNull(pojo.foos);
+        assertEquals(0, pojo.foos.size());
     }
 }
