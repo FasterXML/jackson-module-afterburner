@@ -3,10 +3,11 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 @SuppressWarnings("serial")

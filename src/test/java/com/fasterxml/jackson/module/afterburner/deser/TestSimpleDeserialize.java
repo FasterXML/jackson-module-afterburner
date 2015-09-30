@@ -303,7 +303,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals(Boolean.TRUE, bean._b);
     }
 
-    // for [module-afterburner#60]
+    // for [module-afterburner#60] (caused by a bug in jackson-core up to 2.6.2, fixed in 2.6.3)
     public void testProblemWithIndentation() throws Exception {
         final String JSON = "{\n"
 +"            \"foos\" :\n"

@@ -4,6 +4,11 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.3 (not yet released)
+
+#60: Cannot read some "pretty" documents (NOTE: actually fixed by [jackson-core#220] in 2.6.3)
+ (reported by lehcim@github)
+
 2.6.2 (15-Sep-2015)
 
 #56: Afterburner does not respect DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS
