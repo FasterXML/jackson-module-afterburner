@@ -22,7 +22,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
     protected final MyClassLoader _classLoader;
     
     protected final boolean _useCustomDeserializer;
-    
+
     public DeserializerModifier(ClassLoader cl, boolean useCustomDeserializer)
     {
         // If we were given parent class loader explicitly, use that:
@@ -41,7 +41,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
             BeanDescription beanDesc, BeanDeserializerBuilder builder) 
     {
         final Class<?> beanClass = beanDesc.getBeanClass();
-        // [Issue#21]: Can't force access to sealed packages, or anything within "java."
+        // [module-afterburner#21]: Can't force access to sealed packages, or anything within "java."
         if (!MyClassLoader.canAddClassInPackageOf(beanClass)) {
             return builder;
         } 
@@ -118,12 +118,13 @@ public class DeserializerModifier extends BeanDeserializerModifier
             }
             // (although, interestingly enough, can seem to access private classes...)
             
-            // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom deserializers, if any.
+            // 30-Jul-2012, tatu: [module-afterburner#6]: Needs to skip custom deserializers, if any.
             if (prop.hasValueDeserializer()) {
                 if (!isDefaultDeserializer(config, prop.getValueDeserializer())) {
                     continue;
                 }
             }
+
             if (prop instanceof MethodProperty) { // simple setter methods
                 Class<?> type = ((AnnotatedMethod) member).getRawParameterType(0);
                 if (type.isPrimitive()) {

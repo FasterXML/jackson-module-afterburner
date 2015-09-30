@@ -279,7 +279,7 @@ public class TestSimpleDeserialize extends AfterburnerTestBase
         assertEquals("barzoo", bean.getStringField2());
     }
 
-    // Test for [Issue-16]
+    // Test for [module-afterburner#16]
     public void testBigNonVoidProperty() throws Exception
     {
         final String json = "{ \"stringField\" : \"zoobar\" }";

@@ -3,13 +3,13 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
+@SuppressWarnings("serial")
 public class TestStdDeserializerOverrides extends AfterburnerTestBase
 {
     static class ClassWithPropOverrides
@@ -22,17 +22,15 @@ public class TestStdDeserializerOverrides extends AfterburnerTestBase
 
     static class MyStringDeserializer extends StdDeserializer<String>
     {
-        private static final long serialVersionUID = 1L;
-
         public MyStringDeserializer() { super(String.class); }
 
         @Override
-        public String deserialize(JsonParser jp, DeserializationContext ctxt)
+        public String deserialize(JsonParser p, DeserializationContext ctxt)
                 throws IOException, JsonProcessingException {
-            return "Foo:"+jp.getText();
+            return "Foo:"+p.getText();
         }
     }
-    
+
     /*
     /**********************************************************************
     /* Test methods

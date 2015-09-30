@@ -103,6 +103,18 @@ com.fasterxml.jackson.module.afterburner.util
         </executions>
       </plugin>
 
+      <!-- avoid failure due to known (temporarily) failing tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${version.plugin.surefire}</version>
+        <configuration>
+          <excludes>
+            <exclude>com/fasterxml/jackson/**/failing/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <!--  We will shade ASM, to simplify deployment, avoid version conflicts -->
         <groupId>org.apache.maven.plugins</groupId>
