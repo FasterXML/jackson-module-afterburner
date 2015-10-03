@@ -3,14 +3,11 @@ package com.fasterxml.jackson.module.afterburner.ser;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
-
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 // for [Issue#52]
@@ -43,11 +40,11 @@ public class CustomBeanPropertyWriterTest extends AfterburnerTestBase
         }
     }
 
+    @SuppressWarnings("serial")
     static class Only2BeanPropertyWriter extends BeanPropertyWriter
     {
-
         protected Only2BeanPropertyWriter(BeanPropertyWriter base) {
-          super(base);
+            super(base);
         }
 
         @Override

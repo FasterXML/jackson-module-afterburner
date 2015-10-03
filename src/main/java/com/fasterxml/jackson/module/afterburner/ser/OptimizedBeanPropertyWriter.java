@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
  * Intermediate base class that is used for concrete
  * per-type implementations
  */
+@SuppressWarnings("serial")
 abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter<T>>
     extends BeanPropertyWriter
 {

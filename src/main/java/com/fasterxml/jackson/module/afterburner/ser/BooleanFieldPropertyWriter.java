@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 public final class BooleanFieldPropertyWriter
     extends OptimizedBeanPropertyWriter<BooleanFieldPropertyWriter>
 {
+    private static final long serialVersionUID = 1L;
+
     private final boolean _suppressableSet;
     private final boolean _suppressableBoolean;
 

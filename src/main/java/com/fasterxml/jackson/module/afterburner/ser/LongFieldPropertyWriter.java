@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 public final class LongFieldPropertyWriter
     extends OptimizedBeanPropertyWriter<LongFieldPropertyWriter>
 {
+    private static final long serialVersionUID = 1L;
+
     private final long _suppressableLong;
     private final boolean _suppressableLongSet;
 

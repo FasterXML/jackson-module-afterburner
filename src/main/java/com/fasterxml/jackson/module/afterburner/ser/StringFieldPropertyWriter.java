@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 public final class StringFieldPropertyWriter
     extends OptimizedBeanPropertyWriter<StringFieldPropertyWriter>
 {
+    private static final long serialVersionUID = 1L;
+
     public StringFieldPropertyWriter(BeanPropertyWriter src, BeanPropertyAccessor acc, int index,
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);

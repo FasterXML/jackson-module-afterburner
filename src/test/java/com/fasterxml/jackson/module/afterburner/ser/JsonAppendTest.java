@@ -21,6 +21,7 @@ public class JsonAppendTest extends AfterburnerTestBase
         }
     }
 
+    @SuppressWarnings("serial")
     public static class MyVirtualPropertyWriter extends VirtualBeanPropertyWriter {
         protected MyVirtualPropertyWriter() { }
 
