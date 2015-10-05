@@ -28,17 +28,20 @@ public final class SettableIntFieldProperty
     }
     
     @Override
-    public SettableIntFieldProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableIntFieldProperty(this, name);
     }
     
     @Override
-    public SettableIntFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableIntFieldProperty(this, deser);
     }
     
     @Override
-    public SettableIntFieldProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableIntFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 

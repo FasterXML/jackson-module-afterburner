@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.io.NumberInput;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.util.ClassUtil;
 
 /**
  * Base class for concrete type-specific {@link SettableBeanProperty}
@@ -47,7 +48,7 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
             JsonDeserializer<?> deser)
     {
         super(src, deser);
-        _originalSettable = src;
+        _originalSettable = src._originalSettable.withValueDeserializer(deser);
         _propertyMutator = src._propertyMutator;
         _optimizedIndex = src._optimizedIndex;
     }
@@ -56,17 +57,16 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
             PropertyName name)
     {
         super(src, name);
-        _originalSettable = src;
+        _originalSettable = src._originalSettable.withName(name);
         _propertyMutator = src._propertyMutator;
         _optimizedIndex = src._optimizedIndex;
     }
-    
-    public abstract T withMutator(BeanPropertyMutator mut);
 
     @Override
-    public abstract T withValueDeserializer(JsonDeserializer<?> deser);
+    public abstract SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser);
 
-    
+    public abstract SettableBeanProperty withMutator(BeanPropertyMutator mut);
+
     /*
     /********************************************************************** 
     /* Overridden getters
@@ -351,5 +351,14 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
 
     protected boolean _hasTextualNull(String value) {
         return "null".equals(value);
+    }
+
+    /**
+     * Helper method used to check whether given serializer is the default
+     * serializer implementation: this is necessary to avoid overriding other
+     * kinds of deserializers.
+     */
+    protected boolean _isDefaultDeserializer(JsonDeserializer<?> deser) {
+        return (deser == null) || ClassUtil.isJacksonStdImpl(deser);
     }
 }

@@ -26,17 +26,20 @@ public final class SettableBooleanMethodProperty
     }
 
     @Override
-    public SettableBooleanMethodProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableBooleanMethodProperty(this, name);
     }
     
     @Override
-    public SettableBooleanMethodProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableBooleanMethodProperty(this, deser);
     }
     
     @Override
-    public SettableBooleanMethodProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableBooleanMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 

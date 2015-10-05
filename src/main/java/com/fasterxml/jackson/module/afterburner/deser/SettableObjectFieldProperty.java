@@ -24,19 +24,22 @@ public final class SettableObjectFieldProperty
     public SettableObjectFieldProperty(SettableObjectFieldProperty src, PropertyName name) {
         super(src, name);
     }
-    
+
     @Override
-    public SettableObjectFieldProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableObjectFieldProperty(this, name);
     }
-    
+
     @Override
-    public SettableObjectFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableObjectFieldProperty(this, deser);
     }
-    
+
     @Override
-    public SettableObjectFieldProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableObjectFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 

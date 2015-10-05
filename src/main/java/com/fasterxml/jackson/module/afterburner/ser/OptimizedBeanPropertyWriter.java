@@ -5,10 +5,11 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.util.ClassUtil;
 
 /**
  * Intermediate base class that is used for concrete
@@ -76,7 +77,9 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         }
         // 04-Oct-2015, tatu: To fix [module-afterburner#59], need to disable use of
         //    fully optimized variant
-        broken = true;
+        if (!isDefaultSerializer(ser)) {
+            broken = true;
+        }
     }
 
     public abstract T withAccessor(BeanPropertyAccessor acc);
@@ -120,4 +123,13 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
         Logger.getLogger(OptimizedBeanPropertyWriter.class.getName()).log(Level.WARNING, msg, e);
     }
 
+    /**
+     * Helper method used to check whether given serializer is the default
+     * serializer implementation: this is necessary to avoid overriding other
+     * kinds of deserializers.
+     */
+    protected boolean isDefaultSerializer(JsonSerializer<?> ser)
+    {
+        return (ser == null) || ClassUtil.isJacksonStdImpl(ser);
+    }
 }

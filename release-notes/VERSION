@@ -6,6 +6,8 @@ Project: jackson-module-afterburner
 
 2.6.3 (not yet released)
 
+#59: Cannot customize String deserialization behavior
+ (reported by brianwyantora@github)
 #60: Cannot read some "pretty" documents (NOTE: actually fixed by [jackson-core#220] in 2.6.3)
  (reported by lehcim@github)
 

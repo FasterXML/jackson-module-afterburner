@@ -26,17 +26,20 @@ public final class SettableStringMethodProperty
     }
     
     @Override
-    public SettableStringMethodProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableStringMethodProperty(this, name);
     }
     
     @Override
-    public SettableStringMethodProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableStringMethodProperty(this, deser);
     }
     
     @Override
-    public SettableStringMethodProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableStringMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 

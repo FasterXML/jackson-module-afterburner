@@ -3,11 +3,11 @@ package com.fasterxml.jackson.module.afterburner.deser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 @SuppressWarnings("serial")
@@ -32,6 +32,21 @@ public class TestStdDeserializerOverrides extends AfterburnerTestBase
         }
     }
 
+    // for [module-afterburner#59]
+    static class Issue59Bean {
+        public String field;
+    }
+
+    static class DeAmpDeserializer extends StdDeserializer<String>
+    {
+        public DeAmpDeserializer() { super(String.class); }
+
+        @Override
+        public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return p.getText().replaceAll("&amp;", "&");
+        }
+    }
+    
     /*
     /**********************************************************************
     /* Test methods
@@ -52,5 +67,49 @@ public class TestStdDeserializerOverrides extends AfterburnerTestBase
         
         assertEquals("a", burnt.a);
         assertEquals("Foo:b", burnt.b);
+    }
+
+    public void testStringDeserOverideNoAfterburner() throws Exception
+    {
+        final String json = "{\"field\": \"value &amp; value\"}";
+        final String EXP = "value & value";
+        Issue59Bean resultVanilla = new ObjectMapper()
+            .registerModule(new SimpleModule("module", Version.unknownVersion())
+                .addDeserializer(String.class, new DeAmpDeserializer()))
+            .readValue(json, Issue59Bean.class);
+        assertEquals(EXP, resultVanilla.field);
+    }
+
+    // for [module-afterburner#59]
+    public void testStringDeserOverideWithAfterburner() throws Exception
+    {
+        final String json = "{\"field\": \"value &amp; value\"}";
+        final String EXP = "value & value";
+
+        final Module module = new SimpleModule("module", Version.unknownVersion()) {
+            @Override
+            public void setupModule(SetupContext context) {
+                context.addDeserializers(
+                        new Deserializers.Base() {
+                            @Override
+                            public JsonDeserializer<?> findBeanDeserializer(
+                                    JavaType type,
+                                    DeserializationConfig config,
+                                    BeanDescription beanDesc)
+                                    throws JsonMappingException {
+                                if (type.hasRawClass(String.class)) {
+                                    return new DeAmpDeserializer();
+                                }
+                                return null;
+                            }
+                        });
+            }
+        };
+        
+        // but then fails with Afterburner
+        Issue59Bean resultAB = mapperWithModule()
+            .registerModule(module)
+            .readValue(json, Issue59Bean.class);
+        assertEquals(EXP, resultAB.field);
     }
 }

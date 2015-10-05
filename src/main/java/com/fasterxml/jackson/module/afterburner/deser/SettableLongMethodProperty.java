@@ -26,17 +26,20 @@ public final class SettableLongMethodProperty
     }
     
     @Override
-    public SettableLongMethodProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableLongMethodProperty(this, name);
     }
     
     @Override
-    public SettableLongMethodProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableLongMethodProperty(this, deser);
     }
     
     @Override
-    public SettableLongMethodProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableLongMethodProperty(_originalSettable, mut, _optimizedIndex);
     }
 

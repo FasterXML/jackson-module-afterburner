@@ -120,7 +120,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
             
             // 30-Jul-2012, tatu: [module-afterburner#6]: Needs to skip custom deserializers, if any.
             if (prop.hasValueDeserializer()) {
-                if (!isDefaultDeserializer(config, prop.getValueDeserializer())) {
+                if (!isDefaultDeserializer(prop.getValueDeserializer())) {
                     continue;
                 }
             }
@@ -175,9 +175,7 @@ public class DeserializerModifier extends BeanDeserializerModifier
      * deserializer implementation: this is necessary to avoid overriding other
      * kinds of deserializers.
      */
-    protected boolean isDefaultDeserializer(DeserializationConfig config,
-            JsonDeserializer<?> ser)
-    {
-        return ClassUtil.isJacksonStdImpl(ser);
+    protected boolean isDefaultDeserializer(JsonDeserializer<?> deser) {
+        return ClassUtil.isJacksonStdImpl(deser);
     }
 }

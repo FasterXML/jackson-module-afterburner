@@ -28,17 +28,20 @@ public final class SettableBooleanFieldProperty
     }
     
     @Override
-    public SettableBooleanFieldProperty withName(PropertyName name) {
+    public SettableBeanProperty withName(PropertyName name) {
         return new SettableBooleanFieldProperty(this, name);
     }
-    
+
     @Override
-    public SettableBooleanFieldProperty withValueDeserializer(JsonDeserializer<?> deser) {
+    public SettableBeanProperty withValueDeserializer(JsonDeserializer<?> deser) {
+        if (!_isDefaultDeserializer(deser)) {
+            return _originalSettable.withValueDeserializer(deser);
+        }
         return new SettableBooleanFieldProperty(this, deser);
     }
-    
+
     @Override
-    public SettableBooleanFieldProperty withMutator(BeanPropertyMutator mut) {
+    public SettableBeanProperty withMutator(BeanPropertyMutator mut) {
         return new SettableBooleanFieldProperty(_originalSettable, mut, _optimizedIndex);
     }
 
