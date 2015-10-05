@@ -149,7 +149,6 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         if (t == JsonToken.VALUE_FALSE) return false;
         if (t == JsonToken.VALUE_NULL) return false;
 
-        // [JACKSON-78]: should accept ints too, (0 == false, otherwise true)
         if (t == JsonToken.VALUE_NUMBER_INT) {
             // 11-Jan-2012, tatus: May be outside of int...
             if (p.getNumberType() == NumberType.INT) {
@@ -160,7 +159,6 @@ abstract class OptimizedSettableBeanProperty<T extends OptimizedSettableBeanProp
         // And finally, let's allow Strings to be converted too
         if (t == JsonToken.VALUE_STRING) {
             String text = p.getText().trim();
-            // [#422]: Allow aliases
             if ("true".equals(text) || "True".equals(text)) {
                 return true;
             }

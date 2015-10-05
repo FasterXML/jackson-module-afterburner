@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 
 /**
@@ -52,6 +53,30 @@ abstract class OptimizedBeanPropertyWriter<T extends OptimizedBeanPropertyWriter
             srcIn = ((OptimizedBeanPropertyWriter<?>)srcIn).fallbackWriter;
         }
         return srcIn;
+    }
+
+    // Overridden since 2.6.3
+    @Override
+    public void assignTypeSerializer(TypeSerializer typeSer) {
+        super.assignTypeSerializer(typeSer);
+        if (fallbackWriter != null) {
+            fallbackWriter.assignTypeSerializer(typeSer);
+        }
+        // 04-Oct-2015, tatu: Should we handle this wrt [module-afterburner#59]?
+        //    Seems unlikely, as String/long/int/boolean are final types; and for
+        //    basic 'Object' we delegate to deserializer as expected
+    }
+
+    // Overridden since 2.6.3
+    @Override
+    public void assignSerializer(JsonSerializer<Object> ser) {
+        super.assignSerializer(ser);
+        if (fallbackWriter != null) {
+            fallbackWriter.assignSerializer(ser);
+        }
+        // 04-Oct-2015, tatu: To fix [module-afterburner#59], need to disable use of
+        //    fully optimized variant
+        broken = true;
     }
 
     public abstract T withAccessor(BeanPropertyAccessor acc);
