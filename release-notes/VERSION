@@ -4,7 +4,7 @@ Project: jackson-module-afterburner
 === Releases ===
 ------------------------------------------------------------------------
 
-2.6.3 (not yet released)
+2.6.3 (12-Oct-2015)
 
 #59: Cannot customize String deserialization behavior
  (reported by brianwyantora@github)
