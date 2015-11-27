@@ -75,7 +75,6 @@ public class SerializerModifier extends BeanSerializerModifier
         ListIterator<BeanPropertyWriter> it = beanProperties.listIterator();
         while (it.hasNext()) {
             BeanPropertyWriter bpw = it.next();
-            Class<?> type = bpw.getPropertyType();
             AnnotatedMember member = bpw.getMember();
 
             Member jdkMember = member.getMember();
@@ -89,7 +88,7 @@ public class SerializerModifier extends BeanSerializerModifier
             }
             // (although, interestingly enough, can seem to access private classes...)
             
-            // 30-Jul-2012, tatu: [Issue-6]: Needs to skip custom serializers, if any.
+            // 30-Jul-2012, tatu: [#6]: Needs to skip custom serializers, if any.
             if (bpw.hasSerializer()) {
                 if (!isDefaultSerializer(config, bpw.getSerializer())) {
                     continue;
@@ -107,7 +106,8 @@ public class SerializerModifier extends BeanSerializerModifier
             if (bpw.getClass() != BeanPropertyWriter.class) {
                 continue;
             }
-            
+
+            Class<?> type = bpw.getType().getRawClass();
             boolean isMethod = (member instanceof AnnotatedMethod);
             if (type.isPrimitive()) {
                 if (type == Integer.TYPE) {
