@@ -20,6 +20,7 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         int getX() { return 123; }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     static class NonDefaultIntBean {
         private final int _x;
 
@@ -31,7 +32,6 @@ public class TestSimpleSerialize extends AfterburnerTestBase
             _x = x;
         }
 
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         public long getX() { return _x; }
     }
 
@@ -39,6 +39,7 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         public long getValue() { return -99L; }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public static class NonDefaultLongBean {
         private final long _value;
 
@@ -50,7 +51,6 @@ public class TestSimpleSerialize extends AfterburnerTestBase
             _value = value;
         }
 
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         public long getValue() { return _value; }
     }
 
@@ -66,8 +66,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         @JsonProperty("intF") int x = 17;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     static class NonDefaultIntFieldBean {
-        @JsonProperty("intF") @JsonInclude(JsonInclude.Include.NON_DEFAULT) int x = 17;
+        @JsonProperty("intF")
+        int x = 17;
 
         NonDefaultIntFieldBean() {}
 
@@ -80,8 +82,10 @@ public class TestSimpleSerialize extends AfterburnerTestBase
         @JsonProperty("long") long l = -123L;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     static class NonDefaultLongFieldBean {
-        @JsonProperty("long") @JsonInclude(JsonInclude.Include.NON_DEFAULT) long l = -123L;
+        @JsonProperty("long")
+        long l = -123L;
 
         NonDefaultLongFieldBean() {}
 

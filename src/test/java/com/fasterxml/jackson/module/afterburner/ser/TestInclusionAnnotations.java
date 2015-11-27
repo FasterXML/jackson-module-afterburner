@@ -72,7 +72,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
         assertEquals("{\"name\":\"Foo\"}", json);
     }
 
-    // [Issue#39]
+    // [module-afterburner#39]
     public void testEmptyExclusion() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
