@@ -11,6 +11,8 @@ core Jackson components, so rough edges may still exist. However, versions from 
 production ready.
 
 [![Build Status](https://travis-ci.org/FasterXML/jackson-module-afterburner.svg)](https://travis-ci.org/FasterXML/jackson-module-afterburner)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-afterburner/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.module/jackson-module-afterburner/)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.fasterxml.jackson.module/jackson-module-afterburner/badge.svg)](http://www.javadoc.io/doc/com.fasterxml.jackson.module/jackson-module-afterburner)
 
 ## Usage
 
