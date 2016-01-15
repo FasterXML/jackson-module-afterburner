@@ -17,10 +17,7 @@ public final class LongMethodPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
 
-        if (MARKER_FOR_EMPTY == _suppressableValue) {
-            _suppressableLong = 0L;
-            _suppressableLongSet = true;
-        } else if (_suppressableValue instanceof Long) {
+        if (_suppressableValue instanceof Long) {
             _suppressableLong = (Long)_suppressableValue;
             _suppressableLongSet = true;
         } else {

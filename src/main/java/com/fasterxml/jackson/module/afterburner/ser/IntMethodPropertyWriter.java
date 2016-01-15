@@ -17,10 +17,7 @@ public final class IntMethodPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
 
-        if (MARKER_FOR_EMPTY == _suppressableValue) {
-            _suppressableInt = 0;
-            _suppressableIntSet = true;
-        } else if (_suppressableValue instanceof Integer) {
+        if (_suppressableValue instanceof Integer) {
             _suppressableInt = (Integer)_suppressableValue;
             _suppressableIntSet = true;
         } else {
