@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
-// for [Issue#52]
+// for [afterburner#52]
 public class CustomBeanPropertyWriterTest extends AfterburnerTestBase
 {
     static class SampleObject {
@@ -32,7 +32,7 @@ public class CustomBeanPropertyWriterTest extends AfterburnerTestBase
         {
             for (int i = 0, len = props.size(); i < len; ++i) {
                 BeanPropertyWriter w = props.get(i);
-                if (Integer.class.isAssignableFrom(w.getPropertyType())) {
+                if (Integer.class.isAssignableFrom(w.getType().getRawClass())) {
                     props.set(i, new Only2BeanPropertyWriter(w));
                 }
             }

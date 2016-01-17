@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.afterburner.deser;
+package com.fasterxml.jackson.module.afterburner.ser;
 
 import java.io.IOException;
 import java.util.*;
