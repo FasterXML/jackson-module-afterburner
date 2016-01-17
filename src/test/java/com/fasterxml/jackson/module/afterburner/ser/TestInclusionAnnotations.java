@@ -77,12 +77,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
     {
         ObjectMapper mapper = mapperWithModule();
         String json;
-
-        json = mapper.writeValueAsString(new NonEmptyIntWrapper(3));
-        assertEquals("{\"value\":3}", json);
-        json = mapper.writeValueAsString(new NonEmptyIntWrapper(0));
-        assertEquals("{}", json);
-
+        
         json = mapper.writeValueAsString(new NonEmptyStringWrapper("x"));
         assertEquals("{\"value\":\"x\"}", json);
         json = mapper.writeValueAsString(new NonEmptyStringWrapper(""));
@@ -94,11 +89,6 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
     public void testEmptyExclusionViaClass() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
-
-        assertEquals("{\"value\":3}",
-                mapper.writeValueAsString(new NonEmptyIntWrapper2(3)));
-        assertEquals("{}",
-                mapper.writeValueAsString(new NonEmptyIntWrapper2(0)));
 
         assertEquals("{\"value\":\"x\"}",
                 mapper.writeValueAsString(new NonEmptyStringWrapper2("x")));

@@ -17,10 +17,7 @@ public final class BooleanMethodPropertyWriter
             JsonSerializer<Object> ser) {
         super(src, acc, index, ser);
 
-        if (MARKER_FOR_EMPTY == _suppressableValue) {
-            _suppressableBoolean = false;
-            _suppressableSet = true;
-        } else if (_suppressableValue instanceof Boolean) {
+        if (_suppressableValue instanceof Boolean) {
             _suppressableBoolean = ((Boolean)_suppressableValue).booleanValue();
             _suppressableSet = true;
         } else {
