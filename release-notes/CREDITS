@@ -41,3 +41,8 @@ natnan@github
 Steve Metcalfe (steveme@github)
 * Reported #58: Specific ordering of type information for polymorphic deserialization
  (2.6.2)
+
+Lucas Pouzac (lucaspouzac@github)
+
+* Reported, constributed fix to  #63: Revert back expansion of NON_EMPTY handling
+ (2.7.1)

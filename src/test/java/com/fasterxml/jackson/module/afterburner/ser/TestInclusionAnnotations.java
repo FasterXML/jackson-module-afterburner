@@ -8,7 +8,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerTestBase;
 
 public class TestInclusionAnnotations extends AfterburnerTestBase
 {
-    public class IntWrapper
+    static class IntWrapper
     {
         @JsonInclude(JsonInclude.Include.NON_NULL) 
         public Integer value;
@@ -16,7 +16,7 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
         public IntWrapper(Integer v) { value = v; }
     }
 
-    public class NonEmptyIntWrapper {
+    static class NonEmptyIntWrapper {
         private int value;
         public NonEmptyIntWrapper(int v) { value = v; }
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -24,11 +24,19 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
     }
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class NonEmptyIntWrapper2 {
+    static class NonEmptyIntWrapper2 {
         public int value;
         public NonEmptyIntWrapper2(int v) { value = v; }
     }
 
+    // But whereas 'empty' should NOT include '0', 'default' for property should
+    static class NonDefaultIntWrapper {
+        private int value;
+        public NonDefaultIntWrapper(int v) { value = v; }
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        public int getValue() { return value; }
+    }
+    
     public class NonEmptyStringWrapper {
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public String value;
@@ -77,7 +85,14 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
     {
         ObjectMapper mapper = mapperWithModule();
         String json;
-        
+
+        json = mapper.writeValueAsString(new NonEmptyIntWrapper(3));
+        assertEquals("{\"value\":3}", json);
+        // as per [module-afterburner#63], ints should not have "empty" value
+        // (temporarily, for 2.6, they did have)
+        json = mapper.writeValueAsString(new NonEmptyIntWrapper(0));
+        assertEquals("{\"value\":0}", json);
+
         json = mapper.writeValueAsString(new NonEmptyStringWrapper("x"));
         assertEquals("{\"value\":\"x\"}", json);
         json = mapper.writeValueAsString(new NonEmptyStringWrapper(""));
@@ -85,10 +100,15 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
         json = mapper.writeValueAsString(new NonEmptyStringWrapper(null));
         assertEquals("{}", json);
     }
-
+    
     public void testEmptyExclusionViaClass() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
+
+        assertEquals("{\"value\":3}",
+                mapper.writeValueAsString(new NonEmptyIntWrapper2(3)));
+        assertEquals("{\"value\":0}",
+                mapper.writeValueAsString(new NonEmptyIntWrapper2(0)));
 
         assertEquals("{\"value\":\"x\"}",
                 mapper.writeValueAsString(new NonEmptyStringWrapper2("x")));
@@ -96,5 +116,16 @@ public class TestInclusionAnnotations extends AfterburnerTestBase
                 mapper.writeValueAsString(new NonEmptyStringWrapper2("")));
         assertEquals("{}",
                 mapper.writeValueAsString(new NonEmptyStringWrapper2(null)));
+    }
+
+    public void testDefaultExclusion() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        String json;
+
+        json = mapper.writeValueAsString(new NonDefaultIntWrapper(3));
+        assertEquals("{\"value\":3}", json);
+        json = mapper.writeValueAsString(new NonDefaultIntWrapper(0));
+        assertEquals("{}", json);
     }
 }
