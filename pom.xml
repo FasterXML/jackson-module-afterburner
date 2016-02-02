@@ -22,8 +22,7 @@ used to enhance access functionality using bytecode generation.
   </scm>
 
   <properties>
-    <!-- annotations more stable, no patch versions -->
-    <jackson.core.version>2.7.0</jackson.core.version>
+    <jackson.core.version>2.7.1</jackson.core.version>
 
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/module/afterburner</packageVersion.dir>
