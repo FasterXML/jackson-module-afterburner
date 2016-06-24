@@ -13,6 +13,18 @@ Project: jackson-module-afterburner
 
 No changes since 2.6.
 
+2.6.7.1 (not yet released)
+
+(modules-base#7): Afterburner excludes serialization of some `null`-valued
+  Object properties
+
+2.6.7 (05-Jun-2016)
+2.6.6 (05-Apr-2016)
+2.6.5 (19-Jan-2016)
+2.6.4 (07-Dec-2015)
+
+No changes since 2.6.3
+
 2.6.3 (12-Oct-2015)
 
 #59: Cannot customize String deserialization behavior
